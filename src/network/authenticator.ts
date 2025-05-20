@@ -36,15 +36,6 @@ class Authenticator {
 
 		const platform = os.platform()
 
-		const system = {
-			network: os.networkInterfaces().en0 || [{ mac: UUID.zero }],
-			id0: UUID.zero,
-			platform:
-				platform in platforms
-					? platforms[platform as keyof typeof platforms]
-					: "Lin",
-		}
-
 		const options = [
 			"inventory-root",
 			"inventory-skeleton",
@@ -65,11 +56,14 @@ class Authenticator {
 			start: start,
 			channel: this.channel,
 			version: this.version,
-			platform: system.platform,
-			mac: system.network[0].mac, // TODO: do this better
-			id0: system.id0,
-			agree_to_tos: true, // TODO: handle this clientside
-			read_critical: true, // TODO: handle this clientside
+			platform:
+				platform in platforms
+					? platforms[platform as keyof typeof platforms]
+					: "Lin",
+			mac: this.getActiveMacAddress() || UUID.zero,
+			id0: UUID.zero,
+			agree_to_tos: true, // TODO: handle this client-side
+			read_critical: true, // TODO: handle this client-side
 			viewer_digest: this.digest,
 			options: options,
 		}
@@ -89,6 +83,20 @@ class Authenticator {
 				},
 			)
 		})
+	}
+
+	private getActiveMacAddress() {
+		const interfaces = os.networkInterfaces()
+
+		for (const interfaceName in interfaces) {
+			for (const iface of interfaces[interfaceName] ?? []) {
+				if (iface.family === "IPv4" && !iface.internal) {
+					return iface.mac
+				}
+			}
+		}
+
+		return null
 	}
 }
 

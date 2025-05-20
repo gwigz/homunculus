@@ -1,52 +1,39 @@
 import type Long from "long"
-
-import type { Circuit, Core, Packets } from ".."
-import type Client from "../../client"
-import type { Region } from "../../structures"
+import type { Circuit, Packets } from ".."
 
 class Delegate {
-	public readonly circuit: Circuit
+	constructor(public readonly circuit: Circuit) {}
 
-	constructor(circuit: Circuit) {
-		Object.defineProperty(this, "circuit", { value: circuit })
-	}
-
-	get core(): Core {
+	get core() {
 		return this.circuit.core
 	}
 
-	get client(): Client {
+	get client() {
 		return this.circuit.core.client
 	}
 
 	/**
 	 * Toggle for avoiding decoding packets we don't care about, for example
 	 * ChatFromSimulator will return `false` if no listen events are bound to
-	 * the clinets nearby helper.
+	 * the clients nearby helper.
 	 *
-	 * @returns {boolean} True if we want to recieve packets, defaulted to true
+	 * @returns {boolean} True if we want to receive packets, defaulted to true
 	 */
-	get waiting(): boolean {
+	get waiting() {
 		return true
 	}
 
 	/**
-	 * Handler recieved and parsed Packet objects.
-	 *
-	 * @param {Packet} packet Parsed packet object
+	 * Handler received and parsed Packet objects.
 	 */
-	public handle(packet: Packets.Packet): void {
+	public handle(packet: Packets.Packet) {
 		// ...
 	}
 
 	/**
 	 * Attempts to fetch region by region handle.
-	 *
-	 * @param {Long} handle Region handle
-	 * @returns {?Region}
 	 */
-	protected region(handle: Long): Region | null {
-		// This is kinda ugly, I know.
+	protected region(handle: Long) {
 		return this.client.regions.get(
 			`${handle.getHighBits()}${handle.getLowBits()}`,
 		)

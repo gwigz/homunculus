@@ -2,14 +2,14 @@ import assert from "node:assert"
 import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
 import { Authenticator, Core } from "./network"
 import type { Packet } from "./network/packets"
-import { Agent, Nearby, type Parcel, type Region } from "./structures"
-import { Collection, Constants } from "./utilities"
+import { Agent, Nearby, type Region } from "./structures"
+import { Constants } from "./utilities"
 
 export interface ClientEvents {
-	ready: []
-	debug: [message: string]
-	error: [error: Error]
-	warning: [warning: string]
+	[Constants.ClientEvents.READY]: []
+	[Constants.ClientEvents.DEBUG]: [message: string]
+	[Constants.ClientEvents.ERROR]: [error: Error]
+	[Constants.ClientEvents.WARNING]: [warning: string]
 }
 
 /**
@@ -25,7 +25,7 @@ class Client extends AsyncEventEmitter<ClientEvents> {
 	 */
 	public agent?: Agent
 
-	public regions: Collection<string, Region>
+	public regions: Map<string, Region>
 
 	public readonly nearby: Nearby
 
@@ -51,10 +51,8 @@ class Client extends AsyncEventEmitter<ClientEvents> {
 
 		/**
 		 * Regions we are currently connected to, or recently have been.
-		 *
-		 * @type {Collection}
 		 */
-		this.regions = new Collection()
+		this.regions = new Map()
 
 		/**
 		 * The nearby helper, becomes fully functional after ready event is emitted.
@@ -123,7 +121,7 @@ class Client extends AsyncEventEmitter<ClientEvents> {
 		}
 
 		this.emit(
-			Constants.Events.DEBUG,
+			Constants.ClientEvents.DEBUG,
 			`Attempting login using username "${username}"...`,
 		)
 
@@ -132,7 +130,7 @@ class Client extends AsyncEventEmitter<ClientEvents> {
 		assert(typeof response === "object", Constants.Errors.LOGIN_FAILED)
 
 		if (response.message) {
-			this.emit(Constants.Events.DEBUG, response.message)
+			this.emit(Constants.ClientEvents.DEBUG, response.message)
 		}
 
 		assert("circuit_code" in response, 'Missing "circuit_code" in response')
@@ -171,7 +169,26 @@ class Client extends AsyncEventEmitter<ClientEvents> {
 			id: response.agent_id,
 			session: response.session_id,
 			key: response.circuit_code,
+			firstname:
+				"first_name" in response
+					? response.first_name.replace('"', "")
+					: undefined,
+			lastname:
+				"last_name" in response
+					? response.last_name.replace('"', "")
+					: undefined,
 		})
+
+		/**
+		 * inventory-root: [{ folder_id }],
+		 * inventory-skeleton: [{ name, folder_id, parent_id, type_default, version }],
+		 * buddy-list: [{ buddy_id, buddy_rights_has, buddy_rights_given }]
+		 * look_at: "[r-0.0121346,r0.998734,r0.0488137]",
+		 * region_x: 272128,
+		 * region_y: 334080,
+		 * home: "{'region_handle':[r123, r123], 'position':[r130.5, r170.75, r22.25], 'look_at':[r0.0, r1.0, r0.0]}",
+		 * seed_capability: "https://simhost..."
+		 */
 
 		return this.core.handshake({
 			id: response.circuit_code,
@@ -197,7 +214,7 @@ class Client extends AsyncEventEmitter<ClientEvents> {
 	public async disconnect() {
 		await this.core.disconnect()
 
-		this.emit(Constants.Events.DEBUG, "Disconnected!")
+		this.emit(Constants.ClientEvents.DEBUG, "Disconnected!")
 	}
 }
 

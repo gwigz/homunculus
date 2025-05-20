@@ -49,6 +49,11 @@ class Agent extends Entity {
 		return 0.0
 	}
 
+	/**
+	 * Sends an instant message to the agent.
+	 *
+	 * @param message The message to send.
+	 */
 	public message(message: string) {
 		assert(this.client.agent, "Agent is not ready")
 
@@ -70,15 +75,15 @@ class Agent extends Entity {
 		)
 	}
 
-	public whisper(message: string, channel = 0): void {
+	public whisper(message: string, channel = 0) {
 		this.client.nearby.whisper(message, channel)
 	}
 
-	public say(message: string, channel = 0): void {
+	public say(message: string, channel = 0) {
 		this.client.nearby.say(message, channel)
 	}
 
-	public shout(message: string, channel = 0): void {
+	public shout(message: string, channel = 0) {
 		this.client.nearby.shout(message, channel)
 	}
 }

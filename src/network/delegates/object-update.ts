@@ -1,10 +1,11 @@
-import { Entity } from "../../structures"
+import { Entity, type Region } from "../../structures"
 import { Constants } from "../../utilities"
+import type { ObjectUpdate as ObjectUpdatePacket } from "../packets"
 
 import Delegate from "./delegate"
 
 class ObjectUpdate extends Delegate {
-	public handle(packet): void {
+	public handle(packet: ObjectUpdatePacket) {
 		const handle = packet.data.regionData[0].regionHandle
 		const region = this.region(handle)
 
@@ -23,7 +24,7 @@ class ObjectUpdate extends Delegate {
 		}
 	}
 
-	public update(entity, data): Entity {
+	public update(entity: Entity, data: any): Entity {
 		// data.data
 		// data.objectData
 		// data.extraParams
@@ -39,10 +40,9 @@ class ObjectUpdate extends Delegate {
 		return entity
 	}
 
-	public insert(data, region): Entity {
-		const entity = new Entity(this.client, this.update({}, data))
+	public insert(data: any, region: Region): Entity {
+		const entity = new Entity(this.client, this.update({} as Entity, data))
 
-		// Pass to regions entity collection.
 		region.objects.set(entity.id, entity)
 
 		return entity

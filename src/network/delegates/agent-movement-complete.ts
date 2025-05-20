@@ -6,10 +6,16 @@ import * as Packets from "../packets"
 class AgentMovementComplete extends Delegate {
 	private counter = 0
 
-	public handle(packet: Packets.AgentMovementComplete): void {
-		const data = packet.data.data[0]
+	public handle(packet: Packets.AgentMovementComplete) {
 		const client = this.client
-		const agent = this.client.agent
+		const agent = client.agent
+
+		if (!agent) {
+			return
+		}
+
+		const data = packet.data.data[0]
+
 		// const sim = packet.data.simData[0]
 		// const simulator = this.client.simulator
 
@@ -26,7 +32,6 @@ class AgentMovementComplete extends Delegate {
 			0.0,
 		]
 
-		// This is kinda ugly, I know.
 		client.regions.set(
 			`${data.regionHandle.getHighBits()}${data.regionHandle.getLowBits()}`,
 			new Region(client, {
@@ -47,9 +52,6 @@ class AgentMovementComplete extends Delegate {
 
 		const throttles = Buffer.allocUnsafe(7 * 4)
 
-		// May decide to just pass an array of values, keep buffer stuff out of
-		// these sorts of classes. Depends on how Variable1 and Variable2 types
-		// are defined.
 		throttles.writeFloatLE(resend, 0)
 		throttles.writeFloatLE(land, 4)
 		throttles.writeFloatLE(wind, 8)
@@ -58,9 +60,6 @@ class AgentMovementComplete extends Delegate {
 		throttles.writeFloatLE(texture, 20)
 		throttles.writeFloatLE(asset, 24)
 
-		// Pass our throttle data, generated above. This controls the rate of
-		// various packets that we can safely handle without hitting the users
-		// specified bandwidth limit.
 		this.circuit.send(
 			new Packets.AgentThrottle({
 				throttle: {
@@ -70,8 +69,6 @@ class AgentMovementComplete extends Delegate {
 			}),
 		)
 
-		// This sends the users field of vision value, which in this case we're
-		// just saying "hey, give me everything, even stuff behind me".
 		this.circuit.send(
 			new Packets.AgentFOV({
 				fovBlock: {
@@ -82,8 +79,6 @@ class AgentMovementComplete extends Delegate {
 			}),
 		)
 
-		// This sends the height and width of what would usually calculated via. 3D
-		// display/window size.
 		this.circuit.send(
 			new Packets.AgentHeightWidth({
 				heightWidthBlock: {
@@ -94,18 +89,14 @@ class AgentMovementComplete extends Delegate {
 			}),
 		)
 
-		// Toggle for always run, probably more likely to be used; but we'll set
-		// that up once we have a "agent control manager" or something of the sorts.
 		this.circuit.send(
 			new Packets.SetAlwaysRun({
-				agentData: {
-					alwaysRun: false,
-				},
+				agentData: { alwaysRun: false },
 			}),
 		)
 
 		// TODO: add toggle to enable/disable these packets, as they allow object
-		// data to start being recieved, which we may or may not want.
+		// data to start being received, which we may or may not want.
 		this.circuit.send(
 			new Packets.AgentUpdate({
 				agentData: {

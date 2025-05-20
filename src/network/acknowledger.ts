@@ -1,33 +1,24 @@
-import { Collection } from "../utilities"
 import { PacketAck } from "./packets"
 
 import type Circuit from "./circuit"
 
 interface IAcknowledgerPackets {
-	seen: Collection<number, number>
+	seen: Map<number, number>
 	queued: Set<number>
 }
 
 class Acknowledger {
-	public readonly circuit: Circuit
-
 	private acknowledge: PacketAck
 	private packets: IAcknowledgerPackets
 
-	constructor(circuit: Circuit) {
-		/**
-		 * Circuit instance that instantiated this Acknowledger.
-		 *
-		 * @name Acknowledger#circuit
-		 * @type {Circuit}
-		 * @readonly
-		 */
-		Object.defineProperty(this, "circuit", { value: circuit })
-
+	constructor(
+		/** Circuit instance that instantiated this Acknowledger. */
+		public readonly circuit: Circuit,
+	) {
 		this.acknowledge = new PacketAck({ packets: [] })
 
 		this.packets = {
-			seen: new Collection(),
+			seen: new Map(),
 			queued: new Set(),
 		}
 
@@ -35,15 +26,15 @@ class Acknowledger {
 		setInterval(this.prune.bind(this), 1000)
 	}
 
-	public seen(number): boolean {
+	public seen(number: number) {
 		return this.packets.seen.has(number) || this.packets.queued.has(number)
 	}
 
-	public queue(number): void {
+	public queue(number: number) {
 		this.packets.queued.add(number)
 	}
 
-	public tick(): void {
+	public tick() {
 		if (this.packets.queued.size) {
 			const uptime = process.uptime()
 
@@ -62,7 +53,7 @@ class Acknowledger {
 		}
 	}
 
-	public prune(): void {
+	public prune() {
 		if (!this.packets.seen.size) {
 			return
 		}

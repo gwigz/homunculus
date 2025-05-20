@@ -3,11 +3,9 @@ import type Core from "./core"
 import Deserializer from "./deserializer"
 import Serializer from "./serializer"
 
-import * as Delegates from "./delegates"
-
-import type { Agent } from "../structures"
 import { Constants } from "../utilities"
-
+import * as Delegates from "./delegates"
+import type { PacketBuffer } from "./helpers"
 import { CompleteAgentMovement, type Packet, UseCircuitCode } from "./packets"
 
 interface ICircuitOptions {
@@ -17,8 +15,6 @@ interface ICircuitOptions {
 }
 
 class Circuit {
-	public readonly core: Core
-
 	public readonly id: number
 	public readonly address: string
 	public readonly port: number
@@ -27,19 +23,14 @@ class Circuit {
 	public readonly deserializer: Deserializer
 	public readonly serializer: Serializer
 
-	protected delegates: any
+	protected delegates: Record<string, Delegates.Delegate>
 	protected dead: boolean
 
-	constructor(core: Core, data: ICircuitOptions) {
-		/**
-		 * Core instance that instantiated this Circuit.
-		 *
-		 * @name Circuit#core
-		 * @type {Circuit}
-		 * @readonly
-		 */
-		Object.defineProperty(this, "core", { value: core })
-
+	constructor(
+		/** Core instance that instantiated this Circuit. */
+		public readonly core: Core,
+		data: ICircuitOptions,
+	) {
 		this.id = data.id
 		this.address = data.address
 		this.port = data.port
@@ -53,12 +44,12 @@ class Circuit {
 		this.register(Delegates)
 	}
 
-	get agent(): Agent {
+	get agent() {
 		return this.core.agent
 	}
 
-	get session(): number {
-		return this.core.agent.session
+	get session() {
+		return this.core.agent?.session
 	}
 
 	public send(...packets: Array<Packet>): Promise<Array<void>> {
@@ -72,7 +63,7 @@ class Circuit {
 		)
 	}
 
-	public receive(buffer): void {
+	public receive(buffer: PacketBuffer) {
 		if (buffer.reliable) {
 			if (this.acknowledger.seen(buffer.sequence)) {
 				return
@@ -87,9 +78,9 @@ class Circuit {
 			return
 		}
 
-		if (packet.name in this.delegates && this.delegates[packet.name].waiting) {
+		if (packet.name in this.delegates && this.delegates[packet.name]?.waiting) {
 			// TODO: check async
-			this.delegates[packet.name].handle(
+			this.delegates[packet.name]?.handle(
 				this.deserializer.convert(packet, buffer),
 			)
 		}
@@ -104,7 +95,7 @@ class Circuit {
 
 		return this.send(
 			new UseCircuitCode({
-				id: this.agent.id,
+				id: this.agent?.id,
 				code: this.id,
 				session: this.session,
 			}),
@@ -112,10 +103,8 @@ class Circuit {
 		)
 	}
 
-	public register(delegates: any): void {
-		for (const Delegate of Object.values(delegates) as Array<
-			typeof Delegates.Delegate
-		>) {
+	public register(delegates: Record<string, typeof Delegates.Delegate>) {
+		for (const Delegate of Object.values(delegates)) {
 			if (Delegate !== Delegates.Delegate) {
 				this.delegates[Delegate.name] = new Delegate(this)
 			}

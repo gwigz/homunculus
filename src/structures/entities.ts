@@ -1,8 +1,7 @@
-import { Collection } from "../utilities"
 import type Entity from "./entity"
 
-class Entities extends Collection<number, Entity> {
-	private register = new Collection<string, number>()
+class Entities extends Map<number, Entity> {
+	private register = new Map<string, number>()
 
 	public lookup(key: string) {
 		if (this.register.has(key)) {

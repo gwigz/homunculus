@@ -14,14 +14,14 @@ class Quaternion {
 	public static toBuffer(quaternion: Array<number>): Buffer {
 		const buffer = Buffer.allocUnsafe(Quaternion.size)
 
-		if (quaternion[3] >= 0.0) {
-			buffer.writeFloatLE(quaternion[0], 0)
-			buffer.writeFloatLE(quaternion[1], 4)
-			buffer.writeFloatLE(quaternion[2], 8)
+		if (quaternion[3]! >= 0.0) {
+			buffer.writeFloatLE(quaternion[0]!, 0)
+			buffer.writeFloatLE(quaternion[1]!, 4)
+			buffer.writeFloatLE(quaternion[2]!, 8)
 		} else {
-			buffer.writeFloatLE(-quaternion[0], 0)
-			buffer.writeFloatLE(-quaternion[1], 4)
-			buffer.writeFloatLE(-quaternion[2], 8)
+			buffer.writeFloatLE(-quaternion[0]!, 0)
+			buffer.writeFloatLE(-quaternion[1]!, 4)
+			buffer.writeFloatLE(-quaternion[2]!, 8)
 		}
 
 		return buffer
@@ -58,15 +58,15 @@ class Quaternion {
 		if (normalized) {
 			const sum =
 				1 -
-				quaternion[0] * quaternion[0] -
-				quaternion[1] * quaternion[1] -
-				quaternion[2] * quaternion[2]
+				quaternion[0]! * quaternion[0]! -
+				quaternion[1]! * quaternion[1]! -
+				quaternion[2]! * quaternion[2]!
 
 			quaternion[3] = sum > 0.0 ? Math.sqrt(sum) : 0.0
 		}
 
 		if ("toFloat" in type) {
-			return quaternion.map((value) => type.toFloat(value, lower, upper))
+			return quaternion.map((value) => type.toFloat(value!, lower!, upper!))
 		}
 
 		return quaternion

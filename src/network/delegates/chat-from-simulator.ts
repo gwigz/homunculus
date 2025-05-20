@@ -27,7 +27,7 @@ class ChatFromSimulator extends Delegate {
 		}
 	}
 
-	get waiting(): boolean {
+	get waiting() {
 		return !!this.client.nearby.listenerCount("chat")
 	}
 }

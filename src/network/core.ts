@@ -1,7 +1,7 @@
 import type { Client } from ".."
 
 import type { Agent, Entities, Region } from "../structures"
-import { Collection, Constants } from "../utilities"
+import { Constants } from "../utilities"
 import { LogoutRequest } from "./packets"
 
 import Circuit, { type ICircuitOptions } from "./circuit"
@@ -13,73 +13,52 @@ import Socket from "./socket"
  */
 class Core {
 	public socket: Socket
-	public circuits: Collection<string, Circuit>
-	public circuit: Circuit
+	public circuits: Map<string, Circuit>
+	public circuit?: Circuit
 	public status: number
 
-	public readonly client: Client
-
 	/**
-	 * @param {Client} client For emiting processed messages back to
+	 * @param client For emitting processed messages back to.
 	 */
-	constructor(client: Client) {
-		/**
-		 * Client instance that instantiated this Core.
-		 *
-		 * @name Acknowledger#client
-		 * @type {Client}
-		 * @readonly
-		 */
-		Object.defineProperty(this, "client", { value: client })
-
+	constructor(
+		/** Client instance that instantiated this Core. */
+		public readonly client: Client,
+	) {
 		/**
 		 * The UDP connection/socket.
-		 * @type {Socket}
 		 */
 		this.socket = new Socket(this)
 
 		/**
 		 * Collection of recently, and currently in use Circuit instances.
-		 * @type {Collection}
 		 */
-		this.circuits = new Collection()
-
-		/**
-		 * Currently active circuit.
-		 * @type {?Circuit}
-		 */
-		this.circuit = null
+		this.circuits = new Map()
 
 		/**
 		 * The status of this class, a type of Constants.Status, IDLE default.
-		 * @type {number}
 		 */
 		this.status = Constants.Status.IDLE
 	}
 
-	get agent(): Agent {
+	get agent() {
 		return this.client.agent
 	}
 
-	get region(): Region {
-		return this.client.region
-	}
+	// get region() {
+	// 	return this.client.region
+	// }
 
-	get objects(): Entities {
-		return this.client.region.objects
-	}
+	// get objects(): Entities {
+	// 	return this.client.region.objects
+	// }
 
 	/**
 	 * Sends message to Circuit over UDP socket.
 	 *
-	 * @param {Circuit} circuit Circuit to send packets too
-	 * @param {...Buffer} packets Packet to send
-	 * @returns {Promise}
+	 * @param circuit Circuit to send packets too.
+	 * @param packets Packet to send.
 	 */
-	public send(
-		circuit: Circuit,
-		...packets: Array<Buffer>
-	): Promise<Array<void>> {
+	public send(circuit: Circuit, ...packets: Array<Buffer>) {
 		return Promise.all(
 			packets.map((packet) => this.socket.send(circuit, packet)),
 		)
@@ -87,43 +66,41 @@ class Core {
 
 	/**
 	 * Connects the client to a given circuit code.
-	 *
-	 * @param {data} ICircuitOptions
 	 */
-	public handshake(data: ICircuitOptions): Promise<Array<void>> {
+	public handshake(data: ICircuitOptions) {
 		const circuit = new Circuit(this, data)
 
-		this.status = Constants.Status.CONNECTING
 		this.circuits.set(`${circuit.address}:${circuit.port}`, circuit)
 
-		if (this.circuit === null) {
+		if (!this.circuit) {
+			this.status = Constants.Status.CONNECTING
 			this.circuit = circuit
 		}
 
 		this.client.emit(
-			Constants.Events.DEBUG,
-			"Handshake recieved, creating circuit...",
+			Constants.ClientEvents.DEBUG,
+			"Handshake received, creating circuit...",
 		)
 
 		return circuit.handshake()
 	}
 
-	public ready(): void {
+	public ready() {
 		if (this.status < Constants.Status.CONNECTING) {
 			return
 		}
 
 		this.status = Constants.Status.READY
 
-		this.client.emit(Constants.Events.DEBUG, "Connected!")
-		this.client.emit(Constants.Events.READY)
+		this.client.emit(Constants.ClientEvents.DEBUG, "Connected!")
+		this.client.emit(Constants.ClientEvents.READY)
 	}
 
 	/**
 	 * Disconnects the client from the current circuit.
 	 */
-	public disconnect(): void {
-		this.circuit.send(new LogoutRequest())
+	public disconnect() {
+		this.circuit?.send(new LogoutRequest())
 	}
 }
 

@@ -1,4 +1,5 @@
 import PacketBuffer from "../helpers/packet-buffer"
+import type { ObjectUpdateCompressed as ObjectUpdateCompressedPacket } from "../packets"
 import CompressedObjectValue, {
 	type CompressedObjectProperties,
 } from "./compressed-object-value"
@@ -14,7 +15,7 @@ const Flags = {
 	SCRATCH_PAD: 0x01,
 	TREE_TYPE: 0x02,
 	TEXT: 0x04,
-	PARTICALS: 0x08,
+	PARTICLES: 0x08,
 	SOUND_DATA: 0x10,
 	PARENT: 0x20,
 	TEXTURE_ANIMATION: 0x40,
@@ -46,7 +47,7 @@ const compressedObjectProperties: CompressedObjectProperties = [
 ]
 
 // ['media.url', new CompressedObjectValue(Types.Text, Flags.MEDIA_URL)],
-// ['particles', new CompressedObjectValue(Types.ParticleData, Flags.PARTICALS)],
+// ['particles', new CompressedObjectValue(Types.ParticleData, Flags.PARTICLES)],
 // ['parameters', Types.Variable1],
 // ['sound.key', new CompressedObjectValue(Types.UUID, Flags.SOUND_DATA)],
 // ['sound.gain', new CompressedObjectValue(Types.U32, Flags.SOUND_DATA)],
@@ -75,7 +76,7 @@ const compressedObjectProperties: CompressedObjectProperties = [
 // ['animation', new CompressedObjectValue(Types.U32, Flags.TEXTURE_ANIMATION)]
 
 class ObjectUpdateCompressed extends Delegate {
-	public handle(packet): void {
+	public handle(packet: ObjectUpdateCompressedPacket) {
 		const handle = packet.data.regionData[0].regionHandle
 		const region = this.region(handle)
 
@@ -116,7 +117,7 @@ class ObjectUpdateCompressed extends Delegate {
 			switch (key) {
 				case "velocity.angular":
 				case "data":
-					// Ignored values, for now.
+					// ignored values, for now
 					break
 
 				case "text.value":
@@ -156,13 +157,12 @@ class ObjectUpdateCompressed extends Delegate {
 		buffer: PacketBuffer,
 		flags: number,
 		region: Region,
-	): Entity {
+	) {
 		const entity = this.update(
 			new Entity(this.client, { id, key, flags }),
 			buffer,
 		)
 
-		// Pass to entity collection.
 		region.objects.set(entity.id, entity)
 
 		return entity

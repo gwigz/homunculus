@@ -1,9 +1,12 @@
-import { RequestMultipleObjects } from "../packets"
+import {
+	type ObjectUpdateCached as ObjectUpdateCachedPacket,
+	RequestMultipleObjects,
+} from "../packets"
 import Delegate from "./delegate"
 
 class ObjectUpdateCached extends Delegate {
-	public handle(packet): void {
-		const uncached = packet.data.objectData.map((data) => ({
+	public handle(packet: ObjectUpdateCachedPacket) {
+		const uncached = packet.data.objectData.map((data: any) => ({
 			id: data.id,
 			cacheMissType: 0,
 		}))

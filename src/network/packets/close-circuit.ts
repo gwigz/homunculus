@@ -8,8 +8,6 @@ class CloseCircuit extends Packet {
 	 * Packet ID, this value is only unique per-frequency range, see key get
 	 * method of Packet, plus the buffer helper of the network namespace for
 	 * generating a lookup codes.
-	 *
-	 * @type {number}
 	 */
 	public static id = 4294967293
 
@@ -18,16 +16,12 @@ class CloseCircuit extends Packet {
 	 * 32 bits. There can be unique 254 messages IDs in the "High" or "Medium"
 	 * frequencies and 32,000 in "Low". A message with a "Fixed" frequency also
 	 * defines its own ID and is considered to be a signal.
-	 *
-	 * @type {number}
 	 */
 	public static frequency = 3
 
 	/**
 	 * If this value is true, the client cannot send this packet as circuits only
 	 * accept trusted packets from internal connections (to utility servers etc).
-	 *
-	 * @type {boolean}
 	 */
 	public static trusted = false
 
@@ -35,8 +29,6 @@ class CloseCircuit extends Packet {
 	 * States if this packet should use or be using zerocoding, to attempt to
 	 * compress the sequences of zeros in the message in order to reduce network
 	 * load.
-	 *
-	 * @type {boolean}
 	 */
 	public static compression = false
 

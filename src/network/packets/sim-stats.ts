@@ -1,4 +1,3 @@
-import { Collection } from "../../utilities"
 import Packet from "./packet"
 
 import * as Types from "../types"
@@ -11,8 +10,6 @@ class SimStats extends Packet {
 	 * Packet ID, this value is only unique per-frequency range, see key get
 	 * method of Packet, plus the buffer helper of the network namespace for
 	 * generating a lookup codes.
-	 *
-	 * @type {number}
 	 */
 	public static id = 140
 
@@ -21,16 +18,12 @@ class SimStats extends Packet {
 	 * 32 bits. There can be unique 254 messages IDs in the "High" or "Medium"
 	 * frequencies and 32,000 in "Low". A message with a "Fixed" frequency also
 	 * defines its own ID and is considered to be a signal.
-	 *
-	 * @type {number}
 	 */
 	public static frequency = 0
 
 	/**
 	 * If this value is true, the client cannot send this packet as circuits only
 	 * accept trusted packets from internal connections (to utility servers etc).
-	 *
-	 * @type {boolean}
 	 */
 	public static trusted = true
 
@@ -38,8 +31,6 @@ class SimStats extends Packet {
 	 * States if this packet should use or be using zerocoding, to attempt to
 	 * compress the sequences of zeros in the message in order to reduce network
 	 * load.
-	 *
-	 * @type {boolean}
 	 */
 	public static compression = false
 
@@ -48,15 +39,13 @@ class SimStats extends Packet {
 	 * required parameters.
 	 *
 	 * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
-	 * @type {Collection}
 	 */
-	public static format: Collection<string, any> = new Collection([
-		// tslint:disable-next-line:max-line-length
+	public static format: Map<string, any> = new Map([
 		[
 			"region",
 			{
 				quantity: 1,
-				parameters: new Collection<string, any>([
+				parameters: new Map<string, any>([
 					["regionX", Types.U32],
 					["regionY", Types.U32],
 					["regionFlags", Types.U32],
@@ -64,22 +53,20 @@ class SimStats extends Packet {
 				]),
 			},
 		],
-		// tslint:disable-next-line:max-line-length
 		[
 			"stat",
 			{
-				parameters: new Collection<string, any>([
+				parameters: new Map<string, any>([
 					["stat", Types.U32],
 					["statValue", Types.F32],
 				]),
 			},
 		],
-		// tslint:disable-next-line:max-line-length
 		[
 			"pidStat",
 			{
 				quantity: 1,
-				parameters: new Collection<string, any>([["pID", Types.S32]]),
+				parameters: new Map<string, any>([["pID", Types.S32]]),
 			},
 		],
 	])

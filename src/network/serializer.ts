@@ -6,19 +6,12 @@ import type Circuit from "./circuit"
 
 class Serializer {
 	public index: number
-	public readonly circuit: Circuit
 
-	constructor(circuit) {
+	constructor(
+		/** Circuit instance that instantiated this Serializer. */
+		public readonly circuit: Circuit,
+	) {
 		this.index = 1
-
-		/**
-		 * Circuit instance that instantiated this Seralizer.
-		 *
-		 * @name Seralizer#circuit
-		 * @type {Circuit}
-		 * @readonly
-		 */
-		Object.defineProperty(this, "circuit", { value: circuit })
 	}
 
 	public convert(packet: Packet): Buffer {
@@ -30,11 +23,11 @@ class Serializer {
 		const array = [this.header(PacketConstructor)]
 
 		if (PacketConstructor.format) {
-			// Support skipping the block name in parameters.
+			// support skipping the block name in parameters
 			if (PacketConstructor.format.size === 1) {
-				const [[block, format]] = PacketConstructor.format
+				const [block, format] = PacketConstructor.format.entries().next().value!
 
-				// Try and assume this correctly.
+				// try and assume this correctly...
 				if (!(block in packet.data) || Object.keys(packet.data).length > 1) {
 					return Buffer.concat(
 						array.concat(this.parse(block, format, packet.data)),
@@ -62,7 +55,7 @@ class Serializer {
 				}
 
 				if (!format.quantity) {
-					// Prefix with variable block quantity.
+					// prefix with variable block quantity
 					array.push(U8.toBuffer(length || 1))
 				}
 
@@ -78,11 +71,11 @@ class Serializer {
 	public header(PacketConstructor: typeof Packet): Buffer {
 		const index = this.index++
 
-		// First, append flags and packet sequence number/index.
+		// first, append flags and packet sequence number/index
 		// http://wiki.secondlife.com/wiki/Packet_Layout
 		const array = [0x00, index >> 24, index >> 16, index >> 8, index, 0x00]
 
-		// Logic for additional header bytes dependant on packet type/frequency.
+		// logic for additional header bytes dependant on packet type/frequency
 		if (PacketConstructor.frequency !== 2) {
 			array.push(0xff)
 
@@ -97,10 +90,10 @@ class Serializer {
 			}
 		}
 
-		// Append remaining section of the packet identifier.
+		// append remaining section of the packet identifier
 		array.push(PacketConstructor.id & 0xff)
 
-		// Pass buffer object.
+		// pass buffer object
 		return Buffer.from(array)
 	}
 
@@ -116,7 +109,7 @@ class Serializer {
 
 				switch (name) {
 					case "agent":
-						data.agent = this.circuit.agent.id
+						data.agent = this.circuit.agent?.id
 						break
 
 					case "session":

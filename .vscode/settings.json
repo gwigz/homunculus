@@ -13,5 +13,9 @@
 	},
 	"[json]": {
 		"editor.defaultFormatter": "biomejs.biome"
-	}
+	},
+	"cSpell.words": [
+		"firstname",
+		"lastname"
+	]
 }

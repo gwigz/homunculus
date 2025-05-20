@@ -20,7 +20,7 @@ class Nearby extends AsyncEventEmitter<NearbyEvents> {
 		super()
 	}
 
-	// get agents(): Collection<string, Agent> {
+	// get agents(): Map<string, Agent> {
 	// 	return this.client.region.agents
 	// }
 

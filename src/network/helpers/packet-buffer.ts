@@ -1,14 +1,15 @@
+import assert from "node:assert"
 import * as Types from "../types"
 
 /**
  * @link http://wiki.secondlife.com/wiki/Packet_Layout
  */
 class PacketBuffer {
-	public readonly id: number
-	public readonly frequency: number
+	public readonly id?: number
+	public readonly frequency?: number
 
 	private buffer: Buffer
-	private position: number
+	private position = 0
 
 	constructor(buffer: Buffer, delegating = false) {
 		this.buffer = buffer
@@ -26,17 +27,17 @@ class PacketBuffer {
 		}
 
 		const header = this.zerocoded
-			? []
+			? ([] as number[])
 			: this.buffer.slice(6, Math.min(this.buffer.length, 12))
 
-		if (Array.isArray(header)) {
-			const offset = Math.min(this.buffer.length, 12)
+		const offset = Math.min(this.buffer.length, 12)
 
+		if (Array.isArray(header)) {
 			for (let i = 6; i < offset; i++) {
 				if (this.buffer[i] === 0x00) {
 					header.push(...new Uint8Array(this.buffer.readUInt8(++i)))
 				} else {
-					header.push(this.buffer[i])
+					header.push(this.buffer[i] ?? 0)
 				}
 			}
 		}
@@ -48,7 +49,7 @@ class PacketBuffer {
 			this.id = Number(`${header[1]}1`)
 			this.frequency = 1
 		} else if (header[2] !== 0xff) {
-			this.id = Number(`${(header[2] << 8) + header[3]}0`)
+			this.id = Number(`${(header[2]! << 8) + (header[3] ?? 0)}0`)
 			this.frequency = 0
 		} else {
 			this.id = Number(`${header[3]}3`)
@@ -56,7 +57,7 @@ class PacketBuffer {
 		}
 	}
 
-	public prepare(): this {
+	public prepare() {
 		if (this.zerocoded) {
 			this.dezerocode()
 		}
@@ -79,36 +80,36 @@ class PacketBuffer {
 		return this
 	}
 
-	get length(): number {
+	get length() {
 		return this.buffer.length
 	}
 
-	get sequence(): number {
+	get sequence() {
 		return (
-			(this.buffer[1] << 24) |
-			(this.buffer[2] << 16) |
-			(this.buffer[3] << 8) |
-			this.buffer[4]
+			((this.buffer[1] ?? 0) << 24) |
+			((this.buffer[2] ?? 0) << 16) |
+			((this.buffer[3] ?? 0) << 8) |
+			(this.buffer[4] ?? 0)
 		)
 	}
 
-	get acks(): boolean {
-		return !!(this.buffer[0] & 0x10)
+	get acks() {
+		return !!((this.buffer[0] ?? 0) & 0x10)
 	}
 
-	get resent(): boolean {
-		return !!(this.buffer[0] & 0x20)
+	get resent() {
+		return !!((this.buffer[0] ?? 0) & 0x20)
 	}
 
-	get reliable(): boolean {
-		return !!(this.buffer[0] & 0x40)
+	get reliable() {
+		return !!((this.buffer[0] ?? 0) & 0x40)
 	}
 
-	get zerocoded(): boolean {
-		return !!(this.buffer[0] & 0x80)
+	get zerocoded() {
+		return !!((this.buffer[0] ?? 0) & 0x80)
 	}
 
-	public dezerocode(): void {
+	public dezerocode() {
 		const output = [...this.buffer.slice(0, 6)]
 		const length = this.length
 
@@ -116,17 +117,17 @@ class PacketBuffer {
 			if (this.buffer[i] === 0x00) {
 				output.push(...new Uint8Array(this.buffer.readUInt8(++i)))
 			} else {
-				output.push(this.buffer[i])
+				output.push(this.buffer[i] ?? 0)
 			}
 		}
 
 		this.buffer = Buffer.from(output)
 	}
 
-	public read(Type, ...args): any {
-		const output = this.fetch(Type, ...args)
+	public read(type: Types.Type, ...args: any[]) {
+		const output = this.fetch(type, ...args)
 
-		switch (Type) {
+		switch (type) {
 			case Types.Variable1:
 				this.position += this.buffer.readUInt8(this.position) + 1
 				break
@@ -149,10 +150,10 @@ class PacketBuffer {
 					}
 				} else if (args.length) {
 					// If normalized, default to standard size.
-					this.position += Type.size
+					this.position += Types.Quaternion.size
 				} else {
 					// If not, add one to default size.
-					this.position += Type.size + Types.F32.size
+					this.position += Types.Quaternion.size + Types.F32.size
 				}
 				break
 
@@ -160,20 +161,30 @@ class PacketBuffer {
 				if (args.length) {
 					this.position += args[0].size * output.length
 				} else {
-					this.position += Type.size
+					this.position += Types.Vector3.size
 				}
 				break
 
 			default:
-				this.position += Type.size
+				assert(
+					type && "size" in type && typeof type.size === "number",
+					"Invalid type",
+				)
+
+				this.position += type.size
 				break
 		}
 
 		return output
 	}
 
-	public fetch(Type, ...args): any {
-		return Type.fromBuffer(this.buffer, this.position, ...args)
+	public fetch(type: Types.Type, ...args: any[]) {
+		assert(
+			type && "fromBuffer" in type && typeof type.fromBuffer === "function",
+			"Invalid type",
+		)
+
+		return type.fromBuffer(this.buffer, this.position, ...args)
 	}
 }
 

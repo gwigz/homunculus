@@ -1,5 +1,4 @@
 import type { Client } from ".."
-import { Collection } from "../utilities"
 
 import type Agent from "./agent"
 import Entities from "./entities"
@@ -11,9 +10,9 @@ interface IRegionOptions {
 
 class Region {
 	public handle: number
-	public agents: Collection<string, Agent>
+	public agents: Map<string, Agent>
 	public objects: Entities
-	public parcels: Collection<string, Parcel>
+	public parcels: Map<string, Parcel>
 
 	/**
 	 * @param client The Client that instantiated this Region.
@@ -24,9 +23,9 @@ class Region {
 		data: IRegionOptions,
 	) {
 		this.handle = data.handle
-		this.agents = new Collection()
+		this.agents = new Map()
 		this.objects = new Entities()
-		this.parcels = new Collection()
+		this.parcels = new Map()
 	}
 }
 

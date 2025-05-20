@@ -1,9 +1,9 @@
-export const Events = {
+export const ClientEvents = {
 	DEBUG: "debug",
 	WARNING: "warning",
 	ERROR: "error",
 	READY: "ready",
-}
+} as const
 
 export const Errors = {
 	NOT_CONNECTED: "Not connected, cannot process request.",
@@ -23,7 +23,7 @@ export const Errors = {
 	INVALID_PARAMETER_TYPE: "Method parameter invalid.",
 	UNEXPECTED_OBJECT_UPDATE: "Recieved object update for unknown region!",
 	UNEXPECTED_OBJECT_UPDATE_LENGTH: "Unexpected object update length!",
-}
+} as const
 
 export const Status = {
 	READY: 0,
@@ -31,17 +31,17 @@ export const Status = {
 	RECONNECTING: 2,
 	IDLE: 3,
 	DISCONNECTED: 4,
-}
+} as const
 
 export const Endpoints = {
 	LOGIN_URL: "https://login.agni.lindenlab.com/cgi-bin/login.cgi",
-}
+} as const
 
 export const ChatSources = {
 	SYSTEM: 0,
 	AGENT: 1,
 	OBJECT: 2,
-}
+} as const
 
 export const ChatTypes = {
 	WHISPER: 0,
@@ -52,4 +52,4 @@ export const ChatTypes = {
 	STOPPED: 5,
 	DEBUG: 6,
 	OWNERSAY: 8,
-}
+} as const

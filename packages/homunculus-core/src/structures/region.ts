@@ -1,5 +1,4 @@
 import type { Client } from ".."
-
 import type Agent from "./agent"
 import Entities from "./entities"
 import type Parcel from "./parcel"

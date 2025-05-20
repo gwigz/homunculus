@@ -1,6 +1,5 @@
-import { PacketAck } from "./packets"
-
 import type Circuit from "./circuit"
+import { PacketAck } from "./packets"
 
 interface IAcknowledgerPackets {
 	seen: Map<number, number>

@@ -1,9 +1,7 @@
-import type { Packet } from "./packets"
-
+import assert from "node:assert"
 import PacketBuffer from "./helpers/packet-buffer"
 import PacketLookup from "./helpers/packet-lookup"
-
-import assert from "node:assert"
+import type { Packet } from "./packets"
 import * as Types from "./types"
 
 /**

@@ -1,7 +1,6 @@
 import { Entity, type Region } from "../../structures"
 import { Constants } from "../../utilities"
 import type { ObjectUpdate as ObjectUpdatePacket } from "../packets"
-
 import Delegate from "./delegate"
 
 class ObjectUpdate extends Delegate {

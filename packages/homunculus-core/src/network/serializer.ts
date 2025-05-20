@@ -1,8 +1,7 @@
 import { Constants } from "../utilities"
+import type Circuit from "./circuit"
 import { Packet } from "./packets"
 import { U8 } from "./types"
-
-import type Circuit from "./circuit"
 
 class Serializer {
 	public index: number

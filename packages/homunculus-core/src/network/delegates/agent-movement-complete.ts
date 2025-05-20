@@ -1,7 +1,6 @@
 import Region from "../../structures/region"
-import Delegate from "./delegate"
-
 import * as Packets from "../packets"
+import Delegate from "./delegate"
 
 class AgentMovementComplete extends Delegate {
 	private counter = 0

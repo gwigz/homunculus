@@ -1,12 +1,11 @@
+import { Constants } from "../utilities"
 import Acknowledger from "./acknowledger"
 import type Core from "./core"
-import Deserializer from "./deserializer"
-import Serializer from "./serializer"
-
-import { Constants } from "../utilities"
 import * as Delegates from "./delegates"
+import Deserializer from "./deserializer"
 import type { PacketBuffer } from "./helpers"
 import { CompleteAgentMovement, type Packet, UseCircuitCode } from "./packets"
+import Serializer from "./serializer"
 
 interface ICircuitOptions {
 	id: number

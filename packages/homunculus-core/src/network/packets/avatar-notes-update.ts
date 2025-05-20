@@ -1,6 +1,5 @@
-import Packet from "./packet"
-
 import * as Types from "../types"
+import Packet from "./packet"
 
 /**
  * AvatarNotesUpdate Packet

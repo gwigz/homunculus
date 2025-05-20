@@ -12,10 +12,10 @@ class IP {
 		const ip = string.split(".")
 		const buffer = Buffer.allocUnsafe(IP.size)
 
-		buffer.writeUInt8(Number.parseInt(ip[0], 10), 0)
-		buffer.writeUInt8(Number.parseInt(ip[1], 10), 1)
-		buffer.writeUInt8(Number.parseInt(ip[2], 10), 2)
-		buffer.writeUInt8(Number.parseInt(ip[3], 10), 3)
+		buffer.writeUInt8(Number.parseInt(ip[0] ?? "0", 10), 0)
+		buffer.writeUInt8(Number.parseInt(ip[1] ?? "0", 10), 1)
+		buffer.writeUInt8(Number.parseInt(ip[2] ?? "0", 10), 2)
+		buffer.writeUInt8(Number.parseInt(ip[3] ?? "0", 10), 3)
 
 		return buffer
 	}

@@ -22,7 +22,7 @@ assert(process.env.PASSWORD, "PASSWORD env value is not set")
 
 assert(
 	process.env.START
-		? /^(?:uri:[A-Za-z0-9 ]+\&\d{1,3}\&\d{1,3}\&\d{1,4}|first|last)$/.test(
+		? /^(?:uri:[A-Za-z0-9 ]+&\d{1,3}&\d{1,3}&\d{1,4}|first|last)$/.test(
 				process.env.START,
 			)
 		: true,

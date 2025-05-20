@@ -22,7 +22,7 @@ class Variable1 extends Variable {
 	 * @returns {Buffer}
 	 */
 	public static fromBuffer(buffer: Buffer, start?: number): Buffer {
-		return Variable1.fromPrefixedBuffer(Variable1.prefix, buffer, start)
+		return Variable1.fromPrefixedBuffer(Variable1.prefix, buffer, start ?? 0)
 	}
 }
 

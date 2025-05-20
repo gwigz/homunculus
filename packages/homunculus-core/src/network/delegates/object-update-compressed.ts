@@ -1,14 +1,12 @@
+import { Entity, type Region } from "../../structures"
+import { Constants } from "../../utilities"
 import PacketBuffer from "../helpers/packet-buffer"
 import type { ObjectUpdateCompressed as ObjectUpdateCompressedPacket } from "../packets"
+import * as Types from "../types"
 import CompressedObjectValue, {
 	type CompressedObjectProperties,
 } from "./compressed-object-value"
 import Delegate from "./delegate"
-
-import { Entity, type Region } from "../../structures"
-import { Constants } from "../../utilities"
-
-import * as Types from "../types"
 
 const Flags = {
 	NONE: 0x00,
@@ -143,6 +141,7 @@ class ObjectUpdateCompressed extends Delegate {
 					break
 
 				default:
+					// @ts-ignore fix later
 					entity[key] = value
 					break
 			}

@@ -1,8 +1,7 @@
 #!/usr/bin/env node
-import { render } from "ink";
-import meow from "meow";
-import React from "react";
-import App from "./app";
+import { render } from "ink"
+import meow from "meow"
+import App from "./app"
 
 const cli = meow(
 	`
@@ -14,7 +13,6 @@ const cli = meow(
 
 	Examples
 	  $ homunculus --start "uri:Bug Island&128&128&0"
-	  Hello, Jane
 `,
 	{
 		importMeta: import.meta,
@@ -23,7 +21,7 @@ const cli = meow(
 				type: "string",
 			},
 		},
-	}
-);
+	},
+)
 
-render(<App name={cli.flags.name} />);
+render(<App start={(cli.flags.start as string) ?? process.env.START} />)

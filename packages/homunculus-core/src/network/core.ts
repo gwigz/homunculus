@@ -1,10 +1,7 @@
 import type { Client } from ".."
-
-import type { Agent, Entities, Region } from "../structures"
 import { Constants } from "../utilities"
-import { LogoutRequest } from "./packets"
-
 import Circuit, { type ICircuitOptions } from "./circuit"
+import { LogoutRequest } from "./packets"
 import Socket from "./socket"
 
 /**

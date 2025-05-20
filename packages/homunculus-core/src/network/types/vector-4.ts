@@ -11,10 +11,10 @@ class Vector4 {
 	public static toBuffer(vector: Array<number>): Buffer {
 		const buffer = Buffer.allocUnsafe(Vector4.size)
 
-		buffer.writeFloatLE(vector[0], 0)
-		buffer.writeFloatLE(vector[1], 4)
-		buffer.writeFloatLE(vector[2], 8)
-		buffer.writeFloatLE(vector[4], 12)
+		buffer.writeFloatLE(vector[0] ?? 0, 0)
+		buffer.writeFloatLE(vector[1] ?? 0, 4)
+		buffer.writeFloatLE(vector[2] ?? 0, 8)
+		buffer.writeFloatLE(vector[4] ?? 0, 12)
 
 		return buffer
 	}

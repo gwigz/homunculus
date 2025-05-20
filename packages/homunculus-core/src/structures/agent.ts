@@ -2,7 +2,6 @@ import assert from "node:assert"
 import type { Client } from ".."
 import { ImprovedInstantMessage } from "../network/packets"
 import { UUID, Vector3 } from "../network/types"
-
 import Entity, { type IEntityOptions } from "./entity"
 
 export interface IAgentOptions extends IEntityOptions {

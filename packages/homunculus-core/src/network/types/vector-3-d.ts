@@ -10,9 +10,9 @@ class Vector3D {
 	public static toBuffer(vector: Array<number>): Buffer {
 		const buffer = Buffer.allocUnsafe(Vector3D.size)
 
-		buffer.writeDoubleLE(vector[0], 0)
-		buffer.writeDoubleLE(vector[1], 8)
-		buffer.writeDoubleLE(vector[2], 16)
+		buffer.writeDoubleLE(vector[0] ?? 0, 0)
+		buffer.writeDoubleLE(vector[1] ?? 0, 8)
+		buffer.writeDoubleLE(vector[2] ?? 0, 16)
 
 		return buffer
 	}

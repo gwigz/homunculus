@@ -1,14 +1,46 @@
-import { Text } from "ink";
-import React from "react";
+import assert from "node:assert"
+import { randomUUID } from "node:crypto"
+import { Client, Constants } from "@gwigz/homunculus-core"
+import { Static, Text } from "ink"
+import { useMemo, useState } from "react"
 
-type Props = {
-	name: string | undefined;
-};
+interface Props {
+	start?: string
+}
 
-export default function App({ name = "Stranger" }: Props) {
+export default function App({ start = "last" }: Props) {
+	const [chat, setChat] = useState<
+		Array<{ key: string; name: string; message: string }>
+	>([])
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: sigh
+	useMemo(() => {
+		const client = new Client()
+
+		client.nearby.on("chat", (chatter, message) => {
+			if (chatter.type === Constants.ChatTypes.NORMAL) {
+				setChat((chat) => [
+					...chat,
+					{ key: randomUUID(), name: chatter.name, message },
+				])
+			}
+		})
+
+		assert(process.env.USERNAME, "USERNAME env value is not set")
+		assert(process.env.PASSWORD, "PASSWORD env value is not set")
+
+		client.connect(process.env.USERNAME!, process.env.PASSWORD!, start)
+
+		return client
+	}, [])
+
 	return (
-		<Text>
-			Hello, <Text color="green">{name}</Text>
-		</Text>
-	);
+		<Static items={chat}>
+			{(message) => (
+				<Text key={message.key}>
+					{message.name}: {message.message}
+				</Text>
+			)}
+		</Static>
+	)
 }

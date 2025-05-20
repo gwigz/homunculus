@@ -2,7 +2,6 @@ import { Constants } from "../../utilities"
 import { PacketBuffer } from "../helpers"
 import type { ImprovedTerseObjectUpdate as ImprovedTerseObjectUpdatePacket } from "../packets"
 import * as Types from "../types"
-
 import Delegate from "./delegate"
 
 class ImprovedTerseObjectUpdate extends Delegate {

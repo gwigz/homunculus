@@ -10,7 +10,7 @@ class CompressedObjectValue {
 		this.flag = flag
 	}
 
-	public read(buffer: PacketBuffer, flags: number) {
+	public read(buffer: PacketBuffer, _flags: number) {
 		// if (this.flag && !(flags & this.flag)) {
 		//   return this.preset
 		// }

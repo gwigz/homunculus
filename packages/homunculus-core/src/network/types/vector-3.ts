@@ -14,9 +14,9 @@ class Vector3 {
 	public static toBuffer(vector: Array<number>): Buffer {
 		const buffer = Buffer.allocUnsafe(Vector3.size)
 
-		buffer.writeFloatLE(vector[0], 0)
-		buffer.writeFloatLE(vector[1], 4)
-		buffer.writeFloatLE(vector[2], 8)
+		buffer.writeFloatLE(vector[0] ?? 0, 0)
+		buffer.writeFloatLE(vector[1] ?? 0, 4)
+		buffer.writeFloatLE(vector[2] ?? 0, 8)
 
 		return buffer
 	}
@@ -47,7 +47,7 @@ class Vector3 {
 		]
 
 		if ("toFloat" in type) {
-			return output.map((value) => type.toFloat(value, lower, upper))
+			return output.map((value) => type.toFloat(value, lower ?? 0, upper ?? 0))
 		}
 
 		return output
@@ -61,9 +61,9 @@ class Vector3 {
 	 * @returns {number}
 	 */
 	public static distance(from: Array<number>, to: Array<number>): number {
-		const dx = from[0] - to[0]
-		const dy = from[1] - to[1]
-		const dz = from[2] - to[2]
+		const dx = (from[0] ?? 0) - (to[0] ?? 0)
+		const dy = (from[1] ?? 0) - (to[1] ?? 0)
+		const dz = (from[2] ?? 0) - (to[2] ?? 0)
 
 		return Math.sqrt(dx * dx + dy * dy + dz * dz)
 	}

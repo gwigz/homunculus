@@ -1,7 +1,6 @@
 import crypto from "node:crypto"
 import os from "node:os"
 import xmlrpc from "xmlrpc"
-
 import { UUID } from "../network/types"
 import { Constants } from "../utilities"
 
@@ -71,6 +70,7 @@ class Authenticator {
 		const client = xmlrpc.createSecureClient({
 			url: Constants.Endpoints.LOGIN_URL,
 			headers: { "User-Agent": this.agent },
+			// @ts-ignore
 			rejectUnauthorized: false, // TODO: bundle cert
 		})
 

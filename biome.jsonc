@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.0.0-beta.5/schema.json",
 	"vcs": {
 		"enabled": false,
 		"clientKind": "git",
@@ -7,14 +7,23 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"ignore": []
+		"includes": ["**", "!package.json"]
+	},
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": {
+					"level": "on",
+					"options": {
+						"groups": [":URL:", ":NODE:"]
+					}
+				}
+			}
+		}
 	},
 	"formatter": {
 		"enabled": true,
 		"indentStyle": "tab"
-	},
-	"organizeImports": {
-		"enabled": true
 	},
 	"linter": {
 		"enabled": true,
@@ -22,7 +31,17 @@
 			"style": {
 				"noNonNullAssertion": {
 					"level": "off"
-				}
+				},
+				"noParameterAssign": "error",
+				"useAsConstAssertion": "error",
+				"useDefaultParameterLast": "error",
+				"useEnumInitializers": "error",
+				"useSelfClosingElements": "error",
+				"useSingleVarDeclarator": "error",
+				"noUnusedTemplateLiteral": "error",
+				"useNumberNamespace": "error",
+				"noInferrableTypes": "error",
+				"noUselessElse": "error"
 			},
 			"nursery": {
 				"useSortedClasses": {
@@ -43,7 +62,7 @@
 					"level": "warn"
 				},
 				"noExplicitAny": {
-					"level": "warn"
+					"level": "off"
 				}
 			},
 			"recommended": true

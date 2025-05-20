@@ -1,5 +1,3 @@
-import xmlrpc from "xmlrpc"
-
 declare module "xmlrpc" {
 	interface ClientOptions {
 		url?: string

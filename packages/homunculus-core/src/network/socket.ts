@@ -1,11 +1,9 @@
 import {
+	createSocket,
 	type RemoteInfo,
 	type Socket as UDPSocket,
-	createSocket,
 } from "node:dgram"
-
 import { Constants } from "../utilities"
-
 import type Circuit from "./circuit"
 import type Core from "./core"
 

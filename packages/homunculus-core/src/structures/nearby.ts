@@ -39,7 +39,7 @@ class Nearby extends AsyncEventEmitter<NearbyEvents> {
 	public message(
 		message: string,
 		channel = 0,
-		type = Constants.ChatTypes.NORMAL,
+		type: number = Constants.ChatTypes.NORMAL,
 	): Promise<Array<void>> {
 		return this.client.send(
 			new ChatFromViewer({

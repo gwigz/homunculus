@@ -1,0 +1,36 @@
+# Babel compiled directory
+dist
+
+# Unfinished documentation stuff
+docs
+
+# Unfinished tests
+tests
+bin
+bot.ts
+
+# Environment variables
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Dependency directories
+node_modules
+
+# NPM stuff
+.npm
+package-lock.json
+
+# REPL history
+.node_repl_history
+
+# macOS related
+.DS_Store

@@ -1,0 +1,100 @@
+import { Collection } from "../../utilities"
+import Packet from "./packet"
+
+import * as Types from "../types"
+
+/**
+ * DirFindQueryBackend Packet
+ */
+class DirFindQueryBackend extends Packet {
+	/**
+	 * Packet ID, this value is only unique per-frequency range, see key get
+	 * method of Packet, plus the buffer helper of the network namespace for
+	 * generating a lookup codes.
+	 *
+	 * @type {number}
+	 */
+	public static id = 32
+
+	/**
+	 * Packet frequency. This value determines whether the message ID is 8, 16, or
+	 * 32 bits. There can be unique 254 messages IDs in the "High" or "Medium"
+	 * frequencies and 32,000 in "Low". A message with a "Fixed" frequency also
+	 * defines its own ID and is considered to be a signal.
+	 *
+	 * @type {number}
+	 */
+	public static frequency = 0
+
+	/**
+	 * If this value is true, the client cannot send this packet as circuits only
+	 * accept trusted packets from internal connections (to utility servers etc).
+	 *
+	 * @type {boolean}
+	 */
+	public static trusted = true
+
+	/**
+	 * States if this packet should use or be using zerocoding, to attempt to
+	 * compress the sequences of zeros in the message in order to reduce network
+	 * load.
+	 *
+	 * @type {boolean}
+	 */
+	public static compression = true
+
+	/**
+	 * Determines the blocks that are are contained in the message and it's
+	 * required parameters.
+	 *
+	 * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
+	 * @type {Collection}
+	 */
+	public static format: Collection<string, any> = new Collection([
+		// tslint:disable-next-line:max-line-length
+		[
+			"agentData",
+			{
+				quantity: 1,
+				parameters: new Collection<string, any>([["agent", Types.UUID]]),
+			},
+		],
+		// tslint:disable-next-line:max-line-length
+		[
+			"queryData",
+			{
+				quantity: 1,
+				parameters: new Collection<string, any>([
+					["query", Types.UUID],
+					["queryText", Types.Variable1],
+					["queryFlags", Types.U32],
+					["queryStart", Types.S32],
+					["estate", Types.U32],
+					["godlike", Types.Boolean],
+				]),
+			},
+		],
+	])
+
+	/**
+	 * DirFindQueryBackend constructor, can be passed either a fully
+	 * initialized Packet Buffer or an object containing this Objects required
+	 * parameters from {@link DirFindQueryBackend.format}. Note that
+	 * "agentData" blocks may be excluded if {@link build} is able to fetch the
+	 * requirements itself.
+	 *
+	 * @param {object|Buffer} [data] Packet block data to be seralized, may be optional
+	 * @param {string} [data.agentData.agent] AgentID
+	 * @param {string} [data.queryData.query] QueryID
+	 * @param {Variable1} [data.queryData.queryText] QueryText
+	 * @param {U32} [data.queryData.queryFlags] QueryFlags
+	 * @param {S32} [data.queryData.queryStart] QueryStart
+	 * @param {U32} [data.queryData.estate] EstateID
+	 * @param {boolean} [data.queryData.godlike] Godlike
+	 */
+	constructor(data = {}) {
+		super(data)
+	}
+}
+
+export default DirFindQueryBackend

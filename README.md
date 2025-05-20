@@ -1,4 +1,4 @@
-# `@gwigz/homunculus`
+# `@gwigz/homunculus-*`
 
 #### Please note this library is a work in progress!
 

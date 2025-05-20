@@ -5,13 +5,7 @@
 		"source.organizeImports.biome": "explicit"
 	},
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
-	"[javascript]": {
-		"editor.defaultFormatter": "biomejs.biome"
-	},
-	"[typescript]": {
-		"editor.defaultFormatter": "biomejs.biome"
-	},
-	"[json]": {
+	"[javascript][typescript][json]": {
 		"editor.defaultFormatter": "biomejs.biome"
 	},
 	"cSpell.words": [

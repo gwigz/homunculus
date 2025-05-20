@@ -10,7 +10,6 @@
 		"moduleDetection": "force",
 		"jsx": "react-jsx",
 		"allowJs": true,
-		"newLine": "lf",
 		// bundler mode
 		"moduleResolution": "bundler",
 		"allowImportingTsExtensions": true,
@@ -24,6 +23,6 @@
 		// some stricter flags (disabled by default)
 		"noUnusedLocals": false,
 		"noUnusedParameters": false,
-		"noPropertyAccessFromIndexSignature": false,
+		"noPropertyAccessFromIndexSignature": false
 	}
 }

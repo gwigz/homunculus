@@ -26,8 +26,8 @@ class UUID {
 	 * Converts buffer input into a UUID string.
 	 *
 	 * @todo Optimize this, it's probably not that good
-	 * @param {Buffer} buffer Buffer to convert
-	 * @param {number} position Position to read from
+	 * @param buffer Buffer to convert
+	 * @param position Position to read from
 	 * @returns {string}
 	 */
 	public static fromBuffer(buffer: Buffer, position = 0): string {
@@ -49,7 +49,7 @@ class UUID {
 	 * Zero padding helper function, may be moved.
 	 *
 	 * @param {string} value Character to pad
-	 * @param {number} width Number of characters to zero pad
+	 * @param width Number of characters to zero pad
 	 * @returns {string}
 	 */
 	public static pad(value: string, width: number): string {

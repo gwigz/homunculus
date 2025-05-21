@@ -20,8 +20,8 @@ class Boolean {
 	 * Converts buffer input into an boolean which was representing an 8-bit
 	 * unsigned boolean.
 	 *
-	 * @param {Buffer} buffer Buffer to convert
-	 * @param {number} position Position to read from
+	 * @param buffer Buffer to convert
+	 * @param position Position to read from
 	 * @returns {boolean}
 	 */
 	public static fromBuffer(buffer: Buffer, position = 0): boolean {

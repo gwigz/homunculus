@@ -1,9 +1,11 @@
 import Boolean from "./boolean"
+import Color4 from "./color-4"
 import F32 from "./f32"
 import F64 from "./f64"
 import Fixed4 from "./fixed-4"
 import Fixed32 from "./fixed-32"
 import IP from "./ip"
+import ParticleSystem from "./particle-system"
 import Port from "./port"
 import Quaternion from "./quaternion"
 import S8 from "./s8"
@@ -23,11 +25,13 @@ import Vector4 from "./vector-4"
 
 export {
 	Boolean,
+	Color4,
 	F32,
 	F64,
 	Fixed32,
 	Fixed4,
 	IP,
+	ParticleSystem,
 	Port,
 	Quaternion,
 	S16,
@@ -48,11 +52,13 @@ export {
 
 export type Type =
 	| Boolean
+	| Color4
 	| F32
 	| F64
 	| Fixed32
 	| Fixed4
 	| IP
+	| ParticleSystem
 	| Port
 	| Quaternion
 	| S16

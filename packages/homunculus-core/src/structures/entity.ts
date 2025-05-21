@@ -60,6 +60,11 @@ class Entity {
 	public flags: number
 
 	/**
+	 * Entity name.
+	 */
+	public name?: string
+
+	/**
 	 * Current position of Entity.
 	 */
 	public position?: [x: number, y: number, z: number]

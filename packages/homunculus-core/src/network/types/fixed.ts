@@ -4,7 +4,7 @@ abstract class Fixed {
 	/**
 	 * Pads buffer bytes of fixed length if necessary.
 	 *
-	 * @param {Buffer} buffer This will truncate or pad if necessary
+	 * @param buffer This will truncate or pad if necessary
 	 * @returns {Buffer}
 	 */
 	public static toBuffer(buffer: Buffer): Buffer {
@@ -13,7 +13,7 @@ abstract class Fixed {
 		}
 
 		if (buffer.length > Fixed.size) {
-			return buffer.slice(0, Fixed.size)
+			return buffer.subarray(0, Fixed.size)
 		}
 
 		const output = Buffer.alloc(Fixed.size)
@@ -28,12 +28,12 @@ abstract class Fixed {
 	/**
 	 * Extracts bytes for fixed length from the buffer.
 	 *
-	 * @param {Buffer} buffer Buffer to handle
-	 * @param {number} start Position to read from
+	 * @param buffer Buffer to handle
+	 * @param start Position to read from
 	 * @returns {Buffer}
 	 */
-	public static fromBuffer(buffer: Buffer, start: number): Buffer {
-		return buffer.slice(start, start + Fixed.size)
+	public static fromBuffer(buffer: Buffer, start: number) {
+		return buffer.subarray(start, start + Fixed.size)
 	}
 }
 

@@ -5,7 +5,7 @@ class Variable1 extends Variable {
 
 	/**
 	 * Converts string into a length-prefixed buffer, ending with a null
-	 * terminater.
+	 * byte.
 	 *
 	 * @param {string|Buffer} Maximum length of 255 bytes, may truncate
 	 * @returns {Buffer}
@@ -17,8 +17,8 @@ class Variable1 extends Variable {
 	/**
 	 * Converts buffer input into a correct length buffer.
 	 *
-	 * @param {Buffer} buffer Buffer to convert
-	 * @param {number} start Position to read from
+	 * @param buffer Buffer to convert
+	 * @param start Position to read from
 	 * @returns {Buffer}
 	 */
 	public static fromBuffer(buffer: Buffer, start?: number): Buffer {

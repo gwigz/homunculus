@@ -11,7 +11,7 @@ class Vector3 {
 	 * @param {number[]} vector Should contain 3 values
 	 * @returns {Buffer}
 	 */
-	public static toBuffer(vector: Array<number>): Buffer {
+	public static toBuffer(vector: Array<number>) {
 		const buffer = Buffer.allocUnsafe(Vector3.size)
 
 		buffer.writeFloatLE(vector[0] ?? 0, 0)
@@ -25,13 +25,11 @@ class Vector3 {
 	 * Converts buffer input into an array of float values representing a 3 point
 	 * vector.
 	 *
-	 * @param {Buffer} buffer Buffer to convert
-	 * @param {number} position Position to read from
-	 * @param {any} type Optional type overwrite
-	 * @param {number} lower Lower limit for optional type conversion
-	 * @param {number} upper Upper limit for optional type conversion
-	 * @returns {number[]}
-	 * @todo Handle these parameters better
+	 * @param buffer Buffer to convert
+	 * @param position Position to read from
+	 * @param type Optional type overwrite
+	 * @param lower Lower limit for optional type conversion
+	 * @param upper Upper limit for optional type conversion
 	 */
 	public static fromBuffer(
 		buffer: Buffer,
@@ -39,7 +37,7 @@ class Vector3 {
 		type: typeof F32 | typeof U16 = F32,
 		lower?: number,
 		upper?: number,
-	): Array<number> {
+	) {
 		const output = [
 			type.fromBuffer(buffer, position),
 			type.fromBuffer(buffer, position + type.size),
@@ -47,18 +45,19 @@ class Vector3 {
 		]
 
 		if ("toFloat" in type) {
-			return output.map((value) => type.toFloat(value, lower ?? 0, upper ?? 0))
+			return output.map((value) =>
+				type.toFloat(value, lower ?? 0, upper ?? 0),
+			) as [x: number, y: number, z: number]
 		}
 
-		return output
+		return output as [x: number, y: number, z: number]
 	}
 
 	/**
 	 * Calculates the distance between two three wide number vectors.
 	 *
-	 * @param {number[]} from Position to calculate distance from
-	 * @param {number[]} to Position to calculate distance to
-	 * @returns {number}
+	 * @param from Position to calculate distance from
+	 * @param to Position to calculate distance to
 	 */
 	public static distance(from: Array<number>, to: Array<number>): number {
 		const dx = (from[0] ?? 0) - (to[0] ?? 0)

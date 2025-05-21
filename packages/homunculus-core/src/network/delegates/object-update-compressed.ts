@@ -37,41 +37,43 @@ const compressedObjectProperties: CompressedObjectProperties = [
 		"velocity.angular",
 		new CompressedObjectValue(Types.Vector3, Flags.ANGULAR_VELOCITY),
 	],
-	["parent", new CompressedObjectValue(Types.U32, Flags.PARENT)],
+	["parent", new CompressedObjectValue(Types.U32, Flags.PARENT, 0)],
 	["tree", new CompressedObjectValue(Types.U8, Flags.TREE_TYPE)],
 	["data", new CompressedObjectValue(Types.Variable1, Flags.SCRATCH_PAD)],
 	["text.value", new CompressedObjectValue(Types.Text, Flags.TEXT)],
-	// ['text.color', new CompressedObjectValue(Types.U8, Flags.TEXT)] <- is array of [U8, U8, U8, U8]
+	["text.color", new CompressedObjectValue(Types.Color4, Flags.TEXT)],
+	["media.url", new CompressedObjectValue(Types.Text, Flags.MEDIA_URL)],
+	[
+		"particles",
+		new CompressedObjectValue(Types.ParticleSystem, Flags.MEDIA_URL),
+	],
+	["parameters", 0],
+	["sound.key", new CompressedObjectValue(Types.UUID, Flags.SOUND_DATA)],
+	["sound.gain", new CompressedObjectValue(Types.F32, Flags.SOUND_DATA)],
+	["sound.flags", new CompressedObjectValue(Types.U8, Flags.SOUND_DATA)],
+	["sound.radius", new CompressedObjectValue(Types.F32, Flags.SOUND_DATA)],
+	["name", new CompressedObjectValue(Types.Text, Flags.NAME)],
+	// ['path.curve', Types.U8],
+	// ['path.begin', Types.U16],
+	// ['path.end', Types.U16],
+	// ['path.scale.x', Types.U8],
+	// ['path.scale.y', Types.U8],
+	// ['path.shear.x', Types.U8],
+	// ['path.shear.y', Types.U8],
+	// ['path.twist.length', Types.S8],
+	// ['path.twist.begin', Types.S8],
+	// ['path.radius.offset', Types.S8],
+	// ['path.taper.y', Types.S8],
+	// ['path.taper.x', Types.S8],
+	// ['path.revolutions', Types.U8],
+	// ['path.skew', Types.S8],
+	// ['profile.curve', Types.U8],
+	// ['profile.begin', Types.U16],
+	// ['profile.end', Types.U16],
+	// ['profile.hollow', Types.U16],
+	// ['textures', Types.Variable4],
+	// ['animation', new CompressedObjectValue(Types.U32, Flags.TEXTURE_ANIMATION)]
 ]
-
-// ['media.url', new CompressedObjectValue(Types.Text, Flags.MEDIA_URL)],
-// ['particles', new CompressedObjectValue(Types.ParticleData, Flags.PARTICLES)],
-// ['parameters', Types.Variable1],
-// ['sound.key', new CompressedObjectValue(Types.UUID, Flags.SOUND_DATA)],
-// ['sound.gain', new CompressedObjectValue(Types.U32, Flags.SOUND_DATA)],
-// ['sound.flags', new CompressedObjectValue(Types.U8, Flags.SOUND_DATA)],
-// ['sound.radius', new CompressedObjectValue(Types.U32, Flags.SOUND_DATA)],
-// ['name', new CompressedObjectValue(Types.Text, Flags.NAME)],
-// ['path.curve', Types.U8],
-// ['path.begin', Types.U16],
-// ['path.end', Types.U16],
-// ['path.scale.x', Types.U8],
-// ['path.scale.y', Types.U8],
-// ['path.shear.x', Types.U8],
-// ['path.shear.y', Types.U8],
-// ['path.twist.length', Types.S8],
-// ['path.twist.begin', Types.S8],
-// ['path.radius.offset', Types.S8],
-// ['path.taper.y', Types.S8],
-// ['path.taper.x', Types.S8],
-// ['path.revolutions', Types.U8],
-// ['path.skew', Types.S8],
-// ['profile.curve', Types.U8],
-// ['profile.begin', Types.U16],
-// ['profile.end', Types.U16],
-// ['profile.hollow', Types.U16],
-// ['textures', Types.Variable4],
-// ['animation', new CompressedObjectValue(Types.U32, Flags.TEXTURE_ANIMATION)]
 
 class ObjectUpdateCompressed extends Delegate {
 	public handle(packet: ObjectUpdateCompressedPacket) {
@@ -90,20 +92,27 @@ class ObjectUpdateCompressed extends Delegate {
 
 			const insert = !region.objects.has(id)
 
-			const entity = insert
-				? this.update(new Entity(this.client, { id, key, flags }), buffer)
-				: region.objects.get(id)!
+			try {
+				const entity = insert
+					? this.update(new Entity(this.client, { id, key, flags }), buffer)
+					: this.update(region.objects.get(id)!, buffer)
 
-			this.update(entity, buffer)
-
-			entity.flags |= flags
-
-			if (insert) {
-				region.objects.set(id, entity)
-
-				if (entity.type === 47) {
-					region.agents.set(entity.key, new Agent(this.client, entity))
+				if (!entity) {
+					continue
 				}
+
+				entity.flags |= flags
+
+				if (insert) {
+					region.objects.set(id, entity)
+
+					if (entity.type === 47) {
+						region.agents.set(entity.key, new Agent(this.client, entity))
+					}
+				}
+			} catch (error) {
+				this.client.emit("debug", `Error updating object "${key}".`)
+				this.client.emit("error", error as Error)
 			}
 		}
 	}
@@ -112,6 +121,28 @@ class ObjectUpdateCompressed extends Delegate {
 		let flags = Flags.NONE
 
 		for (const [key, type] of compressedObjectProperties) {
+			if (key === "parameters") {
+				try {
+					const count = buffer.read(Types.U8)
+
+					for (let i = 0; i < count; i++) {
+						buffer.skip(Types.U16.size)
+						buffer.skip(buffer.read(Types.U32))
+					}
+
+					continue
+				} catch (error) {
+					this.client.emit(
+						"debug",
+						`Error skipping parameters on object "${entity.key}".`,
+					)
+
+					this.client.emit("error", error as Error)
+
+					return
+				}
+			}
+
 			const value =
 				type instanceof CompressedObjectValue
 					? type.read(buffer, flags)
@@ -121,23 +152,30 @@ class ObjectUpdateCompressed extends Delegate {
 				continue
 			}
 
-			// TODO: this is shit, and unfinished
 			switch (key) {
 				case "flags":
 					flags = value
 					break
 
 				case "velocity.angular":
+				case "tree":
 				case "data":
+				case "media.url":
+				case "particles":
+				case "parameters":
+				case "sound.key":
+				case "sound.gain":
+				case "sound.flags":
+				case "sound.radius":
 					// ignored values, for now
 					break
 
 				case "text.value":
 					if (value?.length > 1) {
 						if (entity.text) {
-							entity.text.value = value
+							entity.text.value = value.slice(0, -1)
 						} else {
-							entity.text = { value: value, color: [0, 0, 0, 0] }
+							entity.text = { value: value.slice(0, -1), color: [0, 0, 0, 0] }
 						}
 					} else {
 						entity.text = undefined
@@ -148,6 +186,10 @@ class ObjectUpdateCompressed extends Delegate {
 					if (entity.text) {
 						entity.text.color = value
 					}
+					break
+
+				case "name":
+					entity.name = value
 					break
 
 				default:

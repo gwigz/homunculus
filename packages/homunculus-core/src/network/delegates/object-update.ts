@@ -32,7 +32,9 @@ class ObjectUpdate extends Delegate {
 		entity.type = data.pCode
 		entity.scale = data.scale
 		entity.flags = data.flags
-		entity.text = data.text?.length > 1 ? { value: data.text } : undefined
+
+		entity.text =
+			data.text?.length > 1 ? { value: data.text.slice(0, -1) } : undefined
 
 		return entity
 	}

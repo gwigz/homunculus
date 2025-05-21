@@ -23,8 +23,8 @@ class Vector4 {
 	 * Converts buffer input into an array of float values representing a 4 point
 	 * vector.
 	 *
-	 * @param {Buffer} buffer Buffer to convert
-	 * @param {number} position Position to read from
+	 * @param buffer Buffer to convert
+	 * @param position Position to read from
 	 * @returns {number[]}
 	 */
 	public static fromBuffer(buffer: Buffer, position = 0): Array<number> {

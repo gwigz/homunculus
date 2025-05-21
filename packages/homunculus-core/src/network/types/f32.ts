@@ -4,7 +4,7 @@ class F32 {
 	/**
 	 * Converts number input into a buffer representing an 32-bit float.
 	 *
-	 * @param {number} float Number/float to convert
+	 * @param float Number/float to convert
 	 * @returns {Buffer}
 	 */
 	public static toBuffer(float: number): Buffer {
@@ -19,8 +19,8 @@ class F32 {
 	 * Converts buffer input into an number which was representing an 32-bit
 	 * float.
 	 *
-	 * @param {Buffer} buffer Buffer to convert
-	 * @param {number} position Position to read from
+	 * @param buffer Buffer to convert
+	 * @param position Position to read from
 	 * @returns {number}
 	 */
 	public static fromBuffer(buffer: Buffer, position = 0): number {

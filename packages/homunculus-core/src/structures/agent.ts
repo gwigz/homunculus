@@ -16,16 +16,18 @@ class Agent {
 		this.entity = entity
 	}
 
-	get id(): number {
+	get id() {
 		return this.entity.id
 	}
 
-	get key(): string {
+	get key() {
 		return this.entity.key
 	}
 
-	get name(): string {
-		return `${this.firstname} ${this.lastname}`.trim()
+	get name() {
+		return this.firstname
+			? `${this.firstname} ${this.lastname ?? ""}`.trim()
+			: undefined
 	}
 
 	get distance(): number {

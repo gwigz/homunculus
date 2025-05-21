@@ -4,10 +4,12 @@ import type { Type } from "../types"
 class CompressedObjectValue {
 	private type: any
 	private flag: number
+	private placeholder?: any
 
-	constructor(type: any, flag: number) {
+	constructor(type: any, flag: number, placeholder?: any) {
 		this.type = type
 		this.flag = flag
+		this.placeholder = placeholder
 	}
 
 	public read(buffer: PacketBuffer, flags: number) {
@@ -15,7 +17,7 @@ class CompressedObjectValue {
 			return buffer.read(this.type)
 		}
 
-		return
+		return this.placeholder
 	}
 }
 

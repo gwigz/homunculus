@@ -207,7 +207,11 @@ client.on("debug", (message) =>
 )
 
 client.on("warning", (message) => addChat("[WARNING]", `/me ${message}`))
-client.on("error", (error) => addChat("[ERROR]", `/me ${error.message}`))
+
+client.on("error", (error) => {
+	addChat("[ERROR]", `/me ${error.message}`)
+	logError(error)
+})
 
 const ignoredChatTypes = [
 	Constants.ChatTypes.TYPING,
@@ -234,7 +238,7 @@ function updateNearbyObjects() {
 		nearbyAvatars.pushLine(`${region.handle}`)
 
 		for (const agent of region.agents.values()) {
-			nearbyAvatars.pushLine(blessed.escape(agent.name ?? agent.key))
+			nearbyAvatars.pushLine(blessed.escape(agent.key))
 		}
 	}
 

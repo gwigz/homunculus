@@ -28,7 +28,7 @@ class PacketBuffer {
 
 		const header = this.zerocoded
 			? ([] as number[])
-			: this.buffer.slice(6, Math.min(this.buffer.length, 12))
+			: this.buffer.subarray(6, Math.min(this.buffer.length, 12))
 
 		const offset = Math.min(this.buffer.length, 12)
 
@@ -110,7 +110,7 @@ class PacketBuffer {
 	}
 
 	public dezerocode() {
-		const output = [...this.buffer.slice(0, 6)]
+		const output = [...this.buffer.subarray(0, 6)]
 		const length = this.length
 
 		for (let i = 6; i < length; i++) {
@@ -176,6 +176,10 @@ class PacketBuffer {
 		}
 
 		return output
+	}
+
+	public skip(bytes: number) {
+		this.position += bytes
 	}
 
 	public fetch(type: Types.Type, ...args: any[]) {

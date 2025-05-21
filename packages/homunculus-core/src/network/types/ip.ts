@@ -23,8 +23,8 @@ class IP {
 	/**
 	 * Converts buffer input into a string representing an IP address
 	 *
-	 * @param {Buffer} buffer Buffer to convert
-	 * @param {number} position Position to read from
+	 * @param buffer Buffer to convert
+	 * @param position Position to read from
 	 * @returns {string}
 	 */
 	public static fromBuffer(buffer: Buffer, position = 0): string {

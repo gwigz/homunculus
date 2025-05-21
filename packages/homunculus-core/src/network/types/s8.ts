@@ -4,7 +4,7 @@ class S8 {
 	/**
 	 * Converts integer input into a buffer representing an 8-bit signed integer.
 	 *
-	 * @param {number} integer Integer to convert
+	 * @param integer Integer to convert
 	 * @returns {Buffer}
 	 */
 	public static toBuffer(integer: number): Buffer {
@@ -19,8 +19,8 @@ class S8 {
 	 * Converts buffer input into an integer which was representing an 8-bit
 	 * signed integer.
 	 *
-	 * @param {Buffer} buffer Buffer to convert
-	 * @param {number} position Position to read from
+	 * @param buffer Buffer to convert
+	 * @param position Position to read from
 	 * @returns {number}
 	 */
 	public static fromBuffer(buffer: Buffer, position = 0): number {

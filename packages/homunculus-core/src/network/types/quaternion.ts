@@ -31,12 +31,12 @@ class Quaternion {
 	 * Converts buffer input into an array of float values representing a
 	 * normalized quaternion.
 	 *
-	 * @param {Buffer} buffer Buffer to convert
-	 * @param {number} position Position to read from
+	 * @param buffer Buffer to convert
+	 * @param position Position to read from
 	 * @param {boolean} normalized True if value is normalized
 	 * @param {Type} type Optional type overwrite
-	 * @param {number} lower Lower limit for optional type conversion
-	 * @param {number} upper Upper limit for optional type conversion
+	 * @param lower Lower limit for optional type conversion
+	 * @param upper Upper limit for optional type conversion
 	 * @returns {number[]}
 	 * @todo Handle these parameters better
 	 */

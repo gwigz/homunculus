@@ -1,8 +1,9 @@
-# Babel compiled directory
+# Compiled code
 dist
 
 # Unfinished documentation stuff
 docs
+NOTES.md
 
 # Unfinished tests
 tests
@@ -15,7 +16,6 @@ bot.ts
 # Logs
 logs
 *.log
-npm-debug.log*
 
 # Runtime data
 pids

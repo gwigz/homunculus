@@ -7,7 +7,7 @@ import Delegate from "./delegate"
 class ImprovedTerseObjectUpdate extends Delegate {
 	public handle(packet: ImprovedTerseObjectUpdatePacket) {
 		const handle = packet.data.regionData[0].regionHandle
-		const region = this.region(handle)
+		const region = this.client.regions.get(handle)
 
 		if (!region) {
 			throw Error(Constants.Errors.UNEXPECTED_OBJECT_UPDATE)
@@ -24,17 +24,21 @@ class ImprovedTerseObjectUpdate extends Delegate {
 			const entity = region.objects.get(id)
 
 			if (!entity) {
-				// TODO: we would want to log this, as a info/warning.
+				// TODO: we would want to log this, as a info/warning
 				continue
 			}
 
 			entity.state = buffer.read(Types.U8)
 
-			// Next byte defines if this update is for an avatar or not.
+			if (entity.key === this.client.self?.key) {
+				this.client.self.state = entity.state
+			}
+
+			// next byte defines if this update is for an avatar or not
 			if (buffer.read(Types.Boolean)) {
-				// This contains a normal and Z position for the avatars foot shadow,
+				// this contains a normal and Z position for the avatars foot shadow,
 				// we don't use these at the moment for anything, so don't include them
-				// for now.
+				// for now...
 				buffer.read(Types.Vector4)
 			}
 
@@ -42,6 +46,7 @@ class ImprovedTerseObjectUpdate extends Delegate {
 
 			// U16 compressed velocity properties...
 			entity.velocity = buffer.read(Types.Vector3, Types.U16, -64.0, 64.0)
+
 			entity.rotation = buffer.read(
 				Types.Quaternion,
 				false,
@@ -51,7 +56,6 @@ class ImprovedTerseObjectUpdate extends Delegate {
 			)
 
 			// entity.angularVelocity = buffer.read(Types.Vector3, Types.U16, -64.0, 64.0)
-			// entity.emit('moved')
 		}
 	}
 }

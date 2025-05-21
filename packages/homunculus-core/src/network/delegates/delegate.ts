@@ -1,4 +1,3 @@
-import type Long from "long"
 import type { Circuit, Packets } from ".."
 
 class Delegate {
@@ -17,7 +16,7 @@ class Delegate {
 	 * ChatFromSimulator will return `false` if no listen events are bound to
 	 * the clients nearby helper.
 	 *
-	 * @returns {boolean} True if we want to receive packets, defaulted to true
+	 * @returns True if we want to receive packets, defaulted to true
 	 */
 	get waiting() {
 		return true
@@ -28,15 +27,6 @@ class Delegate {
 	 */
 	public handle(_packet: Packets.Packet) {
 		// ...
-	}
-
-	/**
-	 * Attempts to fetch region by region handle.
-	 */
-	protected region(handle: Long) {
-		return this.client.regions.get(
-			`${handle.getHighBits()}${handle.getLowBits()}`,
-		)
 	}
 }
 

@@ -1,15 +1,16 @@
 import Region from "../../structures/region"
+import type { AgentMovementComplete as AgentMovementCompletePacket } from "../packets"
 import * as Packets from "../packets"
 import Delegate from "./delegate"
 
 class AgentMovementComplete extends Delegate {
 	private counter = 0
 
-	public handle(packet: Packets.AgentMovementComplete) {
+	public handle(packet: AgentMovementCompletePacket) {
 		const client = this.client
-		const agent = client.agent
+		const self = client.self
 
-		if (!agent) {
+		if (!self) {
 			return
 		}
 
@@ -20,22 +21,20 @@ class AgentMovementComplete extends Delegate {
 
 		// simulator.channel = sim.channelVersion
 
-		agent.position = data.position
-		agent.rotation = data.lookAt
+		self.position = data.position
+		self.rotation = data.lookAt
 
 		// TODO: setup an actual objects for region handle (so we can have sugar for
 		// global to local transformations).
-		agent.offset = [
-			data.regionHandle.shiftRight(32).toNumber(),
-			data.regionHandle.and(0xffffffff).toNumber(),
+		self.offset = [
+			Number(data.regionHandle >> BigInt(32)),
+			Number(data.regionHandle & BigInt(0xffffffff)),
 			0.0,
 		]
 
 		client.regions.set(
-			`${data.regionHandle.getHighBits()}${data.regionHandle.getLowBits()}`,
-			new Region(client, {
-				handle: data.regionHandle,
-			}),
+			data.regionHandle.toString(),
+			new Region(client, { handle: data.regionHandle }),
 		)
 
 		// client.throttle/bandwidth?
@@ -95,14 +94,14 @@ class AgentMovementComplete extends Delegate {
 		)
 
 		// TODO: add toggle to enable/disable these packets, as they allow object
-		// data to start being received, which we may or may not want.
+		// data to start being received, which we may or may not want...
 		this.circuit.send(
 			new Packets.AgentUpdate({
 				agentData: {
-					bodyRotation: agent.rotation,
+					bodyRotation: self.rotation,
 					headRotation: [0.0, 0.0, 0.0, 0.0],
-					state: agent.state,
-					cameraCenter: agent.position,
+					state: self.state,
+					cameraCenter: self.position,
 					cameraAtAxis: [0.0, 0.0, 0.0],
 					cameraLeftAxis: [0.0, 0.0, 0.0],
 					cameraUpAxis: [0.0, 0.0, 0.0],

@@ -1,25 +1,18 @@
 import crypto from "node:crypto"
 import os from "node:os"
+import { machineIdSync } from "node-machine-id"
 import xmlrpc from "xmlrpc"
-import { UUID } from "../network/types"
 import { Constants } from "../utilities"
 
 class Authenticator {
 	private readonly channel: string
 	private readonly version: string
 	private readonly agent: string
-	private readonly digest: string
 
 	constructor(channel: string, version: string) {
 		this.channel = channel
 		this.version = version
 		this.agent = `${channel} ${version}`
-
-		// TODO: figure out better method of doing this, for callers file?
-		this.digest = crypto
-			.createHash("md5")
-			.update(JSON.stringify(require("../../package.json")))
-			.digest("hex")
 	}
 
 	public login(
@@ -27,51 +20,43 @@ class Authenticator {
 		password: string,
 		start: "first" | "last" | string = "last",
 	): Promise<any> {
-		const platforms = {
-			darwin: "Mac",
-			linux: "Lin",
-			win32: "Win",
-		}
-
+		const platforms = { darwin: "mac", linux: "lnx", win32: "win" }
 		const platform = os.platform()
-
-		const options = [
-			"inventory-root",
-			"inventory-skeleton",
-			"buddy-list",
-			"login-flags",
-			"adult_compliant",
-		]
 
 		const passwd = crypto
 			.createHash("md5")
-			.update(password.substr(0, 16))
+			.update(password.substring(0, 16))
 			.digest("hex")
+
+		const id0 = crypto.createHash("md5").update(machineIdSync()).digest("hex")
 
 		const parameters = {
 			first: username.split(" ")[0],
 			last: username.split(" ")[1] || "Resident",
 			passwd: `$1$${passwd}`,
-			start: start,
+			start,
 			channel: this.channel,
 			version: this.version,
 			platform:
 				platform in platforms
 					? platforms[platform as keyof typeof platforms]
-					: "Lin",
-			mac: this.getActiveMacAddress() || UUID.zero,
-			id0: UUID.zero,
-			agree_to_tos: true, // TODO: handle this client-side
-			read_critical: true, // TODO: handle this client-side
-			viewer_digest: this.digest,
-			options: options,
+					: platforms.linux,
+			mac: this.getActiveMacAddress() || "00:00:00:00:00:00",
+			id0,
+			agree_to_tos: process.env.SL_AGREE_TO_TOS === "true",
+			read_critical: process.env.SL_READ_CRITICAL === "true",
+			viewer_digest: "31570be3-0bd1-4bf2-abf9-1a915a395b85",
+			options: [
+				"inventory-root",
+				"inventory-skeleton",
+				"buddy-list",
+				"login-flags",
+			],
 		}
 
 		const client = xmlrpc.createSecureClient({
 			url: Constants.Endpoints.LOGIN_URL,
 			headers: { "User-Agent": this.agent },
-			// @ts-ignore
-			rejectUnauthorized: false, // TODO: bundle cert
 		})
 
 		return new Promise((resolve) => {

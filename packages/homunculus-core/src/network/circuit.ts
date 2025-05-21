@@ -43,12 +43,12 @@ class Circuit {
 		this.register(Delegates)
 	}
 
-	get agent() {
-		return this.core.agent
+	get self() {
+		return this.core.self
 	}
 
 	get session() {
-		return this.core.agent?.session
+		return this.core.self?.session
 	}
 
 	public send(...packets: Array<Packet>): Promise<Array<void>> {
@@ -94,7 +94,7 @@ class Circuit {
 
 		return this.send(
 			new UseCircuitCode({
-				id: this.agent?.id,
+				id: this.self?.key,
 				code: this.id,
 				session: this.session,
 			}),

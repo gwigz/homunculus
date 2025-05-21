@@ -4,12 +4,12 @@ import Delegate from "./delegate"
 class AgentDataUpdate extends Delegate {
 	public handle(packet: AgentDataUpdatePacket) {
 		const data = packet.data.agentData[0]
-		const agent = this.client.agent
+		const self = this.client.self
 
-		if (agent) {
-			agent.key = data.agent
-			agent.firstname = data.firstName.toString("utf8").slice(0, -1)
-			agent.lastname = data.lastName.toString("utf8").slice(0, -1)
+		if (self) {
+			self.key = data.agent
+			self.firstname = data.firstName.toString("utf8").slice(0, -1)
+			self.lastname = data.lastName.toString("utf8").slice(0, -1)
 		}
 
 		/*

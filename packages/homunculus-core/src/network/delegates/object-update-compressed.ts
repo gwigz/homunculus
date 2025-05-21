@@ -1,4 +1,4 @@
-import { Entity, type Region } from "../../structures"
+import { Agent, Entity } from "../../structures"
 import { Constants } from "../../utilities"
 import PacketBuffer from "../helpers/packet-buffer"
 import type { ObjectUpdateCompressed as ObjectUpdateCompressedPacket } from "../packets"
@@ -41,7 +41,7 @@ const compressedObjectProperties: CompressedObjectProperties = [
 	["tree", new CompressedObjectValue(Types.U8, Flags.TREE_TYPE)],
 	["data", new CompressedObjectValue(Types.Variable1, Flags.SCRATCH_PAD)],
 	["text.value", new CompressedObjectValue(Types.Text, Flags.TEXT)],
-	// ['text.color', new CompressedObjectValue(Types.U32, Flags.TEXT)] <- this is 4 U8s
+	// ['text.color', new CompressedObjectValue(Types.U8, Flags.TEXT)] <- is array of [U8, U8, U8, U8]
 ]
 
 // ['media.url', new CompressedObjectValue(Types.Text, Flags.MEDIA_URL)],
@@ -76,7 +76,7 @@ const compressedObjectProperties: CompressedObjectProperties = [
 class ObjectUpdateCompressed extends Delegate {
 	public handle(packet: ObjectUpdateCompressedPacket) {
 		const handle = packet.data.regionData[0].regionHandle
-		const region = this.region(handle)
+		const region = this.client.regions.get(handle)
 
 		if (!region) {
 			throw Error(Constants.Errors.UNEXPECTED_OBJECT_UPDATE)
@@ -87,19 +87,29 @@ class ObjectUpdateCompressed extends Delegate {
 			const flags = data.updateFlags
 			const key = buffer.read(Types.UUID) as string
 			const id = buffer.read(Types.U32) as number
-			const entity = region.objects.get(id)
 
-			if (entity) {
-				this.update(entity, buffer)
-				entity.flags |= flags
-			} else {
-				this.insert(id, key, buffer, flags, region)
+			const insert = !region.objects.has(id)
+
+			const entity = insert
+				? this.update(new Entity(this.client, { id, key, flags }), buffer)
+				: region.objects.get(id)!
+
+			this.update(entity, buffer)
+
+			entity.flags |= flags
+
+			if (insert) {
+				region.objects.set(id, entity)
+
+				if (entity.type === 47) {
+					region.agents.set(entity.key, new Agent(this.client, entity))
+				}
 			}
 		}
 	}
 
 	public update(entity: Entity, buffer: PacketBuffer) {
-		const flags = Flags.NONE
+		let flags = Flags.NONE
 
 		for (const [key, type] of compressedObjectProperties) {
 			const value =
@@ -113,30 +123,30 @@ class ObjectUpdateCompressed extends Delegate {
 
 			// TODO: this is shit, and unfinished
 			switch (key) {
+				case "flags":
+					flags = value
+					break
+
 				case "velocity.angular":
 				case "data":
 					// ignored values, for now
 					break
 
 				case "text.value":
-					if (entity.text) {
-						entity.text.value = value
-					} else {
-						entity.text = {
-							value: value,
-							color: Types.Vector4.zero,
+					if (value?.length > 1) {
+						if (entity.text) {
+							entity.text.value = value
+						} else {
+							entity.text = { value: value, color: [0, 0, 0, 0] }
 						}
+					} else {
+						entity.text = undefined
 					}
 					break
 
 				case "text.color":
 					if (entity.text) {
 						entity.text.color = value
-					} else {
-						entity.text = {
-							value: "",
-							color: value,
-						}
 					}
 					break
 
@@ -146,23 +156,6 @@ class ObjectUpdateCompressed extends Delegate {
 					break
 			}
 		}
-
-		return entity
-	}
-
-	public insert(
-		id: number,
-		key: string,
-		buffer: PacketBuffer,
-		flags: number,
-		region: Region,
-	) {
-		const entity = this.update(
-			new Entity(this.client, { id, key, flags }),
-			buffer,
-		)
-
-		region.objects.set(entity.id, entity)
 
 		return entity
 	}

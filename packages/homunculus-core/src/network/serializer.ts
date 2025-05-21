@@ -108,7 +108,7 @@ class Serializer {
 
 				switch (name) {
 					case "agent":
-						data.agent = this.circuit.agent?.id
+						data.agent = this.circuit.self?.key
 						break
 
 					case "session":

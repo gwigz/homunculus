@@ -1,30 +1,18 @@
 import type { Client } from ".."
-import type Agent from "./agent"
+import Agents from "./agents"
 import Entities from "./entities"
-import type Parcel from "./parcel"
-
-interface IRegionOptions {
-	handle: number
-}
 
 class Region {
 	public handle: number
-	public agents: Map<string, Agent>
-	public objects: Entities
-	public parcels: Map<string, Parcel>
+	public agents = new Agents()
+	public objects = new Entities()
 
-	/**
-	 * @param client The Client that instantiated this Region.
-	 * @param data Handle of the region.
-	 */
 	constructor(
+		/** The Client that instantiated this Region. */
 		public readonly client: Client,
-		data: IRegionOptions,
+		data: { handle: number },
 	) {
 		this.handle = data.handle
-		this.agents = new Map()
-		this.objects = new Entities()
-		this.parcels = new Map()
 	}
 }
 

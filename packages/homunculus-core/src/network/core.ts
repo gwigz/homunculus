@@ -39,8 +39,8 @@ class Core {
 		this.socket = new Socket(this)
 	}
 
-	get agent() {
-		return this.client.agent
+	get self() {
+		return this.client.self
 	}
 
 	// get region() {

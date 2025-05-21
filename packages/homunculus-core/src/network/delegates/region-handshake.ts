@@ -20,17 +20,13 @@ class RegionHandshake extends Delegate {
 		// { ProductSKU Variable1 } // string
 		// { ProductName Variable1 } // string
 
-		// TODO: add toggle for this, if we don't want objects dont send this
+		// TODO: add toggle for this, if we don't want objects don't send this
 		this.circuit.send(
-			new RegionHandshakeReply({
-				regionInfo: {
-					// Set to support self appearance.
-					flags: 0x0100,
-				},
-			}),
+			// set to support self appearance
+			new RegionHandshakeReply({ regionInfo: { flags: 1 | 4 } }),
 		)
 
-		// Notify the core that we're connected.
+		// notify the core that we're connected
 		this.circuit.core.ready()
 	}
 }

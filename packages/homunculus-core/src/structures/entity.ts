@@ -1,19 +1,20 @@
 import type { Client } from ".."
-import { Quaternion, U8, UUID, Vector3 } from "../network/types"
+import { U8, UUID, Vector3 } from "../network/types"
 
-export interface IEntityOptions {
+export interface EntityOptions {
 	id: number
 	key: string
 	parent?: number
 	state?: number
 	owner?: string
+	type?: number
 	flags?: number
-	position?: Array<number>
-	velocity?: Array<number>
-	rotation?: Array<number>
-	scale?: Array<number>
+	position?: [x: number, y: number, z: number]
+	velocity?: [x: number, y: number, z: number]
+	rotation?: [x: number, y: number, z: number, w: number]
+	scale?: [x: number, y: number, z: number]
 	text?:
-		| { value: string; color: Array<number> }
+		| { value: string; color: [r: number, g: number, b: number, a: number] }
 		| { value: Buffer; color: Buffer }
 	material?: number // Constants.ObjectMaterials
 	tree?: number // Constants.ObjectTrees
@@ -49,6 +50,11 @@ class Entity {
 	public owner: string
 
 	/**
+	 * Type (PCode) for this Entity, see `Constants.ObjectTypes` for context.
+	 */
+	public type = 0
+
+	/**
 	 * Entity flags, see `Constants.ObjectFlags` for context.
 	 */
 	public flags: number
@@ -56,27 +62,30 @@ class Entity {
 	/**
 	 * Current position of Entity.
 	 */
-	public position: Array<number>
+	public position?: [x: number, y: number, z: number]
 
 	/**
 	 * Current velocity of Entity.
 	 */
-	public velocity: Array<number>
+	public velocity?: [x: number, y: number, z: number]
 
 	/**
 	 * Current rotation of Entity.
 	 */
-	public rotation: Array<number>
+	public rotation?: [x: number, y: number, z: number, w: number]
 
 	/**
 	 * Scale of Entity.
 	 */
-	public scale: Array<number>
+	public scale?: [x: number, y: number, z: number]
 
 	/**
 	 * Floating text, object contains text and color values.
 	 */
-	public text?: { value: string; color: Array<number> }
+	public text?: {
+		value: string
+		color?: [r: number, g: number, b: number, a: number]
+	}
 
 	/**
 	 * Material type, see `Constants.ObjectMaterials` for context.
@@ -96,25 +105,31 @@ class Entity {
 	/**
 	 * Local ID values of all children relating to this object.
 	 */
-	public children: Array<number>
+	public children: Array<number> = []
+
+	/**
+	 * Whether this entity has been deleted.
+	 */
+	public dead = false
 
 	/**
 	 * @param client The Client that instantiated this Entity.
 	 */
 	constructor(
 		public readonly client: Client,
-		data: IEntityOptions,
+		data: EntityOptions | Entity,
 	) {
 		this.id = data.id
 		this.key = data.key ?? UUID.zero
 		this.parent = data.parent
 		this.state = data.state ?? 0
 		this.owner = data.owner ?? UUID.zero
+		this.type = data.type ?? 0
 		this.flags = data.flags ?? 0
-		this.position = data.position ?? Vector3.zero
-		this.velocity = data.velocity ?? Vector3.zero
-		this.rotation = data.rotation ?? Quaternion.zero
-		this.scale = data.scale ?? Vector3.zero
+		this.position = data.position
+		this.velocity = data.velocity
+		this.rotation = data.rotation
+		this.scale = data.scale
 
 		this.text = data.text
 			? {
@@ -125,45 +140,25 @@ class Entity {
 
 					color: Array.isArray(data.text.color)
 						? data.text.color
-						: data.text.color.length === 4
+						: data.text.color?.length === 4
 							? [
 									U8.fromBuffer(data.text.color, 0),
 									U8.fromBuffer(data.text.color, 1),
 									U8.fromBuffer(data.text.color, 2),
 									U8.fromBuffer(data.text.color, 3),
 								]
-							: [0, 0, 0, 0],
+							: undefined,
 				}
 			: undefined
 
-		/**
-		 * Material type, see `Constants.ObjectMaterials` for context.
-		 * @type {number}
-		 */
 		this.material = data.material ?? 0
-
-		/**
-		 * Tree type, see `Constants.ObjectTrees` for context.
-		 * @type {number}
-		 */
 		this.tree = data.tree ?? 0
-
-		/**
-		 * Default click action, see `Constants.ObjectActions` for context.
-		 * @type {number}
-		 */
 		this.action = data.action ?? 0
-
-		/**
-		 * Local ID values of all children relating to this object.
-		 * @type {number[]}
-		 */
-		this.children = []
 	}
 
 	get distance(): number {
-		return this.client.agent
-			? Vector3.distance(this.client.agent.position, this.position)
+		return this.client.self?.position && this.position
+			? Vector3.distance(this.client.self.position, this.position)
 			: -1
 	}
 }

@@ -10,12 +10,12 @@ class CompressedObjectValue {
 		this.flag = flag
 	}
 
-	public read(buffer: PacketBuffer, _flags: number) {
-		// if (this.flag && !(flags & this.flag)) {
-		//   return this.preset
-		// }
+	public read(buffer: PacketBuffer, flags: number) {
+		if (flags & this.flag) {
+			return buffer.read(this.type)
+		}
 
-		return buffer.read(this.type)
+		return
 	}
 }
 

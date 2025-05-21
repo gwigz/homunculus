@@ -11,11 +11,7 @@ class ObjectUpdateCached extends Delegate {
 			cacheMissType: 0,
 		}))
 
-		this.circuit.send(
-			new RequestMultipleObjects({
-				objectData: uncached,
-			}),
-		)
+		this.circuit.send(new RequestMultipleObjects({ objectData: uncached }))
 	}
 }
 

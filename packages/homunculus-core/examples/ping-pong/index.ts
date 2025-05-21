@@ -3,15 +3,16 @@ import { Client, Constants } from "../../src"
 
 const client = new Client()
 
-// client.on("ready", () => ...)
-
 client.nearby.on("chat", (chat) => {
 	if (
 		chat.chatType === Constants.ChatTypes.NORMAL &&
-		chat.sourceType === Constants.ChatSources.AGENT &&
-		chat.message.includes("ping")
+		chat.sourceType === Constants.ChatSources.AGENT
 	) {
-		client.nearby.message("pong")
+		if (chat.message.includes("ping")) {
+			client.nearby.message("pong")
+		}
+
+		console.log(chat)
 	}
 })
 

@@ -60,7 +60,7 @@ class EmailMessageRequest extends Packet {
 	 * "agentData" blocks may be excluded if {@link build} is able to fetch the
 	 * requirements itself.
 	 *
-	 * @param {object|Buffer} [data] Packet block data to be seralized, may be optional
+	 * @param {object|Buffer} [data] Packet block data to be serialized, may be optional
 	 * @param {string} [data.dataBlock.object] ObjectID
 	 * @param {Variable1} [data.dataBlock.fromAddress] FromAddress
 	 * @param {Variable1} [data.dataBlock.subject] Subject

@@ -60,7 +60,7 @@ class ParcelMediaCommandMessage extends Packet {
 	 * "agentData" blocks may be excluded if {@link build} is able to fetch the
 	 * requirements itself.
 	 *
-	 * @param {object|Buffer} [data] Packet block data to be seralized, may be optional
+	 * @param {object|Buffer} [data] Packet block data to be serialized, may be optional
 	 * @param {U32} [data.commandBlock.flags] Flags
 	 * @param {U32} [data.commandBlock.command] Command
 	 * @param {F32} [data.commandBlock.time] Time

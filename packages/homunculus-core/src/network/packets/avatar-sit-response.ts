@@ -70,7 +70,7 @@ class AvatarSitResponse extends Packet {
 	 * "agentData" blocks may be excluded if {@link build} is able to fetch the
 	 * requirements itself.
 	 *
-	 * @param {object|Buffer} [data] Packet block data to be seralized, may be optional
+	 * @param {object|Buffer} [data] Packet block data to be serialized, may be optional
 	 * @param {string} [data.sitObject.id] ID
 	 * @param {boolean} [data.sitTransform.autoPilot] AutoPilot
 	 * @param {Vector3} [data.sitTransform.sitPosition] SitPosition

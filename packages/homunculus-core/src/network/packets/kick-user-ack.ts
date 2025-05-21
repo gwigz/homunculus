@@ -59,7 +59,7 @@ class KickUserAck extends Packet {
 	 * "agentData" blocks may be excluded if {@link build} is able to fetch the
 	 * requirements itself.
 	 *
-	 * @param {object|Buffer} [data] Packet block data to be seralized, may be optional
+	 * @param {object|Buffer} [data] Packet block data to be serialized, may be optional
 	 * @param {string} [data.userInfo.session] SessionID
 	 * @param {U32} [data.userInfo.flags] Flags
 	 */

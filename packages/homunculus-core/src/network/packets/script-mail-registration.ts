@@ -61,7 +61,7 @@ class ScriptMailRegistration extends Packet {
 	 * "agentData" blocks may be excluded if {@link build} is able to fetch the
 	 * requirements itself.
 	 *
-	 * @param {object|Buffer} [data] Packet block data to be seralized, may be optional
+	 * @param {object|Buffer} [data] Packet block data to be serialized, may be optional
 	 * @param {Variable1} [data.dataBlock.targetIP] TargetIP
 	 * @param {Port} [data.dataBlock.targetPort] TargetPort
 	 * @param {string} [data.dataBlock.task] TaskID

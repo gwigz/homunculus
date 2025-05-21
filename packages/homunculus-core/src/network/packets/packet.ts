@@ -10,7 +10,7 @@ class Packet {
 	public data: any
 
 	/**
-	 * @param {object|Buffer} [data] Packet block data to be seralized, may be optional
+	 * @param {object|Buffer} [data] Packet block data to be serialized, may be optional
 	 * @param {string} [data.agentData.agent] AgentID
 	 * @param {string} [data.agentData.session] SessionID
 	 */

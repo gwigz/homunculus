@@ -60,7 +60,7 @@ class AssetUploadComplete extends Packet {
 	 * "agentData" blocks may be excluded if {@link build} is able to fetch the
 	 * requirements itself.
 	 *
-	 * @param {object|Buffer} [data] Packet block data to be seralized, may be optional
+	 * @param {object|Buffer} [data] Packet block data to be serialized, may be optional
 	 * @param {string} [data.assetBlock.UUID] UUID
 	 * @param {S8} [data.assetBlock.type] Type
 	 * @param {boolean} [data.assetBlock.success] Success

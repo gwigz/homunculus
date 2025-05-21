@@ -65,7 +65,7 @@ class LogDwellTime extends Packet {
 	 * "agentData" blocks may be excluded if {@link build} is able to fetch the
 	 * requirements itself.
 	 *
-	 * @param {object|Buffer} [data] Packet block data to be seralized, may be optional
+	 * @param {object|Buffer} [data] Packet block data to be serialized, may be optional
 	 * @param {string} [data.dwellInfo.agent] AgentID
 	 * @param {string} [data.dwellInfo.session] SessionID
 	 * @param {F32} [data.dwellInfo.duration] Duration

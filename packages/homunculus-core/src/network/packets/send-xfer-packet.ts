@@ -66,7 +66,7 @@ class SendXferPacket extends Packet {
 	 * "agentData" blocks may be excluded if {@link build} is able to fetch the
 	 * requirements itself.
 	 *
-	 * @param {object|Buffer} [data] Packet block data to be seralized, may be optional
+	 * @param {object|Buffer} [data] Packet block data to be serialized, may be optional
 	 * @param {U64} [data.xfer.id] ID
 	 * @param {U32} [data.xfer.packet] Packet
 	 * @param {Variable2} [data.dataPacket.data] Data

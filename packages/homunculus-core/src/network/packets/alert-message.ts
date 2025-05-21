@@ -65,7 +65,7 @@ class AlertMessage extends Packet {
 	 * "agentData" blocks may be excluded if {@link build} is able to fetch the
 	 * requirements itself.
 	 *
-	 * @param {object|Buffer} [data] Packet block data to be seralized, may be optional
+	 * @param {object|Buffer} [data] Packet block data to be serialized, may be optional
 	 * @param {Variable1} [data.alertData.message] Message
 	 * @param {Variable1} [data.alertInfo.message] Message
 	 * @param {Variable1} [data.alertInfo.extraParams] ExtraParams

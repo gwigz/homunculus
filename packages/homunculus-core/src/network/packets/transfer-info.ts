@@ -63,7 +63,7 @@ class TransferInfo extends Packet {
 	 * "agentData" blocks may be excluded if {@link build} is able to fetch the
 	 * requirements itself.
 	 *
-	 * @param {object|Buffer} [data] Packet block data to be seralized, may be optional
+	 * @param {object|Buffer} [data] Packet block data to be serialized, may be optional
 	 * @param {string} [data.transferInfo.transfer] TransferID
 	 * @param {S32} [data.transferInfo.channelType] ChannelType
 	 * @param {S32} [data.transferInfo.targetType] TargetType

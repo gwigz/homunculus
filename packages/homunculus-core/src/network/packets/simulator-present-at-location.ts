@@ -94,7 +94,7 @@ class SimulatorPresentAtLocation extends Packet {
 	 * "agentData" blocks may be excluded if {@link build} is able to fetch the
 	 * requirements itself.
 	 *
-	 * @param {object|Buffer} [data] Packet block data to be seralized, may be optional
+	 * @param {object|Buffer} [data] Packet block data to be serialized, may be optional
 	 * @param {Port} [data.simulatorPublicHostBlock.port] Port
 	 * @param {IP} [data.simulatorPublicHostBlock.simulatorIP] SimulatorIP
 	 * @param {U32} [data.simulatorPublicHostBlock.gridX] GridX

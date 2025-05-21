@@ -7,8 +7,12 @@ client.on("ready", () => {
 	console.log("Ready")
 })
 
-client.nearby.on("chat", (chatter, message) => {
-	if (chatter.type === Constants.ChatTypes.NORMAL && message.includes("ping")) {
+client.nearby.on("chat", (chat) => {
+	if (
+		chat.chatType === Constants.ChatTypes.NORMAL &&
+		chat.sourceType === Constants.ChatSources.AGENT &&
+		chat.message.includes("ping")
+	) {
 		client.nearby.message("pong")
 	}
 })

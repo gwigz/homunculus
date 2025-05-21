@@ -3,16 +3,19 @@ import type { Client } from ".."
 import { ChatFromViewer } from "../network/packets"
 import { Constants } from "../utilities"
 
-export interface NearbyChatter {
-	key: string
-	name: string
-	type: number
+export interface NearbyChatMessage {
+	fromName: string
+	source: string
 	owner: string
+	sourceType: number
+	chatType: number
+	audible: number
 	position: [number, number, number]
+	message: string
 }
 
 export interface NearbyEvents {
-	chat: [chatter: NearbyChatter, message: string]
+	chat: [chat: NearbyChatMessage]
 }
 
 class Nearby extends AsyncEventEmitter<NearbyEvents> {

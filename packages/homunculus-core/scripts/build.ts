@@ -12,10 +12,12 @@ await Promise.all([
 		plugins: [dts()],
 		format: "esm",
 		naming: "[dir]/[name].js",
+		target: "node",
 	}),
 	build({
 		...defaultBuildConfig,
 		format: "cjs",
 		naming: "[dir]/[name].cjs",
+		target: "node",
 	}),
 ])

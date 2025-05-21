@@ -1,5 +1,4 @@
-import type { NearbyChatter } from "../../structures/nearby"
-import { Constants } from "../../utilities"
+import type { NearbyChatMessage } from "../../structures/nearby"
 import type { ChatFromSimulator as ChatFromSimulatorPacket } from "../packets"
 import { UUID } from "../types"
 import Delegate from "./delegate"
@@ -7,23 +6,22 @@ import Delegate from "./delegate"
 class ChatFromSimulator extends Delegate {
 	public handle(packet: ChatFromSimulatorPacket) {
 		for (const data of packet.data.chatData) {
-			const chatter = {
-				key: data.source,
-				name: data.fromName.toString().slice(0, -1),
-				type: data.sourceType,
-				owner: UUID.zero,
+			const chat = {
+				fromName: data.fromName.toString().slice(0, -1),
+				source: data.source ?? UUID.zero,
+				owner: data.source ?? UUID.zero,
+				sourceType: data.sourceType,
+				chatType: data.chatType,
+				audible: data.audible,
 				position: data.position,
-			} satisfies NearbyChatter
+				message: data.message.toString().slice(0, -1),
+			} satisfies NearbyChatMessage
 
-			if (data.source === Constants.ChatSources.OBJECT) {
-				chatter.owner = data.owner
-			}
+			// if (data.source === Constants.ChatSources.OBJECT) {
+			// 	chatter.owner = data.owner
+			// }
 
-			this.client.nearby.emit(
-				"chat",
-				chatter,
-				data.message.toString().slice(0, -1),
-			)
+			this.client.nearby.emit("chat", chat)
 		}
 	}
 

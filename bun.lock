@@ -49,6 +49,7 @@
         "@biomejs/biome": "1.9.4",
         "@types/node": "^22.15.20",
         "@types/react": "^18.3.21",
+        "chalk": "^5.4.1",
       },
       "peerDependencies": {
         "typescript": "^5.8.3",

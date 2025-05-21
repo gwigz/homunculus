@@ -108,17 +108,13 @@ class Client extends AsyncEventEmitter<ClientEvents> {
 		password: string,
 		start: "first" | "last" | string = "last",
 	) {
-		if (this.status < Constants.Status.IDLE) {
-			throw new Error(Constants.Errors.ALREADY_CONNECTED)
-		}
+		assert(
+			this.status >= Constants.Status.IDLE,
+			Constants.Errors.ALREADY_CONNECTED,
+		)
 
-		if (typeof username !== "string") {
-			throw new Error(Constants.Errors.INVALID_LOGIN)
-		}
-
-		if (typeof password !== "string") {
-			throw new Error(Constants.Errors.INVALID_LOGIN)
-		}
+		assert(typeof username === "string", Constants.Errors.INVALID_LOGIN)
+		assert(typeof password === "string", Constants.Errors.INVALID_LOGIN)
 
 		this.emit(
 			Constants.ClientEvents.DEBUG,
@@ -204,9 +200,7 @@ class Client extends AsyncEventEmitter<ClientEvents> {
 	 * @returns {Promise}
 	 */
 	public send(...packets: Array<Packet>) {
-		if (this.core.circuit === undefined) {
-			throw new Error(Constants.Errors.NOT_CONNECTED)
-		}
+		assert(!!this.core.circuit, Constants.Errors.NOT_CONNECTED)
 
 		return this.core.circuit.send(...packets)
 	}

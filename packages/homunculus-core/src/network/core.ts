@@ -9,10 +9,25 @@ import Socket from "./socket"
  * messages. It's basically handles 100% of the the communication.
  */
 class Core {
+	/**
+	 * The UDP connection/socket.
+	 */
 	public socket: Socket
-	public circuits: Map<string, Circuit>
+
+	/**
+	 * Collection of recently, and currently in use Circuit instances.
+	 */
+	public circuits = new Map<string, Circuit>()
+
+	/**
+	 * The currently in use Circuit instance.
+	 */
 	public circuit?: Circuit
-	public status: number
+
+	/**
+	 * The status of this class, a type of Constants.Status, IDLE default.
+	 */
+	public status: number = Constants.Status.IDLE
 
 	/**
 	 * @param client For emitting processed messages back to.
@@ -21,20 +36,7 @@ class Core {
 		/** Client instance that instantiated this Core. */
 		public readonly client: Client,
 	) {
-		/**
-		 * The UDP connection/socket.
-		 */
 		this.socket = new Socket(this)
-
-		/**
-		 * Collection of recently, and currently in use Circuit instances.
-		 */
-		this.circuits = new Map()
-
-		/**
-		 * The status of this class, a type of Constants.Status, IDLE default.
-		 */
-		this.status = Constants.Status.IDLE
 	}
 
 	get agent() {

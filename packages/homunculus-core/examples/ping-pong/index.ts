@@ -3,9 +3,7 @@ import { Client, Constants } from "../../src"
 
 const client = new Client()
 
-client.on("ready", () => {
-	console.log("Ready")
-})
+// client.on("ready", () => ...)
 
 client.nearby.on("chat", (chat) => {
 	if (

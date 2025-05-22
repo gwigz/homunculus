@@ -254,10 +254,25 @@ function updateNearbyObjects() {
 
 	for (const region of client.regions.values()) {
 		nearbyAvatars.pushLine("—")
-		nearbyAvatars.pushLine(`{bold}${region.name ?? region.handle}{/bold}`)
+
+		if (region.name) {
+			nearbyAvatars.pushLine(`{bold}${region.name}{/}`)
+		} else {
+			nearbyAvatars.pushLine(`{bold}{gray-fg}Loading... (${region.handle}){/}`)
+		}
 
 		for (const agent of region.agents.values()) {
-			nearbyAvatars.pushLine(blessed.escape(agent.name ?? agent.key))
+			if (agent.key === client.self?.key) {
+				continue
+			}
+
+			const name = agent.name
+
+			nearbyAvatars.pushLine(
+				name
+					? blessed.escape(name)
+					: `Loading... {gray-fg}(${agent.key.slice(0, 8)}){/}`,
+			)
 		}
 	}
 

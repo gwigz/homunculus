@@ -1,8 +1,9 @@
+import type { RegionHandshake as RegionHandshakePacket } from "../packets"
 import { RegionHandshakeReply } from "../packets"
 import Delegate from "./delegate"
 
 class RegionHandshake extends Delegate {
-	public handle() {
+	public handle(_packet: RegionHandshakePacket) {
 		// RegionInfo
 		// { RegionFlags U32 }
 		// { SimAccess U8 }

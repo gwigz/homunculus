@@ -54,7 +54,7 @@ class UUIDNameRequest extends Packet {
 	 * requirements itself.
 	 *
 	 * @param {object|Buffer} [data] Packet block data to be serialized, may be optional
-	 * @param {string} [data.UUIDNameBlock.id] ID
+	 * @param {string} [data.uuidNameBlock.id] ID
 	 */
 	constructor(data = {}) {
 		super(data)

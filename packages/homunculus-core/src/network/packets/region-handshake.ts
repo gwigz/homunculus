@@ -84,10 +84,10 @@ class RegionHandshake extends Packet {
 			{
 				quantity: 1,
 				parameters: new Map<string, any>([
-					["cPUClass", Types.S32],
-					["cPURatio", Types.S32],
+					["cpuClass", Types.S32],
+					["cpuRatio", Types.S32],
 					["coloName", Types.Variable1],
-					["productSKU", Types.Variable1],
+					["productSku", Types.Variable1],
 					["productName", Types.Variable1],
 				]),
 			},
@@ -127,10 +127,10 @@ class RegionHandshake extends Packet {
 	 * @param {F32} [data.regionInfo.terrainHeightRange10] TerrainHeightRange10
 	 * @param {F32} [data.regionInfo.terrainHeightRange11] TerrainHeightRange11
 	 * @param {string} [data.regionInfo2.region] RegionID
-	 * @param {S32} [data.regionInfo3.cPUClass] CPUClassID
-	 * @param {S32} [data.regionInfo3.cPURatio] CPURatio
+	 * @param {S32} [data.regionInfo3.cpuClass] CPUClassID
+	 * @param {S32} [data.regionInfo3.cpuRatio] CPURatio
 	 * @param {Variable1} [data.regionInfo3.coloName] ColoName
-	 * @param {Variable1} [data.regionInfo3.productSKU] ProductSKU
+	 * @param {Variable1} [data.regionInfo3.productSku] ProductSKU
 	 * @param {Variable1} [data.regionInfo3.productName] ProductName
 	 */
 	constructor(data = {}) {

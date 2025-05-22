@@ -8,8 +8,8 @@ class AgentDataUpdate extends Delegate {
 
 		if (self) {
 			self.key = data.agent
-			self.firstname = data.firstName.toString("utf8").slice(0, -1)
-			self.lastname = data.lastName.toString("utf8").slice(0, -1)
+			self.firstName = data.firstName.toString("utf8").slice(0, -1)
+			self.lastName = data.lastName.toString("utf8").slice(0, -1)
 		}
 
 		/*

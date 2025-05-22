@@ -11,8 +11,8 @@ class U64 {
 		const buffer = Buffer.allocUnsafe(U64.size)
 		const value = typeof integer === "bigint" ? integer : BigInt(integer)
 
-		buffer.writeUInt32LE(Number(value & BigInt(0xffffffff)), 0)
-		buffer.writeUInt32LE(Number((value >> BigInt(32)) & BigInt(0xffffffff)), 4)
+		buffer.writeUInt32LE(Number(value & 0xffffffffn), 0)
+		buffer.writeUInt32LE(Number((value >> 32n) & 0xffffffffn), 4)
 
 		return buffer
 	}
@@ -27,8 +27,7 @@ class U64 {
 	public static fromBuffer(buffer: Buffer, position = 0) {
 		return (
 			BigInt.asUintN(32, BigInt(buffer.readUInt32LE(position))) |
-			(BigInt.asUintN(32, BigInt(buffer.readUInt32LE(position + 4))) <<
-				BigInt(32))
+			(BigInt.asUintN(32, BigInt(buffer.readUInt32LE(position + 4))) << 32n)
 		)
 	}
 }

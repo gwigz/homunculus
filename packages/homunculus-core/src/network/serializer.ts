@@ -119,6 +119,18 @@ class Serializer {
 						data.circuitCode = this.circuit.id
 						break
 
+					case "flags":
+						data.flags = 0
+						break
+
+					case "estate":
+						data.estate = 0
+						break
+
+					case "godlike":
+						data.godlike = false
+						break
+
 					default:
 						throw new Error(Constants.Errors.MISSING_PARAMETER)
 				}

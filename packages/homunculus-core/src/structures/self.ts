@@ -6,8 +6,8 @@ class Self {
 	/** Session ID */
 	public session?: number
 
-	public firstname?: string
-	public lastname?: string
+	public firstName?: string
+	public lastName?: string
 
 	public state = 0
 
@@ -25,18 +25,20 @@ class Self {
 		data: {
 			key: string
 			session?: number
-			firstname?: string
-			lastname?: string
+			firstName?: string
+			lastName?: string
 		},
 	) {
 		this.key = data.key
 		this.session = data.session
-		this.firstname = data.firstname
-		this.lastname = data.lastname
+		this.firstName = data.firstName
+		this.lastName = data.lastName
 	}
 
 	get name() {
-		return `${this.firstname} ${this.lastname}`.trim()
+		return this.firstName
+			? `${this.firstName} ${this.lastName ?? ""}`.trim()
+			: undefined
 	}
 }
 

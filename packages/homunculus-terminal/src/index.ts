@@ -30,16 +30,16 @@ const cli = meow(
 	},
 )
 
-assert(process.env.USERNAME, "USERNAME env value is not set")
-assert(process.env.PASSWORD, "PASSWORD env value is not set")
+assert(process.env.SL_USERNAME, "SL_USERNAME env value is not set")
+assert(process.env.SL_PASSWORD, "SL_PASSWORD env value is not set")
 
-const start = cli.flags.start || process.env.START
+const start = cli.flags.start || process.env.SL_START
 
 assert(
 	start
 		? /^(?:uri:[A-Za-z0-9 ]+&\d{1,3}&\d{1,3}&\d{1,4}|first|last)$/.test(start)
 		: true,
-	"START env value is invalid",
+	"SL_START env value is invalid",
 )
 
 const logFile = path.join(process.cwd(), "homunculus-error.log")
@@ -127,8 +127,26 @@ const nearbyAvatars = blessed.box({
 	right: 0,
 	width: 24,
 	height: "100%",
+	scrollable: true,
+	keys: true,
+	mouse: true,
+	vi: true,
+	alwaysScroll: true,
+	scrollback: 200,
+	tags: true,
 	border: {
 		type: "line",
+	},
+	scrollbar: {
+		style: {
+			bg: "blue",
+			fg: "white",
+		},
+		track: {
+			bg: "black",
+			fg: "gray",
+		},
+		ch: "█",
 	},
 	style: {
 		border: {
@@ -222,6 +240,8 @@ client.nearby.on("chat", (chat) => {
 	if (!ignoredChatTypes.includes(chat.chatType) && chat.message.length) {
 		addChat(chat.fromName, chat.message, chat.chatType, chat.sourceType)
 	}
+
+	updateNearbyObjects()
 })
 
 function updateNearbyObjects() {
@@ -232,37 +252,24 @@ function updateNearbyObjects() {
 		nearbyAvatars.pushLine(`${region.agents.size} agents`)
 	}
 
-	nearbyAvatars.pushLine("—")
-
 	for (const region of client.regions.values()) {
-		nearbyAvatars.pushLine(`${region.handle}`)
+		nearbyAvatars.pushLine("—")
+		nearbyAvatars.pushLine(`{bold}${region.name ?? region.handle}{/bold}`)
 
 		for (const agent of region.agents.values()) {
-			nearbyAvatars.pushLine(blessed.escape(agent.key))
+			nearbyAvatars.pushLine(blessed.escape(agent.name ?? agent.key))
 		}
 	}
 
-	nearbyAvatars.pushLine("—")
-
-	const uniqueTypes = new Map<number, number>()
-
-	for (const region of client.regions.values()) {
-		for (const object of region.objects.values()) {
-			uniqueTypes.set(object.type, (uniqueTypes.get(object.type) ?? 0) + 1)
-		}
-	}
-
-	for (const [type, count] of uniqueTypes.entries()) {
-		nearbyAvatars.pushLine(`${count} (${type})`)
-	}
+	screen.render()
 }
 
 function updateRegions() {
 	for (const region of client.regions.values()) {
-		// region.agents.on("set", updateNearbyObjects)
-		// region.agents.on("delete", updateNearbyObjects)
-		region.objects.on("set", updateNearbyObjects)
-		region.objects.on("delete", updateNearbyObjects)
+		region.agents.on("set", updateNearbyObjects)
+		region.agents.on("delete", updateNearbyObjects)
+		// region.objects.on("set", updateNearbyObjects)
+		// region.objects.on("delete", updateNearbyObjects)
 	}
 }
 
@@ -338,7 +345,11 @@ process.on("SIGINT", exit)
 process.on("SIGTERM", exit)
 
 try {
-	await client.connect(process.env.USERNAME!, process.env.PASSWORD!, start)
+	await client.connect(
+		process.env.SL_USERNAME!,
+		process.env.SL_PASSWORD!,
+		start,
+	)
 } catch (error: unknown) {
 	logError(error instanceof Error ? error : new Error(String(error)))
 

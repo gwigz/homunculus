@@ -60,9 +60,9 @@ class UUIDNameReply extends Packet {
 	 * requirements itself.
 	 *
 	 * @param {object|Buffer} [data] Packet block data to be serialized, may be optional
-	 * @param {string} [data.UUIDNameBlock.id] ID
-	 * @param {Variable1} [data.UUIDNameBlock.firstName] FirstName
-	 * @param {Variable1} [data.UUIDNameBlock.lastName] LastName
+	 * @param {string} [data.uuidNameBlock.id] ID
+	 * @param {Variable1} [data.uuidNameBlock.firstName] FirstName
+	 * @param {Variable1} [data.uuidNameBlock.lastName] LastName
 	 */
 	constructor(data = {}) {
 		super(data)

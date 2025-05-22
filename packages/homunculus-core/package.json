@@ -9,9 +9,11 @@
 		"dist"
 	],
 	"scripts": {
-		"dev": "bun run src/index.ts",
-		"build": "bun run scripts/build.ts",
-		"lint": "biome lint ."
+		"dev": "bun run ./src/index.ts",
+		"build": "bun run ./scripts/build.ts",
+		"lint": "biome lint .",
+		"db:generate": "bunx drizzle-kit generate --dialect sqlite --schema ./src/database/schema.ts",
+		"db:migrate": "bun run ./scripts/migrate.ts"
 	},
 	"repository": {
 		"type": "git",
@@ -30,14 +32,16 @@
 	"dependencies": {
 		"@usebruno/node-machine-id": "^2.0.0",
 		"@vladfrangu/async_event_emitter": "^2.4.6",
+		"drizzle-orm": "^0.43.1",
 		"xmlrpc": "^1.3.2"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
-		"@types/bun": "^1.2.13",
+		"@types/bun": "^1.2.14",
 		"@types/node": "^22.15.19",
 		"@types/xmlrpc": "^1.3.10",
-		"bun-plugin-dts": "^0.3.0"
+		"bun-plugin-dts": "^0.3.0",
+		"drizzle-kit": "^0.31.1"
 	},
 	"peerDependencies": {
 		"typescript": "^5.8.3"

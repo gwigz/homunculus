@@ -20,22 +20,22 @@ client.on("debug", console.debug)
 client.on("warning", console.warn)
 client.on("error", console.error)
 
-assert(process.env.USERNAME, "USERNAME env value is not set")
-assert(process.env.PASSWORD, "PASSWORD env value is not set")
+assert(process.env.SL_USERNAME, "SL_USERNAME env value is not set")
+assert(process.env.SL_PASSWORD, "SL_PASSWORD env value is not set")
 
 assert(
-	process.env.START
+	process.env.SL_START
 		? /^(?:uri:[A-Za-z0-9 ]+&\d{1,3}&\d{1,3}&\d{1,4}|first|last)$/.test(
-				process.env.START,
+				process.env.SL_START,
 			)
 		: true,
-	"START env value is invalid",
+	"SL_START env value is invalid",
 )
 
 await client.connect(
-	process.env.USERNAME,
-	process.env.PASSWORD,
-	process.env.START,
+	process.env.SL_USERNAME,
+	process.env.SL_PASSWORD,
+	process.env.SL_START,
 )
 
 async function exit() {

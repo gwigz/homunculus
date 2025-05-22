@@ -27,8 +27,8 @@ class AgentMovementComplete extends Delegate {
 		// TODO: setup an actual objects for region handle (so we can have sugar for
 		// global to local transformations).
 		self.offset = [
-			Number(data.regionHandle >> BigInt(32)),
-			Number(data.regionHandle & BigInt(0xffffffff)),
+			Number(data.regionHandle >> 32n),
+			Number(data.regionHandle & 0xffffffffn),
 			0.0,
 		]
 

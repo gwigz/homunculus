@@ -147,11 +147,11 @@ class Client extends AsyncEventEmitter<ClientEvents> {
 		this.self = new Self(this, {
 			key: response.agent_id,
 			session: response.session_id,
-			firstname:
+			firstName:
 				"first_name" in response
 					? response.first_name.replace('"', "")
 					: undefined,
-			lastname:
+			lastName:
 				"last_name" in response
 					? response.last_name.replace('"', "")
 					: undefined,

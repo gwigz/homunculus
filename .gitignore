@@ -5,6 +5,9 @@ dist
 docs
 NOTES.md
 
+# Drizzle (temporary ignore)
+packages/homunculus-core/drizzle/*
+
 # Unfinished tests
 tests
 bin
@@ -12,6 +15,8 @@ bot.ts
 
 # Environment variables
 .env
+.env.*
+!.env.example
 
 # Logs
 logs
@@ -21,6 +26,7 @@ logs
 pids
 *.pid
 *.seed
+*.db
 
 # Dependency directories
 node_modules

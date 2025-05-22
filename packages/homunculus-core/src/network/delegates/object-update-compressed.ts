@@ -9,7 +9,7 @@ import CompressedObjectValue, {
 import Delegate from "./delegate"
 
 const Flags = {
-	NONE: 0x00,
+	NONE: 0x0,
 	SCRATCH_PAD: 0x01,
 	TREE_TYPE: 0x02,
 	TEXT: 0x04,
@@ -21,6 +21,14 @@ const Flags = {
 	NAME: 0x100,
 	MEDIA_URL: 0x200,
 }
+
+// const ParameterTypes = {
+// 	FLEXIBLE: 0x10,
+// 	LIGHT: 0x20,
+// 	SCULPT: 0x30,
+// 	LIGHT_IMAGE: 0x40,
+// 	MESH: 0x50,
+// }
 
 const compressedObjectProperties: CompressedObjectProperties = [
 	["type", Types.U8],
@@ -45,7 +53,7 @@ const compressedObjectProperties: CompressedObjectProperties = [
 	["media.url", new CompressedObjectValue(Types.Text, Flags.MEDIA_URL)],
 	[
 		"particles",
-		new CompressedObjectValue(Types.ParticleSystem, Flags.MEDIA_URL),
+		new CompressedObjectValue(Types.ParticleSystem, Flags.PARTICLES),
 	],
 	["parameters", 0],
 	["sound.key", new CompressedObjectValue(Types.UUID, Flags.SOUND_DATA)],
@@ -122,25 +130,16 @@ class ObjectUpdateCompressed extends Delegate {
 
 		for (const [key, type] of compressedObjectProperties) {
 			if (key === "parameters") {
-				try {
-					const count = buffer.read(Types.U8)
+				const count = buffer.read(Types.U8)
 
-					for (let i = 0; i < count; i++) {
-						buffer.skip(Types.U16.size)
-						buffer.skip(buffer.read(Types.U32))
-					}
-
-					continue
-				} catch (error) {
-					this.client.emit(
-						"debug",
-						`Error skipping parameters on object "${entity.key}".`,
-					)
-
-					this.client.emit("error", error as Error)
-
-					return
+				// skip parameters for now
+				// this just contains flex, light, mesh, and sculpt data
+				for (let i = 0; i < count; i++) {
+					buffer.skip(Types.U16.size)
+					buffer.skip(buffer.read(Types.U32))
 				}
+
+				continue
 			}
 
 			const value =

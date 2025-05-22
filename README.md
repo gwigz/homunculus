@@ -10,6 +10,18 @@ Homunculus is a Node.js module that allows you to interact with the virtual worl
 [Second Life](https://www.secondlife.com), utilizing the official
 [Second Life UDP protocol](http://wiki.secondlife.com/wiki/Protocol).
 
+## Packages
+
+### `@gwigz/homunculus-core`
+
+Node.js framework for building scripted agents, and minimal clients.
+
+### `@gwigz/homunculus-terminal`
+
+Example terminal client, used for general debugging and testing.
+
+<img src="./packages/homunculus-terminal/terminal.png" />
+
 ## Acknowledgments
 
 Homunculus has been made possible thanks to these wonderful resources:

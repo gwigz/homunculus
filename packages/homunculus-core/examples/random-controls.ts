@@ -4,6 +4,7 @@ const client = new Client()
 const controls = Object.values(Constants.ControlFlags)
 
 let interval: NodeJS.Timeout
+let sitting = false
 
 client.on("ready", () => {
 	let angle = 0
@@ -18,6 +19,20 @@ client.on("ready", () => {
 
 		self.rotation = [sin, 0, 0, cos]
 		self.controlFlags = controls[Math.floor(Math.random() * controls.length)]!
+
+		console.log(
+			sitting,
+			self.controlFlags & Constants.ControlFlags.SIT_ON_GROUND,
+		)
+
+		// stand if we recently sat
+		if (self.controlFlags & Constants.ControlFlags.SIT_ON_GROUND) {
+			sitting = true
+		} else if (sitting) {
+			sitting = false
+			self.controlFlags = Constants.ControlFlags.STAND_UP
+		}
+
 		self.sendAgentUpdate()
 	}, 1000)
 })
@@ -28,13 +43,7 @@ client.on("error", console.error)
 
 // by default, we connect using the SL_USERNAME, SL_PASSWORD, and SL_START
 // environment variables -- alternatively, you can just pass those values in
-await client.connect(process.env.SL_USERNAME!, process.env.SL_PASSWORD!, {
-	login: {
-		start: process.env.SL_START,
-		// mfaToken: process.env.SL_MFA_TOKEN,
-		mfaTokenHash: process.env.SL_MFA_HASH,
-	},
-})
+await client.connect()
 
 async function exit() {
 	clearInterval(interval)

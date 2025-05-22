@@ -68,7 +68,7 @@ class Agent {
 			if (error instanceof AcknowledgeTimeoutError) {
 				this.client.emit(
 					"warning",
-					`Timed out trying to get name for agent ${this.key}.`,
+					`Timed out trying to get name for agent "${this.key}".`,
 				)
 			} else {
 				this.client.emit("error", error as Error)

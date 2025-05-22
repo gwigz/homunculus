@@ -51,7 +51,7 @@ class Region {
 			if (error instanceof AcknowledgeTimeoutError) {
 				this.client.emit(
 					"warning",
-					`Timed out trying to get name for region ${this.handle.toString()}.`,
+					`Timed out trying to get name for region "${this.handle.toString()}".`,
 				)
 			} else {
 				this.client.emit("error", error as Error)

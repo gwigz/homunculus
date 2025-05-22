@@ -1,8 +1,11 @@
-import assert from "node:assert"
+import path from "path"
 import { drizzle } from "drizzle-orm/bun-sqlite"
+import { migrate } from "drizzle-orm/bun-sqlite/migrator"
 
-assert(process.env.DB_FILE_NAME, "DB_FILE_NAME env value is not set")
+export const db = drizzle(process.env.DB_FILE_NAME ?? ":memory:")
 
-export const db = drizzle(process.env.DB_FILE_NAME)
+migrate(db, {
+	migrationsFolder: path.join(import.meta.dir, "..", "..", "drizzle"),
+})
 
 export * as schema from "./schema"

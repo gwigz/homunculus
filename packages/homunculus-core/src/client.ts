@@ -90,6 +90,8 @@ class Client extends AsyncEventEmitter<ClientEvents> {
 		password = process.env.SL_PASSWORD,
 		options: ClientOptions = {},
 	) {
+		options.login = { ...options.login, start: process.env.SL_START }
+
 		assert(
 			this.status >= Constants.Status.IDLE,
 			Constants.Errors.ALREADY_CONNECTED,

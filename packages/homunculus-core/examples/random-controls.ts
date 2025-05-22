@@ -13,6 +13,9 @@ client.on("ready", () => {
 	controlInterval = setInterval(() => {
 		const self = client.self!
 
+		/**
+		 * @see {@link https://wiki.secondlife.com/wiki/How_movement_works}
+		 */
 		self.controlFlags = controls[Math.floor(Math.random() * controls.length)]!
 
 		// stand instead, if we recently sat

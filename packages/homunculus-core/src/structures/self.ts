@@ -21,6 +21,9 @@ class Self {
 	/** Linden Damage health */
 	public health = 100
 
+	/**
+	 * @see {@link https://wiki.secondlife.com/wiki/How_movement_works}
+	 */
 	public controlFlags = 0
 
 	private agentUpdateInterval?: NodeJS.Timeout

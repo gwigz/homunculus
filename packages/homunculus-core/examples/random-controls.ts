@@ -3,38 +3,38 @@ import { Client, Constants } from "../src"
 const client = new Client()
 const controls = Object.values(Constants.ControlFlags)
 
-let interval: NodeJS.Timeout
+let rotationInterval: NodeJS.Timeout
+let controlInterval: NodeJS.Timeout
+
+let angle = 0
 let sitting = false
 
 client.on("ready", () => {
-	let angle = 0
-
-	interval = setInterval(() => {
+	controlInterval = setInterval(() => {
 		const self = client.self!
 
-		angle += 0.2
-
-		const cos = Math.cos(angle / 2)
-		const sin = Math.sin(angle / 2)
-
-		self.rotation = [sin, 0, 0, cos]
 		self.controlFlags = controls[Math.floor(Math.random() * controls.length)]!
 
-		console.log(
-			sitting,
-			self.controlFlags & Constants.ControlFlags.SIT_ON_GROUND,
-		)
-
-		// stand if we recently sat
+		// stand instead, if we recently sat
 		if (self.controlFlags & Constants.ControlFlags.SIT_ON_GROUND) {
 			sitting = true
 		} else if (sitting) {
 			sitting = false
 			self.controlFlags = Constants.ControlFlags.STAND_UP
 		}
-
-		self.sendAgentUpdate()
 	}, 1000)
+
+	rotationInterval = setInterval(() => {
+		const self = client.self!
+
+		angle += 0.1
+
+		const cos = Math.cos(angle / 2)
+		const sin = Math.sin(angle / 2)
+
+		self.rotation = [0, 0, sin, cos]
+		self.sendAgentUpdate()
+	}, 100)
 })
 
 client.on("debug", console.debug)
@@ -46,7 +46,8 @@ client.on("error", console.error)
 await client.connect()
 
 async function exit() {
-	clearInterval(interval)
+	clearInterval(rotationInterval)
+	clearInterval(controlInterval)
 
 	// ensures we disconnect safely, otherwise login may get blocked for a period
 	await client.disconnect()

@@ -1,6 +1,7 @@
 import assert from "node:assert"
 import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
 import { Authenticator, Core } from "./network"
+import type { LoginOptions } from "./network/authenticator"
 import type { Packet } from "./network/packets"
 import { Nearby } from "./structures"
 import Regions from "./structures/regions"
@@ -12,6 +13,10 @@ export interface ClientEvents {
 	[Constants.ClientEvents.DEBUG]: [message: string]
 	[Constants.ClientEvents.ERROR]: [error: Error]
 	[Constants.ClientEvents.WARNING]: [warning: string]
+}
+
+export interface ClientOptions {
+	login?: LoginOptions
 }
 
 /**
@@ -77,13 +82,13 @@ class Client extends AsyncEventEmitter<ClientEvents> {
 	// }
 
 	/**
-	 * @param start Either "first", "last", or alternatively use "uri:Region Name&x&y&z".
+	 * @param start Either "home", "last", or alternatively use "uri:Region Name&x&y&z".
 	 * @returns Complete upon handshake sent, use ready event instead.
 	 */
 	public async connect(
-		username: string,
-		password: string,
-		start: "first" | "last" | string = "last",
+		username = process.env.SL_USERNAME,
+		password = process.env.SL_PASSWORD,
+		options: ClientOptions = {},
 	) {
 		assert(
 			this.status >= Constants.Status.IDLE,
@@ -93,12 +98,25 @@ class Client extends AsyncEventEmitter<ClientEvents> {
 		assert(typeof username === "string", Constants.Errors.INVALID_LOGIN)
 		assert(typeof password === "string", Constants.Errors.INVALID_LOGIN)
 
+		assert(
+			options.login?.start
+				? /^(?:uri:[A-Za-z0-9 ]+&\d{1,3}&\d{1,3}&\d{1,4}|home|last)$/.test(
+						options.login.start,
+					)
+				: true,
+			Constants.Errors.INVALID_START,
+		)
+
 		this.emit(
 			Constants.ClientEvents.DEBUG,
 			`Attempting login using username "${username}"...`,
 		)
 
-		const response = await this.authenticator.login(username, password, start)
+		const response = await this.authenticator.login(
+			username,
+			password,
+			options.login,
+		)
 
 		assert(typeof response === "object", Constants.Errors.LOGIN_FAILED)
 
@@ -180,10 +198,18 @@ class Client extends AsyncEventEmitter<ClientEvents> {
 	 *
 	 * @param packets Packets to send
 	 */
-	public send(...packets: Array<Packet>) {
-		assert(!!this.core.circuit, Constants.Errors.NOT_CONNECTED)
+	public send(packets: Array<Packet>) {
+		return this.core.circuit?.send(packets)
+	}
 
-		return this.core.circuit.send(...packets)
+	/**
+	 * Sends Packet (or multiple) to currently active Circuit.
+	 *
+	 * @param packets Packets to send
+	 * @param timeout Timeout for reliable packets
+	 */
+	public sendReliable(packets: Array<Packet>, timeout = 10_000) {
+		return this.core.circuit?.sendReliable(packets, timeout)
 	}
 
 	public async disconnect() {

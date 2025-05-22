@@ -7,7 +7,7 @@ import type { PacketBuffer } from "./helpers"
 import { CompleteAgentMovement, type Packet, UseCircuitCode } from "./packets"
 import Serializer from "./serializer"
 
-interface ICircuitOptions {
+export interface CircuitOptions {
 	id: number
 	address: string
 	port: number
@@ -18,27 +18,21 @@ class Circuit {
 	public readonly address: string
 	public readonly port: number
 
-	public readonly acknowledger: Acknowledger
-	public readonly deserializer: Deserializer
-	public readonly serializer: Serializer
+	public readonly acknowledger = new Acknowledger(this)
+	public readonly deserializer = new Deserializer()
+	public readonly serializer = new Serializer(this)
 
-	protected delegates: Record<string, Delegates.Delegate>
-	protected dead: boolean
+	protected delegates: Record<string, Delegates.Delegate> = {}
+	protected dead = true
 
 	constructor(
 		/** Core instance that instantiated this Circuit. */
 		public readonly core: Core,
-		data: ICircuitOptions,
+		data: CircuitOptions,
 	) {
 		this.id = data.id
 		this.address = data.address
 		this.port = data.port
-		this.dead = true
-
-		this.acknowledger = new Acknowledger(this)
-		this.deserializer = new Deserializer()
-		this.serializer = new Serializer(this)
-		this.delegates = {}
 
 		this.register(Delegates)
 	}
@@ -51,15 +45,45 @@ class Circuit {
 		return this.core.self?.session
 	}
 
-	public send(...packets: Array<Packet>): Promise<Array<void>> {
+	public send(packets: Array<Packet>) {
 		if (this.dead) {
 			throw new Error(Constants.Errors.INACTIVE_CIRCUIT)
 		}
 
-		return this.core.send(
+		const serialized = packets.map((packet) => this.serializer.convert(packet))
+
+		this.core.send(
 			this,
-			...packets.map((packet) => this.serializer.convert(packet)),
+			serialized.map(([buffer]) => buffer),
 		)
+	}
+
+	/**
+	 * @todo Add a retry mechanism, not just a timeout.
+	 */
+	public sendReliable(packets: Array<Packet>, timeout = 10_000) {
+		for (const packet of packets) {
+			packet.reliable = true
+		}
+
+		const serialized = packets.map((packet) =>
+			this.serializer.convert(packet, true),
+		)
+
+		const promises = serialized.map(([_, number], index) =>
+			this.acknowledger.await(
+				packets[index]!.constructor.name,
+				number,
+				timeout,
+			),
+		)
+
+		this.core.send(
+			this,
+			serialized.map(([buffer]) => buffer),
+		)
+
+		return Promise.all(promises)
 	}
 
 	public receive(buffer: PacketBuffer) {
@@ -71,6 +95,12 @@ class Circuit {
 			this.acknowledger.queue(buffer.sequence)
 		}
 
+		if (buffer.acks) {
+			for (const ack of buffer.acknowledgements()) {
+				this.acknowledger.seen(ack)
+			}
+		}
+
 		const packet = this.deserializer.lookup(buffer)
 
 		if (!packet) {
@@ -78,30 +108,39 @@ class Circuit {
 		}
 
 		if (packet.name in this.delegates && this.delegates[packet.name]?.waiting) {
-			// TODO: check async
+			// TODO: this is just first come first served, packets are meant to be
+			// processed in order...
 			this.delegates[packet.name]?.handle(
 				this.deserializer.convert(packet, buffer),
 			)
 		}
 	}
 
-	public handshake(): Promise<Array<void>> {
+	public async handshake() {
 		if (!this.dead) {
 			throw new Error(Constants.Errors.HANDSHAKE_ACTIVE_CIRCUIT)
 		}
 
 		this.dead = false
 
-		return this.send(
-			new UseCircuitCode({
-				id: this.self?.key,
-				code: this.id,
-				session: this.session,
-			}),
-			new CompleteAgentMovement(),
+		await this.sendReliable(
+			[
+				new UseCircuitCode({
+					id: this.self?.key,
+					code: this.id,
+					session: this.session,
+				}),
+			],
+			30_000,
 		)
+
+		// TODO: timeout on AgentMovementComplete, currently we'll just hang if we don't get it
+		await this.sendReliable([new CompleteAgentMovement()], 30_000)
 	}
 
+	/**
+	 * @todo Cannot currently register multiple delegates with the same name!
+	 */
 	public register(delegates: Record<string, typeof Delegates.Delegate>) {
 		for (const Delegate of Object.values(delegates)) {
 			if (Delegate !== Delegates.Delegate) {
@@ -112,4 +151,3 @@ class Circuit {
 }
 
 export default Circuit
-export type { ICircuitOptions }

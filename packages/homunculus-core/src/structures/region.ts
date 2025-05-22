@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm"
 import type { Client } from ".."
 import { db, schema } from "../database"
+import { AcknowledgeTimeoutError } from "../network/acknowledger"
 import { MapBlockRequest } from "../network/packets"
 import Agents from "./agents"
 import Entities from "./entities"
@@ -44,12 +45,17 @@ class Region {
 					positionData: { minX: x, minY: y, maxX: x, maxY: y },
 				})
 
-				request.reliable = true
-
-				this.client.send(request)
+				this.client.sendReliable([request])
 			}
 		} catch (error) {
-			this.client.emit("error", error as Error)
+			if (error instanceof AcknowledgeTimeoutError) {
+				this.client.emit(
+					"warning",
+					`Timed out trying to get name for region ${this.handle.toString()}.`,
+				)
+			} else {
+				this.client.emit("error", error as Error)
+			}
 		}
 	}
 

@@ -1,18 +1,23 @@
+import assert from "node:assert"
 import Region from "../../structures/region"
-import type { AgentMovementComplete as AgentMovementCompletePacket } from "../packets"
-import * as Packets from "../packets"
+import {
+	type AgentMovementComplete as AgentMovementCompletePacket,
+	AgentThrottle,
+	AgentUpdate,
+	SetAlwaysRun,
+} from "../packets"
 import Delegate from "./delegate"
 
 class AgentMovementComplete extends Delegate {
 	private counter = 0
 
-	public handle(packet: AgentMovementCompletePacket) {
+	public async handle(packet: AgentMovementCompletePacket) {
+		this.client.emit("debug", "Agent movement complete...")
+
 		const client = this.client
 		const self = client.self
 
-		if (!self) {
-			return
-		}
+		assert(self, "Self not found")
 
 		const data = packet.data.data[0]
 
@@ -22,7 +27,7 @@ class AgentMovementComplete extends Delegate {
 		// simulator.channel = sim.channelVersion
 
 		self.position = data.position
-		self.rotation = data.lookAt
+		// self.rotation = data.lookAt // this is not quaternion
 
 		// TODO: setup an actual objects for region handle (so we can have sugar for
 		// global to local transformations).
@@ -41,12 +46,12 @@ class AgentMovementComplete extends Delegate {
 		const throttle = 500 * 1024
 
 		const resend = throttle * 0.1
-		const land = throttle * 0.1
-		const wind = throttle * 0.02
-		const cloud = throttle * 0.02
-		const task = throttle * 0.31
-		const texture = throttle * 0.31
-		const asset = throttle * 0.14
+		const land = throttle * 0.172
+		const wind = throttle * 0.05
+		const cloud = throttle * 0.05
+		const task = throttle * 0.234
+		const texture = throttle * 0.234
+		const asset = throttle * 0.16
 
 		const throttles = Buffer.allocUnsafe(7 * 4)
 
@@ -58,61 +63,31 @@ class AgentMovementComplete extends Delegate {
 		throttles.writeFloatLE(texture, 20)
 		throttles.writeFloatLE(asset, 24)
 
-		this.circuit.send(
-			new Packets.AgentThrottle({
-				throttle: {
-					genCounter: this.counter++,
-					throttles,
-				},
+		await this.circuit.send([
+			new AgentThrottle({
+				throttle: { genCounter: this.counter++, throttles },
 			}),
-		)
+			new SetAlwaysRun({ agentData: { alwaysRun: false } }),
+			// new AgentDataUpdateRequest(),
+		])
 
-		this.circuit.send(
-			new Packets.AgentFOV({
-				fovBlock: {
-					genCounter: this.counter++,
-					// client.fov or camera.fov?
-					verticalAngle: Math.PI * 2 - 0.05,
-				},
+		await this.circuit.send([
+			new AgentUpdate({
+				bodyRotation: self.rotation,
+				headRotation: self.rotation,
+				state: self.state,
+				cameraCenter: self.position,
+				cameraAtAxis: [0.0, 0.0, 0.0],
+				cameraLeftAxis: [0.0, 0.0, 0.0],
+				cameraUpAxis: [0.0, 0.0, 0.0],
+				far: 20,
+				controlFlags: self.controlFlags,
+				flags: 0,
 			}),
-		)
+		])
 
-		this.circuit.send(
-			new Packets.AgentHeightWidth({
-				heightWidthBlock: {
-					genCounter: this.counter++,
-					height: 360,
-					width: 640,
-				},
-			}),
-		)
-
-		this.circuit.send(
-			new Packets.SetAlwaysRun({
-				agentData: { alwaysRun: false },
-			}),
-		)
-
-		// TODO: add toggle to enable/disable these packets, as they allow object
-		// data to start being received, which we may or may not want...
-		this.circuit.send(
-			new Packets.AgentUpdate({
-				agentData: {
-					bodyRotation: self.rotation,
-					headRotation: [0.0, 0.0, 0.0, 0.0],
-					state: self.state,
-					cameraCenter: self.position,
-					cameraAtAxis: [0.0, 0.0, 0.0],
-					cameraLeftAxis: [0.0, 0.0, 0.0],
-					cameraUpAxis: [0.0, 0.0, 0.0],
-					// client or camera.distance or something?
-					far: 20,
-					controlFlags: 65536,
-					// for auto pilot: 0x02
-					flags: 0,
-				},
-			}),
-		)
+		// notify the core that we're connected
+		setTimeout(() => this.circuit.core.ready(), 1000)
 	}
 }
 

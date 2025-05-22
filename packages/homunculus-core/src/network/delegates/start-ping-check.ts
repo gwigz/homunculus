@@ -4,7 +4,7 @@ import Delegate from "./delegate"
 
 class StartPingCheck extends Delegate {
 	public handle(packet: StartPingCheckPacket) {
-		this.circuit.send(new CompletePingCheck(packet.data))
+		this.circuit.send([new CompletePingCheck(packet.data)])
 	}
 }
 

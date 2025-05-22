@@ -1,31 +1,60 @@
 import type Circuit from "./circuit"
 import { PacketAck } from "./packets"
 
-interface IAcknowledgerPackets {
-	seen: Map<number, number>
-	queued: Set<number>
+export class AcknowledgeTimeoutError extends Error {
+	constructor(label: string) {
+		super()
+
+		this.name = "AcknowledgeTimeoutError"
+		this.message = `Timed out waiting for "${label}" packet.`
+	}
 }
 
 class Acknowledger {
-	private acknowledge: PacketAck
-	private packets: IAcknowledgerPackets
+	private acknowledge = new PacketAck({ packets: [] })
+
+	private packets = {
+		seen: new Map<number, number>(),
+		queued: new Set<number>(),
+	}
+
+	private awaiting = new Map<
+		number,
+		[
+			resolve: (value: void | PromiseLike<void>) => void,
+			timeout: NodeJS.Timeout,
+		]
+	>()
+
+	private tickInterval?: NodeJS.Timeout
+	private pruneInterval?: NodeJS.Timeout
 
 	constructor(
 		/** Circuit instance that instantiated this Acknowledger. */
 		public readonly circuit: Circuit,
 	) {
-		this.acknowledge = new PacketAck({ packets: [] })
+		this.tickInterval = setInterval(this.tick.bind(this), 50)
+		this.pruneInterval = setInterval(this.prune.bind(this), 1000)
+	}
 
-		this.packets = {
-			seen: new Map(),
-			queued: new Set(),
-		}
+	public destroy() {
+		clearInterval(this.tickInterval)
+		clearInterval(this.pruneInterval)
 
-		setInterval(this.tick.bind(this), 100)
-		setInterval(this.prune.bind(this), 1000)
+		this.tickInterval = undefined
+		this.pruneInterval = undefined
 	}
 
 	public seen(number: number) {
+		if (this.awaiting.has(number)) {
+			const [resolve, timeout] = this.awaiting.get(number)!
+
+			clearTimeout(timeout)
+			resolve()
+
+			this.awaiting.delete(number)
+		}
+
 		return this.packets.seen.has(number) || this.packets.queued.has(number)
 	}
 
@@ -34,21 +63,28 @@ class Acknowledger {
 	}
 
 	public tick() {
-		if (this.packets.queued.size) {
-			const uptime = process.uptime()
+		if (!this.packets.queued.size) {
+			return
+		}
 
-			// Clean array, this could probably be done better?
-			this.acknowledge.data.packets = []
+		const uptime = process.uptime()
 
-			for (const sequence of this.packets.queued) {
-				this.packets.queued.delete(sequence)
-				this.packets.seen.set(sequence, uptime)
+		for (const sequence of this.packets.queued) {
+			this.packets.queued.delete(sequence)
+			this.packets.seen.set(sequence, uptime)
 
-				// Not sure if we handle limits correctly here.
-				this.acknowledge.data.packets.push({ id: sequence })
+			this.acknowledge.data.packets.push({ id: sequence })
+
+			// max 255 packets per message
+			if (this.acknowledge.data.packets.length >= 255) {
+				this.circuit.send([this.acknowledge])
+				this.acknowledge.data.packets = []
 			}
+		}
 
-			this.circuit.send(this.acknowledge)
+		if (this.acknowledge.data.packets.length) {
+			this.circuit.send([this.acknowledge])
+			this.acknowledge.data.packets = []
 		}
 	}
 
@@ -66,6 +102,19 @@ class Acknowledger {
 				break
 			}
 		}
+	}
+
+	public await(label: string, sequence: number, timeout = 10_000) {
+		if (this.awaiting.has(sequence)) {
+			return this.awaiting.get(sequence)
+		}
+
+		return new Promise<void>((resolve, reject) => {
+			this.awaiting.set(sequence, [
+				resolve,
+				setTimeout(() => reject(new AcknowledgeTimeoutError(label)), timeout),
+			])
+		})
 	}
 }
 

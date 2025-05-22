@@ -57,16 +57,19 @@ class Core {
 	 * @param circuit Circuit to send packets too.
 	 * @param packets Packet to send.
 	 */
-	public send(circuit: Circuit, ...packets: Array<Buffer>) {
-		return Promise.all(
-			packets.map((packet) => this.socket.send(circuit, packet)),
-		)
+	public send(circuit: Circuit, packets: Array<Buffer>) {
+		return packets.map((packet) => this.socket.send(circuit, packet))
 	}
 
 	/**
 	 * Connects the client to a given circuit code.
 	 */
 	public handshake(data: ICircuitOptions) {
+		this.client.emit(
+			Constants.ClientEvents.DEBUG,
+			"Handshake received, creating circuit...",
+		)
+
 		const circuit = new Circuit(this, data)
 
 		this.circuits.set(`${circuit.address}:${circuit.port}`, circuit)
@@ -75,11 +78,6 @@ class Core {
 			this.status = Constants.Status.CONNECTING
 			this.circuit = circuit
 		}
-
-		this.client.emit(
-			Constants.ClientEvents.DEBUG,
-			"Handshake received, creating circuit...",
-		)
 
 		return circuit.handshake()
 	}
@@ -99,7 +97,7 @@ class Core {
 	 * Disconnects the client from the current circuit.
 	 */
 	public disconnect() {
-		this.circuit?.send(new LogoutRequest())
+		this.circuit?.send([new LogoutRequest()])
 	}
 }
 

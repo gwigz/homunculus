@@ -52,7 +52,15 @@ class PacketBuffer {
 			this.id = Number(`${(header[2]! << 8) + (header[3] ?? 0)}0`)
 			this.frequency = 0
 		} else {
-			this.id = Number(`${header[3]}3`)
+			this.id = Number(
+				`${
+					((header[0] << 24) >>> 0) +
+					((header[1] << 16) >>> 0) +
+					((header[2] << 8) >>> 0) +
+					header[3]!
+				}3`,
+			)
+
 			this.frequency = 3
 		}
 	}
@@ -111,9 +119,23 @@ class PacketBuffer {
 
 	public dezerocode() {
 		const output = [...this.buffer.subarray(0, 6)]
-		const length = this.length
 
-		for (let i = 6; i < length; i++) {
+		let end = this.length
+
+		// acks are not zerocoded, so we can skip them
+		if (this.acks) {
+			const acks = this.buffer.readUInt8(this.buffer.length - 1)
+
+			if (acks > 0) {
+				end = this.buffer.length - (acks * 4 + 1)
+			}
+
+			if (end < 7) {
+				throw new Error("Invalid packet")
+			}
+		}
+
+		for (let i = 6; i < end; i++) {
 			if (this.buffer[i] === 0x00) {
 				output.push(...new Uint8Array(this.buffer.readUInt8(++i)))
 			} else {
@@ -189,6 +211,22 @@ class PacketBuffer {
 		)
 
 		return type.fromBuffer(this.buffer, this.position, ...args)
+	}
+
+	public acknowledgements() {
+		if (!this.acks) {
+			return []
+		}
+
+		const acks = []
+		const length = this.buffer.readUInt8(this.buffer.length - 1)
+		const start = this.buffer.length - (length * 4 + 1)
+
+		for (let i = 0; i < length; i++) {
+			acks.push(this.buffer.readUInt32LE(start - (i * 4 + 1)))
+		}
+
+		return acks
 	}
 }
 

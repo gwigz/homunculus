@@ -4,6 +4,12 @@ import { machineIdSync } from "node-machine-id"
 import xmlrpc from "xmlrpc"
 import { Constants } from "../utilities"
 
+export interface LoginOptions {
+	start?: "home" | "last" | string
+	mfaToken?: string
+	mfaTokenHash?: string
+}
+
 class Authenticator {
 	private readonly channel: string
 	private readonly version: string
@@ -18,7 +24,7 @@ class Authenticator {
 	public login(
 		username: string,
 		password: string,
-		start: "first" | "last" | string = "last",
+		options: LoginOptions = {},
 	): Promise<any> {
 		const platforms = { darwin: "mac", linux: "lnx", win32: "win" }
 		const platform = os.platform()
@@ -34,7 +40,9 @@ class Authenticator {
 			first: username.split(" ")[0],
 			last: username.split(" ")[1] || "Resident",
 			passwd: `$1$${passwd}`,
-			start,
+			token: options.mfaToken,
+			mfa_hash: options.mfaTokenHash,
+			start: options.start || "last",
 			channel: this.channel,
 			version: this.version,
 			platform:

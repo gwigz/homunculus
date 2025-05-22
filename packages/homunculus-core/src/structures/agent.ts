@@ -2,6 +2,7 @@ import assert from "node:assert"
 import { eq } from "drizzle-orm"
 import type { Client } from ".."
 import { db, schema } from "../database"
+import { AcknowledgeTimeoutError } from "../network/acknowledger"
 import { ImprovedInstantMessage, UUIDNameRequest } from "../network/packets"
 import { UUID, Vector3 } from "../network/types"
 import type Entity from "./entity"
@@ -61,12 +62,17 @@ class Agent {
 					uuidNameBlock: [{ id: this.key }],
 				})
 
-				request.reliable = true
-
-				this.client.send(request)
+				await this.client.sendReliable([request])
 			}
 		} catch (error) {
-			this.client.emit("error", error as Error)
+			if (error instanceof AcknowledgeTimeoutError) {
+				this.client.emit(
+					"warning",
+					`Timed out trying to get name for agent ${this.key}.`,
+				)
+			} else {
+				this.client.emit("error", error as Error)
+			}
 		}
 	}
 
@@ -105,7 +111,7 @@ class Agent {
 	public message(message: string) {
 		assert(this.client.self, "Agent is not ready")
 
-		return this.client.send(
+		return this.client.send([
 			new ImprovedInstantMessage({
 				id: this.client.self.session,
 				dialog: 0,
@@ -120,7 +126,7 @@ class Agent {
 				position: Vector3.zero,
 				binaryBucket: null,
 			}),
-		)
+		])
 	}
 }
 

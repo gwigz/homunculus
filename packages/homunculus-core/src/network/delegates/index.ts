@@ -9,6 +9,7 @@ import MapBlockReply from "./map-block-reply"
 import ObjectUpdate from "./object-update"
 import ObjectUpdateCached from "./object-update-cached"
 import ObjectUpdateCompressed from "./object-update-compressed"
+import PacketAck from "./packet-ack"
 import RegionHandshake from "./region-handshake"
 import StartPingCheck from "./start-ping-check"
 import UUIDNameReply from "./uuid-name-reply"
@@ -28,6 +29,7 @@ export {
 	ObjectUpdate,
 	ObjectUpdateCached,
 	ObjectUpdateCompressed,
+	PacketAck,
 	RegionHandshake,
 	StartPingCheck,
 	UUIDNameReply,

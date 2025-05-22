@@ -3,23 +3,28 @@ import type Circuit from "./circuit"
 import { Packet } from "./packets"
 import { U8 } from "./types"
 
+const MAX_INDEX = 0x01000000
+
 class Serializer {
-	public index: number
+	public index = 0
 
 	constructor(
 		/** Circuit instance that instantiated this Serializer. */
 		public readonly circuit: Circuit,
-	) {
-		this.index = 1
-	}
+	) {}
 
-	public convert(packet: Packet): Buffer {
+	public convert(
+		packet: Packet,
+		reliable?: boolean,
+	): [buffer: Buffer, index: number] {
 		if (!(packet instanceof Packet)) {
 			throw new Error("Serializer is only able to convert instances of Packet.")
 		}
 
 		const PacketConstructor = packet.constructor as typeof Packet
-		const array = [this.header(PacketConstructor)]
+
+		const index = this.index
+		const array = [this.header(PacketConstructor, packet.reliable || reliable)]
 
 		if (PacketConstructor.format) {
 			// support skipping the block name in parameters
@@ -28,9 +33,10 @@ class Serializer {
 
 				// try and assume this correctly...
 				if (!(block in packet.data) || Object.keys(packet.data).length > 1) {
-					return Buffer.concat(
-						array.concat(this.parse(block, format, packet.data)),
-					)
+					return [
+						Buffer.concat(array.concat(this.parse(block, format, packet.data))),
+						index,
+					]
 				}
 			}
 
@@ -64,15 +70,26 @@ class Serializer {
 			}
 		}
 
-		return Buffer.concat(array)
+		return [Buffer.concat(array), index]
 	}
 
-	public header(PacketConstructor: typeof Packet): Buffer {
+	public header(PacketConstructor: typeof Packet, reliable?: boolean): Buffer {
 		const index = this.index++
+
+		if (index > MAX_INDEX) {
+			this.index = 0
+		}
 
 		// first, append flags and packet sequence number/index
 		// http://wiki.secondlife.com/wiki/Packet_Layout
-		const array = [0x00, index >> 24, index >> 16, index >> 8, index, 0x00]
+		const array = [
+			reliable ? 0x40 : 0x00, // flags
+			index >> 24, // sequence number (1-4)
+			index >> 16,
+			index >> 8,
+			index,
+			0x00, // extra header padding
+		]
 
 		// logic for additional header bytes dependant on packet type/frequency
 		if (PacketConstructor.frequency !== 2) {

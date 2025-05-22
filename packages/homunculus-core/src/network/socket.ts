@@ -22,10 +22,12 @@ class Socket {
 			return Promise.resolve()
 		}
 
-		return new Promise((resolve) => {
+		return new Promise((resolve, reject) => {
 			this.socket.send(buffer, circuit.port, circuit.address, (error) => {
 				if (error) {
 					this.core.client.emit(Constants.ClientEvents.ERROR, error)
+
+					reject(error)
 				}
 
 				resolve()

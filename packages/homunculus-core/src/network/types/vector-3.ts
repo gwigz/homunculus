@@ -14,9 +14,9 @@ class Vector3 {
 	public static toBuffer(vector: Array<number>) {
 		const buffer = Buffer.allocUnsafe(Vector3.size)
 
-		buffer.writeFloatLE(vector[0] ?? 0, 0)
-		buffer.writeFloatLE(vector[1] ?? 0, 4)
-		buffer.writeFloatLE(vector[2] ?? 0, 8)
+		buffer.writeFloatLE(vector?.[0] ?? 0, 0)
+		buffer.writeFloatLE(vector?.[1] ?? 0, 4)
+		buffer.writeFloatLE(vector?.[2] ?? 0, 8)
 
 		return buffer
 	}

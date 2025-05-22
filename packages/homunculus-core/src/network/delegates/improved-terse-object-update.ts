@@ -1,6 +1,9 @@
 import { Constants } from "../../utilities"
 import { PacketBuffer } from "../helpers"
-import type { ImprovedTerseObjectUpdate as ImprovedTerseObjectUpdatePacket } from "../packets"
+import {
+	type ImprovedTerseObjectUpdate as ImprovedTerseObjectUpdatePacket,
+	RequestMultipleObjects,
+} from "../packets"
 import * as Types from "../types"
 import Delegate from "./delegate"
 
@@ -24,15 +27,14 @@ class ImprovedTerseObjectUpdate extends Delegate {
 			const entity = region.objects.get(id)
 
 			if (!entity) {
-				// TODO: we would want to log this, as a info/warning
+				this.circuit.sendReliable([
+					new RequestMultipleObjects({ objectData: { id, cacheMissType: 0 } }),
+				])
+
 				continue
 			}
 
 			entity.state = buffer.read(Types.U8)
-
-			if (entity.key === this.client.self?.key) {
-				this.client.self.state = entity.state
-			}
 
 			// next byte defines if this update is for an avatar or not
 			if (buffer.read(Types.Boolean)) {
@@ -43,9 +45,8 @@ class ImprovedTerseObjectUpdate extends Delegate {
 			}
 
 			entity.position = buffer.read(Types.Vector3)
-
-			// U16 compressed velocity properties...
-			entity.velocity = buffer.read(Types.Vector3, Types.U16, -64.0, 64.0)
+			entity.velocity = buffer.read(Types.Vector3, Types.U16, -128, 128)
+			entity.acceleration = buffer.read(Types.Vector3, Types.U16, -64, 64)
 
 			entity.rotation = buffer.read(
 				Types.Quaternion,
@@ -55,7 +56,18 @@ class ImprovedTerseObjectUpdate extends Delegate {
 				1.0,
 			)
 
-			// entity.angularVelocity = buffer.read(Types.Vector3, Types.U16, -64.0, 64.0)
+			entity.angularVelocity = buffer.read(
+				Types.Vector3,
+				Types.U16,
+				-64.0,
+				64.0,
+			)
+
+			if (entity.type === 47 && entity.key === this.client.self?.key) {
+				this.client.self.state = entity.state
+				this.client.self.position = entity.position
+				this.client.self.rotation = entity.rotation!
+			}
 		}
 	}
 }

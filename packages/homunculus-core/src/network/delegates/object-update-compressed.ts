@@ -105,10 +105,6 @@ class ObjectUpdateCompressed extends Delegate {
 					? this.update(new Entity(this.client, { id, key, flags }), buffer)
 					: this.update(region.objects.get(id)!, buffer)
 
-				if (!entity) {
-					continue
-				}
-
 				entity.flags |= flags
 
 				if (insert) {
@@ -117,6 +113,12 @@ class ObjectUpdateCompressed extends Delegate {
 					if (entity.type === 47) {
 						region.agents.set(entity.key, new Agent(this.client, entity))
 					}
+				}
+
+				if (entity.type === 47 && entity.key === this.client.self?.key) {
+					this.client.self!.state = entity.state
+					this.client.self!.position = entity.position
+					this.client.self!.rotation = entity.rotation!
 				}
 			} catch (error) {
 				this.client.emit("debug", `Error updating object "${key}".`)

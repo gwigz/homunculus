@@ -75,6 +75,16 @@ class Entity {
 	public velocity?: [x: number, y: number, z: number]
 
 	/**
+	 * Current acceleration of Entity.
+	 */
+	public acceleration?: [x: number, y: number, z: number]
+
+	/**
+	 * Current angular velocity of Entity.
+	 */
+	public angularVelocity?: [x: number, y: number, z: number]
+
+	/**
 	 * Current rotation of Entity.
 	 */
 	public rotation?: [x: number, y: number, z: number, w: number]

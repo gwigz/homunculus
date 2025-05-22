@@ -10,7 +10,7 @@ class Self {
 	public firstName?: string
 	public lastName?: string
 
-	public state = 0
+	public state: number = Constants.AgentStates.NONE
 
 	public rotation: [x: number, y: number, z: number, w: number] = [0, 0, 0, 1]
 	public position?: [x: number, y: number, z: number] = [0, 0, 0]

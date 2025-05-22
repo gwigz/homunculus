@@ -20,6 +20,7 @@ client.on("ready", () => {
 
 		if (homing && closestAvatar) {
 			// rotate to face the closest avatar
+			// TODO: utilities for facing a point, avatar, or entity
 			const direction = [
 				closestAvatar.entity.position![0] - self.position![0],
 				closestAvatar.entity.position![1] - self.position![1],

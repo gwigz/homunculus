@@ -5,9 +5,6 @@ dist
 docs
 NOTES.md
 
-# Drizzle (temporary ignore)
-packages/homunculus-core/drizzle/*
-
 # Unfinished tests
 tests
 bin

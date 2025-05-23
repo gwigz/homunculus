@@ -8,7 +8,6 @@ export function loginForm(
 		parent: screen,
 		width: "100%",
 		keys: true,
-		vi: true,
 	})
 
 	blessed.text({
@@ -36,7 +35,6 @@ export function loginForm(
 		top: 3,
 		height: 3,
 		keys: true,
-		vi: true,
 		border: {
 			type: "line",
 		},
@@ -60,7 +58,6 @@ export function loginForm(
 		top: 6,
 		height: 3,
 		keys: true,
-		vi: true,
 		censor: true,
 		border: {
 			type: "line",
@@ -127,7 +124,6 @@ export function loginForm(
 		height: 3,
 		mouse: true,
 		keys: true,
-		vi: true,
 		border: {
 			type: "line",
 		},

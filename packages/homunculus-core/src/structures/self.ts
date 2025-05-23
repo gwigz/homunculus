@@ -13,7 +13,7 @@ class Self {
 	public state: number = Constants.AgentStates.NONE
 
 	public rotation: [x: number, y: number, z: number, w: number] = [0, 0, 0, 1]
-	public position?: [x: number, y: number, z: number] = [0, 0, 0]
+	public position: [x: number, y: number, z: number] = [0, 0, 0]
 
 	/** Global coordinate offset */
 	public offset?: [number, number, number]

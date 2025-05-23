@@ -45,11 +45,7 @@ client.on("ready", () => {
 		closestDistance = Number.POSITIVE_INFINITY
 		closestAvatar = undefined
 
-		if (!avatars || !self.position) {
-			return
-		}
-
-		for (const avatar of avatars.values()) {
+		for (const avatar of avatars?.values() ?? []) {
 			if (!avatar.entity.position || avatar.key === self.key) {
 				continue
 			}

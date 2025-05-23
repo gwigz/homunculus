@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
-process.title = "homunculus-terminal"
+process.title = "homunculus"
 
+import "dotenv/config"
 import assert from "node:assert"
 import fs from "node:fs"
 import path from "node:path"
+import { Client, Constants } from "@gwigz/homunculus-core"
 import blessed from "blessed"
 import meow from "meow"
-import { Client, Constants } from "../../homunculus-core/src"
 
 const cli = meow(
 	`
@@ -23,9 +24,7 @@ const cli = meow(
 	{
 		importMeta: import.meta,
 		flags: {
-			start: {
-				type: "string",
-			},
+			start: { type: "string" },
 		},
 	},
 )

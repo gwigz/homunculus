@@ -1,7 +1,7 @@
 {
 	"name": "@gwigz/homunculus-terminal",
 	"description": "A third-party terminal client for interacting with Linden Lab's virtual world \"Second Life\"",
-	"version": "0.0.0-alpha.3",
+	"version": "0.0.0-alpha.4",
 	"author": "gwigz <gwigz@icloud.com>",
 	"bugs": "https://github.com/gwigz/homunculus/issues",
 	"homepage": "https://github.com/gwigz/homunculus#readme",
@@ -32,6 +32,7 @@
 	"dependencies": {
 		"@gwigz/homunculus-core": "workspace:*",
 		"blessed": "^0.1.81",
+		"dotenv": "^16.5.0",
 		"meow": "^13.2.0"
 	},
 	"devDependencies": {

@@ -1,7 +1,7 @@
 {
 	"name": "@gwigz/homunculus-terminal",
 	"description": "A third-party terminal client for interacting with Linden Lab's virtual world \"Second Life\"",
-	"version": "0.0.0-alpha.4",
+	"version": "0.0.0-alpha.5",
 	"author": "gwigz <gwigz@icloud.com>",
 	"bugs": "https://github.com/gwigz/homunculus/issues",
 	"homepage": "https://github.com/gwigz/homunculus#readme",
@@ -27,17 +27,17 @@
 		"dev": "bun run src/index.ts",
 		"lint": "biome lint .",
 		"prebuild": "rm -rf dist",
-		"build": "bun build ./src/index.ts --outfile ./dist/index.mjs --target node --packages external"
+		"build": "bun build ./src/index.ts --outfile ./dist/index.mjs --target node --external blessed --external sqlite3"
 	},
 	"dependencies": {
-		"@gwigz/homunculus-core": "workspace:*",
-		"blessed": "^0.1.81",
-		"dotenv": "^16.5.0",
-		"meow": "^13.2.0"
+		"blessed": "^0.1.81"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.0.0-beta.5",
+		"@gwigz/homunculus-core": "workspace:*",
 		"@types/blessed": "^0.1.25",
-		"@types/node": "^22.15.20"
+		"@types/node": "^22.15.20",
+		"dotenv": "^16.5.0",
+		"meow": "^13.2.0"
 	}
 }

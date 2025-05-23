@@ -62,20 +62,20 @@
     },
     "packages/homunculus-terminal": {
       "name": "@gwigz/homunculus-terminal",
-      "version": "0.0.0-alpha.4",
+      "version": "0.0.0-alpha.5",
       "bin": {
         "homunculus": "./dist/index.mjs",
       },
       "dependencies": {
-        "@gwigz/homunculus-core": "workspace:*",
         "blessed": "^0.1.81",
-        "dotenv": "^16.5.0",
-        "meow": "^13.2.0",
       },
       "devDependencies": {
         "@biomejs/biome": "^2.0.0-beta.5",
+        "@gwigz/homunculus-core": "workspace:*",
         "@types/blessed": "^0.1.25",
         "@types/node": "^22.15.20",
+        "dotenv": "^16.5.0",
+        "meow": "^13.2.0",
       },
     },
   },

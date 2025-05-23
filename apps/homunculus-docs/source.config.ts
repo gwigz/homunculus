@@ -33,6 +33,15 @@ export default defineConfig({
 			transformers: [
 				...(rehypeCodeDefaultOptions.transformers ?? []),
 				transformerTwoslash({
+					twoslashOptions: {
+						compilerOptions: {
+							paths: {
+								"@gwigz/homunculus-core": [
+									"../../packages/homunculus-core/src",
+								],
+							},
+						},
+					},
 					typesCache: createFileSystemTypesCache(),
 				}),
 			],

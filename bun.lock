@@ -41,7 +41,7 @@
     },
     "packages/homunculus-core": {
       "name": "@gwigz/homunculus-core",
-      "version": "0.0.0-alpha.4",
+      "version": "0.0.0-alpha.5",
       "dependencies": {
         "@keyv/sqlite": "^4.0.4",
         "@usebruno/node-machine-id": "^2.0.0",
@@ -62,7 +62,7 @@
     },
     "packages/homunculus-terminal": {
       "name": "@gwigz/homunculus-terminal",
-      "version": "0.0.0-alpha.1",
+      "version": "0.0.0-alpha.3",
       "dependencies": {
         "@gwigz/homunculus-core": "workspace:*",
         "blessed": "^0.1.81",

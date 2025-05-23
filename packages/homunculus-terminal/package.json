@@ -1,15 +1,10 @@
 {
 	"name": "@gwigz/homunculus-terminal",
-	"version": "0.0.0",
 	"description": "A third-party terminal client for interacting with Linden Lab's virtual world \"Second Life\"",
-	"main": "./dist/index.js",
-	"files": [
-		"dist"
-	],
-	"scripts": {
-		"dev": "bun run src/index.ts",
-		"lint": "biome lint ."
-	},
+	"version": "0.0.0-alpha.1",
+	"author": "gwigz <gwigz@icloud.com>",
+	"bugs": "https://github.com/gwigz/homunculus/issues",
+	"homepage": "https://github.com/gwigz/homunculus#readme",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/gwigz/homunculus.git"
@@ -20,22 +15,25 @@
 		"second",
 		"secondlife"
 	],
-	"author": "gwigz <gwigz@icloud.com>",
 	"license": "MIT",
-	"bugs": "https://github.com/gwigz/homunculus/issues",
-	"homepage": "https://github.com/gwigz/homunculus#readme",
+	"files": [
+		"dist"
+	],
+	"main": "./dist/index.mjs",
+	"scripts": {
+		"dev": "bun run src/index.ts",
+		"lint": "biome lint .",
+		"prebuild": "rm -rf dist",
+		"build": "bun build ./src/index.ts --outfile ./dist/index.mjs --target node --packages external"
+	},
 	"dependencies": {
 		"@gwigz/homunculus-core": "workspace:*",
 		"blessed": "^0.1.81",
 		"meow": "^13.2.0"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "1.9.4",
+		"@biomejs/biome": "^2.0.0-beta.5",
 		"@types/blessed": "^0.1.25",
-		"@types/node": "^22.15.20",
-		"chalk": "^5.4.1"
-	},
-	"peerDependencies": {
-		"typescript": "^5"
+		"@types/node": "^22.15.20"
 	}
 }

@@ -1,10 +1,11 @@
-import { eq } from "drizzle-orm"
 import type { Client } from ".."
-import { db, schema } from "../database"
+import { cache, type RegionCache } from "../cache"
 import { AcknowledgeTimeoutError } from "../network/acknowledger"
 import { MapBlockRequest } from "../network/packets"
 import Agents from "./agents"
 import Entities from "./entities"
+
+const ONE_DAY = 1000 * 60 * 60 * 24
 
 class Region {
 	public handle: bigint
@@ -27,17 +28,13 @@ class Region {
 	 */
 	public async init() {
 		try {
-			const [cache] = await db
-				.select()
-				.from(schema.regions)
-				.where(eq(schema.regions.handle, this.handle.toString()))
-				.execute()
+			const region = await cache.get<RegionCache>(`region:${this.handle}`)
 
-			if (cache?.name) {
-				this.name = cache.name
+			if (region) {
+				this.name = region.name
 			}
 
-			if (!cache || cache.lastUpdated < Date.now() - 1000 * 60 * 60 * 24) {
+			if (!region || region.lastUpdated < Date.now() - ONE_DAY) {
 				const x = Math.floor(Number(this.handle >> 32n) / 256)
 				const y = Math.floor(Number(this.handle & 0xffffffffn) / 256)
 
@@ -51,7 +48,7 @@ class Region {
 			if (error instanceof AcknowledgeTimeoutError) {
 				this.client.emit(
 					"warning",
-					`Timed out trying to get name for region "${this.handle.toString()}".`,
+					`Timed out trying to get name for region "${this.handle}".`,
 				)
 			} else {
 				this.client.emit("error", error as Error)
@@ -63,17 +60,14 @@ class Region {
 	 * Attempts to update avatar details (such as name, etc.) cache.
 	 */
 	public async update(data: Partial<{ name: string }>) {
-		if (this.name !== data.name) {
+		if (data.name && this.name !== data.name) {
 			this.name = data.name
 
 			try {
-				const cache = { name: data.name }
-
-				await db
-					.insert(schema.regions)
-					.values({ handle: this.handle.toString(), ...cache })
-					.onConflictDoUpdate({ target: [schema.regions.handle], set: cache })
-					.execute()
+				await cache.set<RegionCache>(`region:${this.handle}`, {
+					name: data.name,
+					lastUpdated: Date.now(),
+				})
 			} catch (error) {
 				this.client.emit("error", error as Error)
 			}

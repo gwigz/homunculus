@@ -1,11 +1,12 @@
 import assert from "node:assert"
-import { eq } from "drizzle-orm"
 import type { Client } from ".."
-import { db, schema } from "../database"
+import { type AvatarCache, cache } from "../cache"
 import { AcknowledgeTimeoutError } from "../network/acknowledger"
 import { ImprovedInstantMessage, UUIDNameRequest } from "../network/packets"
 import { UUID, Vector3 } from "../network/types"
 import type Entity from "./entity"
+
+const ONE_HOUR = 1000 * 60 * 60
 
 class Agent {
 	public firstName?: string
@@ -46,18 +47,14 @@ class Agent {
 	 */
 	public async init() {
 		try {
-			const [cache] = await db
-				.select()
-				.from(schema.avatars)
-				.where(eq(schema.avatars.key, this.key))
-				.execute()
+			const avatar = await cache.get<AvatarCache>(`avatar:${this.key}`)
 
-			if (cache?.firstName && cache?.lastName) {
-				this.firstName = cache.firstName
-				this.lastName = cache.lastName
+			if (avatar) {
+				this.firstName = avatar.firstName
+				this.lastName = avatar.lastName
 			}
 
-			if (!cache || cache.lastUpdated < Date.now() - 1000 * 60 * 60) {
+			if (!avatar || avatar.lastUpdated < Date.now() - ONE_HOUR) {
 				const request = new UUIDNameRequest({
 					uuidNameBlock: [{ id: this.key }],
 				})
@@ -83,20 +80,19 @@ class Agent {
 		profile: Partial<{ firstName: string; lastName: string }>,
 	) {
 		if (
-			this.firstName !== profile.firstName ||
-			this.lastName !== profile.lastName
+			profile.firstName &&
+			(this.firstName !== profile.firstName ||
+				this.lastName !== profile.lastName)
 		) {
 			this.firstName = profile.firstName
 			this.lastName = profile.lastName
 
 			try {
-				const cache = { firstName: this.firstName, lastName: this.lastName }
-
-				await db
-					.insert(schema.avatars)
-					.values({ key: this.key, ...cache })
-					.onConflictDoUpdate({ target: [schema.avatars.key], set: cache })
-					.execute()
+				await cache.set<AvatarCache>(`avatar:${this.key}`, {
+					firstName: profile.firstName,
+					lastName: profile.lastName,
+					lastUpdated: Date.now(),
+				})
 			} catch (error) {
 				this.client.emit("error", error as Error)
 			}

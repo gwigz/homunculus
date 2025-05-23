@@ -26,5 +26,8 @@
 		"apps/*",
 		"packages/*"
 	],
-	"packageManager": "bun@1.2.9"
+	"packageManager": "bun@1.2.9",
+	"patchedDependencies": {
+		"blessed@0.1.81": "patches/blessed@0.1.81.patch"
+	}
 }

@@ -360,7 +360,7 @@ process.on("SIGINT", exit)
 process.on("SIGTERM", exit)
 
 try {
-	await client.connect(process.env.SL_USERNAME, process.env.SL_PASSWORD, {
+	client.connect(process.env.SL_USERNAME, process.env.SL_PASSWORD, {
 		login: { start },
 	})
 } catch (error: unknown) {

@@ -1,7 +1,7 @@
 {
 	"name": "@gwigz/homunculus",
 	"license": "MIT",
-	"private": true,
+	"version": "0.0.0-alpha.1",
 	"homepage": "https://github.com/gwigz/homunculus#readme",
 	"repository": {
 		"type": "git",
@@ -26,5 +26,8 @@
 		"apps/*",
 		"packages/*"
 	],
-	"packageManager": "bun@1.2.9"
+	"packageManager": "bun@1.2.9",
+	"publishConfig": {
+		"tag": "alpha"
+	}
 }

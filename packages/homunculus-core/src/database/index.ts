@@ -5,7 +5,7 @@ import { migrate } from "drizzle-orm/bun-sqlite/migrator"
 export const db = drizzle(process.env.DB_FILE_NAME ?? ":memory:")
 
 migrate(db, {
-	migrationsFolder: path.join(import.meta.dir, "..", "..", "drizzle"),
+	migrationsFolder: path.join(import.meta.dir, "migrations"),
 })
 
 export * as schema from "./schema"

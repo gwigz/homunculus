@@ -13,11 +13,13 @@ await Promise.all([
 		format: "esm",
 		naming: "[dir]/[name].js",
 		target: "node",
+		packages: "external",
 	}),
 	build({
 		...defaultBuildConfig,
 		format: "cjs",
 		naming: "[dir]/[name].cjs",
 		target: "node",
+		packages: "external",
 	}),
 ])

@@ -25,6 +25,7 @@ node_modules
 # NPM stuff
 .npm
 package-lock.json
+*.tgz
 
 # REPL history
 .node_repl_history

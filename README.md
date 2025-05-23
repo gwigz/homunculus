@@ -20,14 +20,14 @@ Second Life._
 Node.js framework for building scripted agents, and minimal clients. Documentation, and more examples to come later. Several **core features** are also currently **not functional**, check back later!
 
 <div align="center">
-  <img src="./packages/homunculus-terminal/terminal.png" />
+  <img src="./apps/homunculus-terminal/terminal.png" />
 </div>
 
-### [`@gwigz/homunculus-terminal`](./packages/homunculus-terminal)
+### [`@gwigz/homunculus-terminal`](./apps/homunculus-terminal)
 
 Example terminal client, used for general debugging and testing.
 
-### [`@gwigz/homunculus-docs`](./app/homunculus-docs)
+### [`@gwigz/homunculus-docs`](./apps/homunculus-docs)
 
 Holds our homepage, guides, and documentation.
 

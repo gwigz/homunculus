@@ -10,7 +10,7 @@
 	"author": "gwigz <gwigz@icloud.com>",
 	"bugs": "https://github.com/gwigz/homunculus/issues",
 	"scripts": {
-		"dev:terminal": "bun run ./packages/homunculus-terminal/src",
+		"dev:terminal": "bun run ./apps/homunculus-terminal/src",
 		"build": "bun run --filter '*' build",
 		"lint": "biome lint"
 	},

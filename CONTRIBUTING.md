@@ -8,8 +8,9 @@ Will be detailed later.
 
 ## Project Structure
 
+- `apps/homunculus-docs` - documentation
+- `apps/homunculus-terminal` - terminal-based client implementation
 - `packages/homunculus-core` - core library for Second Life interaction
-- `packages/homunculus-terminal` - terminal-based client implementation
 
 ## Development Guidelines
 

@@ -39,6 +39,25 @@
         "typescript": "^5",
       },
     },
+    "apps/homunculus-terminal": {
+      "name": "@gwigz/homunculus-terminal",
+      "version": "0.0.0-alpha.6",
+      "bin": {
+        "homunculus": "./dist/index.mjs",
+      },
+      "dependencies": {
+        "blessed": "^0.1.81",
+        "sqlite3": "^5.1.7",
+      },
+      "devDependencies": {
+        "@biomejs/biome": "^2.0.0-beta.5",
+        "@gwigz/homunculus-core": "workspace:*",
+        "@types/blessed": "^0.1.25",
+        "@types/node": "^22.15.20",
+        "dotenv": "^16.5.0",
+        "meow": "^13.2.0",
+      },
+    },
     "packages/homunculus-core": {
       "name": "@gwigz/homunculus-core",
       "version": "0.0.0-alpha.5",
@@ -58,25 +77,6 @@
       },
       "peerDependencies": {
         "typescript": "^5",
-      },
-    },
-    "packages/homunculus-terminal": {
-      "name": "@gwigz/homunculus-terminal",
-      "version": "0.0.0-alpha.5",
-      "bin": {
-        "homunculus": "./dist/index.mjs",
-      },
-      "dependencies": {
-        "blessed": "^0.1.81",
-        "sqlite3": "^5.1.7",
-      },
-      "devDependencies": {
-        "@biomejs/biome": "^2.0.0-beta.5",
-        "@gwigz/homunculus-core": "workspace:*",
-        "@types/blessed": "^0.1.25",
-        "@types/node": "^22.15.20",
-        "dotenv": "^16.5.0",
-        "meow": "^13.2.0",
       },
     },
   },
@@ -190,7 +190,7 @@
 
     "@gwigz/homunculus-docs": ["@gwigz/homunculus-docs@workspace:apps/homunculus-docs"],
 
-    "@gwigz/homunculus-terminal": ["@gwigz/homunculus-terminal@workspace:packages/homunculus-terminal"],
+    "@gwigz/homunculus-terminal": ["@gwigz/homunculus-terminal@workspace:apps/homunculus-terminal"],
 
     "@iconify/types": ["@iconify/types@2.0.0", "", {}, "sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg=="],
 

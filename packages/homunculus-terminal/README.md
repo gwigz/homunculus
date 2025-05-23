@@ -10,19 +10,18 @@ Node.js powered text client that allows basic interactions with the virtual worl
 - Minimal details about nearby objects and avatars
 - More to come later...
 
-## Installation
-
-Not currently available on NPM.
-
 ## Usage
 
-Currently requires [Bun](https://bun.sh) and several [environment values](../../.env.example). Login inputs, and NPM package coming soon.
+Currently requires [environment values](https://github.com/gwigz/homunculus/blob/main/.env.example) for login credentials, a more complete built-in login form will come later.
 
 ```shell
-bun run dev
+npx @gwigz/homunculus-terminal
 
 # or at a specific location
-bun run dev --start "uri:Hippo Hollow&128&128&2"
+npx @gwigz/homunculus-terminal --start "uri:Hippo Hollow&128&128&2"
+
+# also works with Bun (preferred method)
+bunx @gwigz/homunculus-terminal
 ```
 
 Use `/exit` or `/quit` to disconnect.

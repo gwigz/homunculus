@@ -25,13 +25,18 @@ It is not intended for use yet, large changes are due to happen. This library is
 
 ## Installation
 
-Bun is the recommended way to use Homunculus packages. Currently the caching features are tied to Bun SQLite, so for now Node.js is supported.
+<Tabs groupId='package-manager' persist items={['npm', 'bun']} label="From a new empty project folder">
 
-<Tabs groupId='package-manager' persist items={['bun']} label="From a new empty project folder">
+```bash tab="npm"
+npm init -y
+npm install @gwigz/homunculus-core
+npm install --save-dev @types/node dotenv-cli
+```
 
 ```bash tab="bun"
-bun init
+bun init -y
 bun add @gwigz/homunculus-core
+bun add --dev @types/node
 ```
 
 </Tabs>
@@ -82,6 +87,10 @@ process.on("SIGTERM", exit);
 ```
 
 To run the script, you can use the following command:
+
+```bash tab="npm"
+npx dotenv-cli npx tsx index.ts
+```
 
 ```bash tab="bun"
 bun run index.ts

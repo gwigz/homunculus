@@ -12,7 +12,12 @@ Node.js framework that allows basic interactions with the virtual world
 
 ## Installation
 
-Not currently available on NPM.
+```shell
+npm install @gwigz/homunculus-core
+
+# or with Bun (preferred method)
+bun add @gwigz/homunculus-core
+```
 
 ## Usage
 
@@ -39,7 +44,9 @@ client.nearby.on("chat", (chat) => {
 client.connect();
 ```
 
-More examples can be found in the [`examples`](https://github.com/gwigz/homunculus/tree/main/packages/homunculus-core/examples) folder.
+More complete examples can be found in the [`examples`](https://github.com/gwigz/homunculus/tree/main/packages/homunculus-core/examples) folder.
+
+Also, check out the [quick start](https://homunculus.inworld.link/en/docs/core) guide if you're having trouble.
 
 ## Acknowledgments
 

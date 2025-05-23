@@ -42,7 +42,7 @@ assert(
 	"SL_START env value is invalid",
 )
 
-const logFile = path.join(process.cwd(), "homunculus-error.log")
+const logFile = path.join(import.meta.dirname, "homunculus-error.log")
 
 const logError = (error: Error | string) => {
 	const timestamp = new Date().toISOString()

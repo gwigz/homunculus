@@ -6,6 +6,7 @@ import {
 	metaSchema,
 } from "fumadocs-mdx/config"
 import { transformerTwoslash } from "fumadocs-twoslash"
+import { createFileSystemTypesCache } from "fumadocs-twoslash/cache-fs"
 import { createGenerator, remarkAutoTypeTable } from "fumadocs-typescript"
 
 const generator = createGenerator()
@@ -31,7 +32,9 @@ export default defineConfig({
 			},
 			transformers: [
 				...(rehypeCodeDefaultOptions.transformers ?? []),
-				transformerTwoslash(),
+				transformerTwoslash({
+					typesCache: createFileSystemTypesCache(),
+				}),
 			],
 		},
 		remarkPlugins: [[remarkAutoTypeTable, { generator }]],

@@ -27,7 +27,7 @@ class ImprovedTerseObjectUpdateDelegate extends Delegate {
 			const entity = region.objects.get(id)
 
 			if (!entity) {
-				this.circuit.sendReliable([
+				this.circuit.send([
 					new RequestMultipleObjects({ objectData: { id, cacheMissType: 0 } }),
 				])
 

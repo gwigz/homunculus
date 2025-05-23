@@ -1,7 +1,7 @@
 {
 	"name": "@gwigz/homunculus",
 	"license": "MIT",
-	"version": "0.0.1",
+	"private": true,
 	"homepage": "https://homunculus.inworld.link/en/docs/core",
 	"repository": {
 		"type": "git",
@@ -26,9 +26,5 @@
 		"apps/*",
 		"packages/*"
 	],
-	"packageManager": "bun@1.2.9",
-	"publishConfig": {
-		"access": "public",
-		"tag": "alpha"
-	}
+	"packageManager": "bun@1.2.9"
 }

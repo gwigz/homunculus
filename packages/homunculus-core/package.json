@@ -1,6 +1,6 @@
 {
 	"name": "@gwigz/homunculus-core",
-	"version": "0.0.0",
+	"version": "0.0.0-alpha.3",
 	"description": "A third-party framework for interacting with Linden Lab's virtual world \"Second Life\"",
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.js",
@@ -8,13 +8,6 @@
 	"files": [
 		"dist"
 	],
-	"exports": {
-		".": {
-			"require": "./dist/index.cjs",
-			"import": "./dist/index.mjs",
-			"types": "./dist/index.d.ts"
-		}
-	},
 	"scripts": {
 		"dev": "bun run ./src/index.ts",
 		"prebuild": "rm -rf dist",

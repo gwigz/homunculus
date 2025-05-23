@@ -1,0 +1,109 @@
+---
+title: Quick Start
+description: Getting started with Homunculus
+icon: Album
+---
+
+import { GithubIcon, ScrollTextIcon } from "lucide-react";
+
+### Introduction
+
+Homunculus is a minimal set of Node.js packages that allows basic interactions with the virtual world
+[Second Life](https://www.secondlife.com), utilizing the official
+[Second Life UDP protocol](http://wiki.secondlife.com/wiki/Protocol).
+
+Homunculus _is not affiliated with or sponsored by Linden Research, Linden Lab or
+Second Life._
+
+<Callout type="warn">
+
+**This library is a work in progress!**
+
+It is not intended for use yet, large changes are due to happen. This library is primarily intended for chat functionality in Second Life. Other features may not work as intended or may be incomplete. Use at your own risk.
+
+</Callout>
+
+## Installation
+
+Bun is the recommended way to use Homunculus packages. Currently the caching features are tied to Bun SQLite, so for now Node.js is supported.
+
+<Tabs groupId='package-manager' persist items={['bun']} label="From a new empty project folder">
+
+```bash tab="bun"
+bun init
+bun add @gwigz/homunculus-core
+```
+
+</Tabs>
+
+### Authentication
+
+It's recommended that you create an `.env` file in the root of your project, see the [example file](https://github.com/gwigz/homunculus/blob/main/.env.example).
+
+### Basic Usage
+
+This is a simple example of how to use the `Client` class to connect to Second Life and listen for nearby chat messages.
+
+```ts twoslash title="index.ts"
+import { Client, Constants } from "@gwigz/homunculus-core";
+
+const client = new Client();
+
+client.nearby.on("chat", (chat) => {
+  if (
+    chat.chatType === Constants.ChatTypes.NORMAL &&
+    chat.sourceType === Constants.ChatSources.AGENT
+  ) {
+    if (chat.message.includes("ping")) {
+      client.nearby.message("pong");
+    }
+
+    console.log(chat);
+  }
+});
+
+client.on("debug", console.debug);
+client.on("warning", console.warn);
+client.on("error", console.error);
+
+// by default, we connect using the SL_USERNAME, SL_PASSWORD, and SL_START
+// environment variables -- alternatively, you can just pass those values in
+client.connect();
+
+async function exit() {
+  // ensures we disconnect safely, otherwise login may get blocked for a period
+  await client.disconnect();
+
+  process.exit(0);
+}
+
+process.on("SIGINT", exit);
+process.on("SIGTERM", exit);
+```
+
+To run the script, you can use the following command:
+
+```bash tab="bun"
+bun run index.ts
+```
+
+That's it!
+
+## Resources
+
+<Cards>
+  <Card
+    icon={<GithubIcon />}
+    title="GitHub"
+    href="https://github.com/gwigz/homunculus"
+  >
+    Check out the source code, and see what's soon to come
+  </Card>
+  <Card
+    icon={<ScrollTextIcon />}
+    title="Example Scripts"
+    href="https://github.com/gwigz/homunculus/tree/main/packages/homunculus-core/examples"
+  >
+    View some example scripts to get you started
+  </Card>
+</Cards>

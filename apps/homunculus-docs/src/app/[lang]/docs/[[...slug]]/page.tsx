@@ -4,24 +4,37 @@ import {
 	DocsDescription,
 	DocsPage,
 	DocsTitle,
+	EditOnGitHub,
 } from "fumadocs-ui/page"
 import { notFound } from "next/navigation"
 import { source } from "@/lib/source"
 import { getMDXComponents } from "@/mdx-components"
 
-export default async function Page(props: {
-	params: Promise<{ slug?: string[] }>
+export default async function Page({
+	params,
+}: {
+	params: Promise<{ lang: string; slug?: string[] }>
 }) {
-	const params = await props.params
-	const page = source.getPage(params.slug)
-	if (!page) notFound()
+	const { slug, lang } = await params
+	const page = source.getPage(slug, lang)
+
+	if (!page) {
+		notFound()
+	}
 
 	const MDXContent = page.data.body
 
 	return (
 		<DocsPage toc={page.data.toc} full={page.data.full}>
 			<DocsTitle>{page.data.title}</DocsTitle>
-			<DocsDescription>{page.data.description}</DocsDescription>
+			<DocsDescription className="mb-0">
+				{page.data.description}
+			</DocsDescription>
+			<div className="mb-4 flex flex-row items-center gap-2">
+				<EditOnGitHub
+					href={`https://github.com/gwigz/homunculus/blob/main/apps/homunculus-docs/content/docs/${page.file.path}`}
+				/>
+			</div>
 			<DocsBody>
 				<MDXContent
 					components={getMDXComponents({
@@ -39,11 +52,14 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata(props: {
-	params: Promise<{ slug?: string[] }>
+	params: Promise<{ lang: string; slug?: string[] }>
 }) {
-	const params = await props.params
-	const page = source.getPage(params.slug)
-	if (!page) notFound()
+	const { slug, lang } = await props.params
+	const page = source.getPage(slug, lang)
+
+	if (!page) {
+		notFound()
+	}
 
 	return {
 		title: page.data.title,

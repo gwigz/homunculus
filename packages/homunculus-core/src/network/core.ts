@@ -1,6 +1,6 @@
 import type { Client } from ".."
 import { Constants } from "../utilities"
-import Circuit, { type ICircuitOptions } from "./circuit"
+import Circuit, { type CircuitOptions } from "./circuit"
 import { LogoutRequest } from "./packets"
 import Socket from "./socket"
 
@@ -64,7 +64,7 @@ class Core {
 	/**
 	 * Connects the client to a given circuit code.
 	 */
-	public handshake(data: ICircuitOptions) {
+	public handshake(data: CircuitOptions) {
 		this.client.emit(
 			Constants.ClientEvents.DEBUG,
 			"Handshake received, creating circuit...",
@@ -96,8 +96,8 @@ class Core {
 	/**
 	 * Disconnects the client from the current circuit.
 	 */
-	public disconnect() {
-		this.circuit?.send([new LogoutRequest()])
+	public async disconnect() {
+		await this.circuit?.send([new LogoutRequest()])
 	}
 }
 

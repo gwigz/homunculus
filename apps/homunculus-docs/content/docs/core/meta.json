@@ -1,0 +1,7 @@
+{
+	"title": "homunculus-core",
+	"description": "The client framework",
+	"icon": "PersonStanding",
+	"root": true,
+	"pages": ["---Introduction---", "index"]
+}

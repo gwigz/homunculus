@@ -13,9 +13,9 @@ Second Life._
 >
 > It is not intended for use yet, large changes are due to happen. This library is primarily intended for chat functionality in Second Life. Other features may not work as intended or may be incomplete. Use at your own risk.
 
-## Packages
+## Workspaces
 
-### `@gwigz/homunculus-core`
+### [`@gwigz/homunculus-core`](./packages/homunculus-core)
 
 Node.js framework for building scripted agents, and minimal clients. Documentation, and more examples to come later. Several **core features** are also currently **not functional**, check back later!
 
@@ -23,9 +23,13 @@ Node.js framework for building scripted agents, and minimal clients. Documentati
   <img src="./packages/homunculus-terminal/terminal.png" />
 </div>
 
-### `@gwigz/homunculus-terminal`
+### [`@gwigz/homunculus-terminal`](./packages/homunculus-terminal)
 
 Example terminal client, used for general debugging and testing.
+
+### [`@gwigz/homunculus-docs`](./app/homunculus-docs)
+
+Holds our homepage, guides, and documentation.
 
 ## Acknowledgments
 

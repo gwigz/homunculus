@@ -36,7 +36,7 @@ client.nearby.on("chat", (chat) => {
 
 // by default, we connect using the SL_USERNAME, SL_PASSWORD, and SL_START
 // environment variables -- alternatively, you can just pass those values in
-await client.connect();
+client.connect();
 ```
 
 More examples can be found in the [`examples`](./examples) folder.

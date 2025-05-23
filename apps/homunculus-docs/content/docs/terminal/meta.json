@@ -1,0 +1,7 @@
+{
+	"title": "homunculus-terminal",
+	"description": "Basic terminal client",
+	"icon": "Terminal",
+	"root": true,
+	"pages": ["---Introduction---", "index"]
+}

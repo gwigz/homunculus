@@ -77,7 +77,7 @@ client.on("error", console.error)
 
 // by default, we connect using the SL_USERNAME, SL_PASSWORD, and SL_START
 // environment variables -- alternatively, you can just pass those values in
-await client.connect()
+client.connect()
 
 async function exit() {
 	clearInterval(scanInterval)

@@ -16,9 +16,16 @@ Not currently available on NPM.
 
 ## Usage
 
+Currently requires [Bun](https://bun.sh) and several [environment values](../../.env.example). Login inputs, and NPM package coming soon.
+
 ```shell
-homunculus --start "uri:Bug Island&128&128&2"
+bun run dev
+
+# or at a specific location
+bun run dev --start "uri:Hippo Hollow&128&128&2"
 ```
+
+Use `/exit` or `/quit` to disconnect.
 
 <div align="center">
   <img src="./terminal.png" />

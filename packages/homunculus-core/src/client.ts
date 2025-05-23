@@ -82,8 +82,7 @@ class Client extends AsyncEventEmitter<ClientEvents> {
 	// }
 
 	/**
-	 * @param start Either "home", "last", or alternatively use "uri:Region Name&x&y&z".
-	 * @returns Complete upon handshake sent, use ready event instead.
+	 * @param options.login.start `home`, `last`, or alternatively use `uri:Region Name&x&y&z`.
 	 */
 	public async connect(
 		username = process.env.SL_USERNAME,

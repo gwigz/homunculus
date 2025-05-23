@@ -25,16 +25,23 @@ export default async function Page({
 	const MDXContent = page.data.body
 
 	return (
-		<DocsPage toc={page.data.toc} full={page.data.full}>
+		<DocsPage
+			tableOfContent={{ style: "clerk" }}
+			toc={page.data.toc}
+			full={page.data.full}
+		>
 			<DocsTitle>{page.data.title}</DocsTitle>
+
 			<DocsDescription className="mb-0">
 				{page.data.description}
 			</DocsDescription>
+
 			<div className="mb-4 flex flex-row items-center gap-2">
 				<EditOnGitHub
 					href={`https://github.com/gwigz/homunculus/blob/main/apps/homunculus-docs/content/docs/${page.file.path}`}
 				/>
 			</div>
+
 			<DocsBody>
 				<MDXContent
 					components={getMDXComponents({
@@ -51,18 +58,29 @@ export async function generateStaticParams() {
 	return source.generateParams()
 }
 
-export async function generateMetadata(props: {
-	params: Promise<{ lang: string; slug?: string[] }>
+export async function generateMetadata({
+	params,
+}: {
+	params: Promise<{ slug?: string[] }>
 }) {
-	const { slug, lang } = await props.params
-	const page = source.getPage(slug, lang)
+	const { slug = [] } = await params
+	const page = source.getPage(slug)
 
 	if (!page) {
 		notFound()
 	}
 
+	const image = ["/docs-og", ...slug, "image.png"].join("/")
+
 	return {
 		title: page.data.title,
 		description: page.data.description,
+		openGraph: {
+			images: image,
+		},
+		twitter: {
+			card: "summary_large_image",
+			images: image,
+		},
 	}
 }

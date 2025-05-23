@@ -6,6 +6,9 @@ const withMDX = createMDX()
 const config = {
 	reactStrictMode: true,
 	serverExternalPackages: ["typescript", "twoslash"],
+	async rewrites() {
+		return [{ source: "/en/docs/:path*.mdx", destination: "/llms.mdx/:path*" }]
+	},
 }
 
 export default withMDX(config)

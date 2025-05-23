@@ -1,6 +1,7 @@
 import crypto from "node:crypto"
 import os from "node:os"
-import { machineIdSync } from "node-machine-id"
+// @ts-expect-error no types
+import { machineIdSync } from "@usebruno/node-machine-id"
 import xmlrpc from "xmlrpc"
 import { Constants } from "../utilities"
 

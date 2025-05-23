@@ -7,6 +7,7 @@ import {
 	EditOnGitHub,
 } from "fumadocs-ui/page"
 import { notFound } from "next/navigation"
+import { createMetadata } from "@/lib/metadata"
 import { source } from "@/lib/source"
 import { getMDXComponents } from "@/mdx-components"
 
@@ -61,18 +62,18 @@ export async function generateStaticParams() {
 export async function generateMetadata({
 	params,
 }: {
-	params: Promise<{ slug?: string[] }>
+	params: Promise<{ slug?: string[]; lang: string }>
 }) {
-	const { slug = [] } = await params
+	const { slug = [], lang } = await params
 	const page = source.getPage(slug)
 
 	if (!page) {
 		notFound()
 	}
 
-	const image = ["/docs-og", ...slug, "image.png"].join("/")
+	const image = ["/", lang, "/docs-og", ...slug, "image.png"].join("/")
 
-	return {
+	return createMetadata({
 		title: page.data.title,
 		description: page.data.description,
 		openGraph: {
@@ -82,5 +83,5 @@ export async function generateMetadata({
 			card: "summary_large_image",
 			images: image,
 		},
-	}
+	})
 }

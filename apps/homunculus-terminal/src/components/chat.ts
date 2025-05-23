@@ -62,10 +62,9 @@ export function createChat(screen: blessed.Widgets.Screen) {
 		width: 24,
 		height: "100%",
 		scrollable: true,
-		keys: true,
-		mouse: true,
 		alwaysScroll: true,
 		scrollback: 200,
+		mouse: true,
 		tags: true,
 		border: {
 			type: "line",
@@ -93,6 +92,16 @@ export function createChat(screen: blessed.Widgets.Screen) {
 	screen.append(nearbyAvatars)
 
 	inputBox.focus()
+
+	inputBox.key(["up"], () => {
+		chatBox.scroll(-5)
+		screen.render()
+	})
+
+	inputBox.key(["down"], () => {
+		chatBox.scroll(5)
+		screen.render()
+	})
 
 	return {
 		chatBox,

@@ -1,7 +1,7 @@
 {
 	"name": "@gwigz/homunculus-terminal",
 	"description": "A third-party terminal client for interacting with Linden Lab's virtual world \"Second Life\"",
-	"version": "0.0.0-alpha.1",
+	"version": "0.0.0-alpha.2",
 	"author": "gwigz <gwigz@icloud.com>",
 	"bugs": "https://github.com/gwigz/homunculus/issues",
 	"homepage": "https://github.com/gwigz/homunculus#readme",
@@ -20,6 +20,9 @@
 		"dist"
 	],
 	"main": "./dist/index.mjs",
+	"bin": {
+		"homunculus": "./dist/index.mjs"
+	},
 	"scripts": {
 		"dev": "bun run src/index.ts",
 		"lint": "biome lint .",

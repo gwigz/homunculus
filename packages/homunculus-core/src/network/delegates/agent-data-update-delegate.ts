@@ -1,8 +1,8 @@
-import type { AgentDataUpdate as AgentDataUpdatePacket } from "../packets"
+import type { AgentDataUpdate } from "../packets"
 import Delegate from "./delegate"
 
-class AgentDataUpdate extends Delegate {
-	public handle(packet: AgentDataUpdatePacket) {
+class AgentDataUpdateDelegate extends Delegate {
+	public handle(packet: AgentDataUpdate) {
 		const data = packet.data.agentData[0]
 		const self = this.client.self
 
@@ -23,4 +23,4 @@ class AgentDataUpdate extends Delegate {
 	}
 }
 
-export default AgentDataUpdate
+export default AgentDataUpdateDelegate

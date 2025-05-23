@@ -42,5 +42,5 @@ Homunculus has been made possible thanks to these wonderful resources:
 
 ## Links
 
-- [GitHub Repository](https://github.com/gwigz/slua)
-- [Issue Tracker](https://github.com/gwigz/slua/issues)
+- [GitHub Repository](https://github.com/gwigz/homunculus)
+- [Issue Tracker](https://github.com/gwigz/homunculus/issues)

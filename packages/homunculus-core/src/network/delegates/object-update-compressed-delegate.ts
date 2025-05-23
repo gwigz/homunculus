@@ -1,7 +1,7 @@
 import { Agent, Entity } from "../../structures"
 import { Constants } from "../../utilities"
 import PacketBuffer from "../helpers/packet-buffer"
-import type { ObjectUpdateCompressed as ObjectUpdateCompressedPacket } from "../packets"
+import type { ObjectUpdateCompressed } from "../packets"
 import * as Types from "../types"
 import CompressedObjectValue, {
 	type CompressedObjectProperties,
@@ -83,8 +83,8 @@ const compressedObjectProperties: CompressedObjectProperties = [
 	// ['animation', new CompressedObjectValue(Types.U32, Flags.TEXTURE_ANIMATION)]
 ]
 
-class ObjectUpdateCompressed extends Delegate {
-	public handle(packet: ObjectUpdateCompressedPacket) {
+class ObjectUpdateCompressedDelegate extends Delegate {
+	public handle(packet: ObjectUpdateCompressed) {
 		const handle = packet.data.regionData[0].regionHandle
 		const region = this.client.regions.get(handle)
 
@@ -204,4 +204,4 @@ class ObjectUpdateCompressed extends Delegate {
 	}
 }
 
-export default ObjectUpdateCompressed
+export default ObjectUpdateCompressedDelegate

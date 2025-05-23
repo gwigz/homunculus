@@ -1,8 +1,8 @@
-import type { MapBlockReply as MapBlockReplyPacket } from "../packets"
+import type { MapBlockReply } from "../packets"
 import Delegate from "./delegate"
 
-class MapBlockReply extends Delegate {
-	public handle(packet: MapBlockReplyPacket) {
+class MapBlockReplyDelegate extends Delegate {
+	public handle(packet: MapBlockReply) {
 		for (const data of packet.data.data) {
 			const x = data.x * 256
 			const y = data.y * 256
@@ -25,4 +25,4 @@ class MapBlockReply extends Delegate {
 	}
 }
 
-export default MapBlockReply
+export default MapBlockReplyDelegate

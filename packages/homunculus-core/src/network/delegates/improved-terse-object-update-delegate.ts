@@ -1,14 +1,14 @@
 import { Constants } from "../../utilities"
 import { PacketBuffer } from "../helpers"
 import {
-	type ImprovedTerseObjectUpdate as ImprovedTerseObjectUpdatePacket,
+	type ImprovedTerseObjectUpdate,
 	RequestMultipleObjects,
 } from "../packets"
 import * as Types from "../types"
 import Delegate from "./delegate"
 
-class ImprovedTerseObjectUpdate extends Delegate {
-	public handle(packet: ImprovedTerseObjectUpdatePacket) {
+class ImprovedTerseObjectUpdateDelegate extends Delegate {
+	public handle(packet: ImprovedTerseObjectUpdate) {
 		const handle = packet.data.regionData[0].regionHandle
 		const region = this.client.regions.get(handle)
 
@@ -72,4 +72,4 @@ class ImprovedTerseObjectUpdate extends Delegate {
 	}
 }
 
-export default ImprovedTerseObjectUpdate
+export default ImprovedTerseObjectUpdateDelegate

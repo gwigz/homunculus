@@ -39,7 +39,7 @@ client.nearby.on("chat", (chat) => {
 client.connect();
 ```
 
-More examples can be found in the [`examples`](./examples) folder.
+More examples can be found in the [`examples`](https://github.com/gwigz/homunculus/tree/main/packages/homunculus-core/examples) folder.
 
 ## Acknowledgments
 
@@ -52,5 +52,5 @@ Homunculus has been made possible thanks to these wonderful resources:
 
 ## Links
 
-- [GitHub Repository](https://github.com/gwigz/slua)
-- [Issue Tracker](https://github.com/gwigz/slua/issues)
+- [GitHub Repository](https://github.com/gwigz/homunculus)
+- [Issue Tracker](https://github.com/gwigz/homunculus/issues)

@@ -1,8 +1,8 @@
-import type { KillObject as KillObjectPacket } from "../packets"
+import type { KillObject } from "../packets"
 import Delegate from "./delegate"
 
-class KillObject extends Delegate {
-	public handle(packet: KillObjectPacket) {
+class KillObjectDelegate extends Delegate {
+	public handle(packet: KillObject) {
 		for (const region of this.client.regions.values()) {
 			for (const { id } of packet.data.objectData) {
 				if (!region.objects.has(id)) {
@@ -30,4 +30,4 @@ class KillObject extends Delegate {
 	}
 }
 
-export default KillObject
+export default KillObjectDelegate

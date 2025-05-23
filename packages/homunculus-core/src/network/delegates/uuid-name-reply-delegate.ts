@@ -1,8 +1,8 @@
-import type { UUIDNameReply as UUIDNameReplyPacket } from "../packets"
+import type { UUIDNameReply } from "../packets"
 import Delegate from "./delegate"
 
-class UUIDNameReply extends Delegate {
-	public handle(packet: UUIDNameReplyPacket) {
+class UUIDNameReplyDelegate extends Delegate {
+	public handle(packet: UUIDNameReply) {
 		for (const data of packet.data.uuidNameBlock) {
 			this.findAgent(data.id)?.update({
 				firstName: data.firstName.toString().slice(0, -1),
@@ -18,4 +18,4 @@ class UUIDNameReply extends Delegate {
 	}
 }
 
-export default UUIDNameReply
+export default UUIDNameReplyDelegate

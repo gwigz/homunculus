@@ -1,8 +1,8 @@
 {
 	"name": "@gwigz/homunculus",
 	"license": "MIT",
-	"version": "0.0.0-alpha.1",
-	"homepage": "https://github.com/gwigz/homunculus#readme",
+	"version": "0.0.0-alpha.2",
+	"homepage": "https://homunculus.inworld.link/en/docs/core",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/gwigz/homunculus.git"
@@ -20,7 +20,7 @@
 		"@types/node": "^22.15.19"
 	},
 	"peerDependencies": {
-		"typescript": "^5.8.3"
+		"typescript": "^5"
 	},
 	"workspaces": [
 		"apps/*",
@@ -28,6 +28,7 @@
 	],
 	"packageManager": "bun@1.2.9",
 	"publishConfig": {
+		"access": "public",
 		"tag": "alpha"
 	}
 }

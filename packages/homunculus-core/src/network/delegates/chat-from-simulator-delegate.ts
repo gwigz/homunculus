@@ -1,10 +1,10 @@
 import type { NearbyChatMessage } from "../../structures/nearby"
-import type { ChatFromSimulator as ChatFromSimulatorPacket } from "../packets"
+import type { ChatFromSimulator } from "../packets"
 import { UUID } from "../types"
 import Delegate from "./delegate"
 
-class ChatFromSimulator extends Delegate {
-	public handle(packet: ChatFromSimulatorPacket) {
+class ChatFromSimulatorDelegate extends Delegate {
+	public handle(packet: ChatFromSimulator) {
 		for (const data of packet.data.chatData) {
 			const chat = {
 				fromName: data.fromName.toString().slice(0, -1),
@@ -30,4 +30,4 @@ class ChatFromSimulator extends Delegate {
 	}
 }
 
-export default ChatFromSimulator
+export default ChatFromSimulatorDelegate

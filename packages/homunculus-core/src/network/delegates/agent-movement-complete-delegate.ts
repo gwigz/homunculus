@@ -1,17 +1,17 @@
 import assert from "node:assert"
 import Region from "../../structures/region"
 import {
-	type AgentMovementComplete as AgentMovementCompletePacket,
+	type AgentMovementComplete,
 	AgentThrottle,
 	AgentUpdate,
 	SetAlwaysRun,
 } from "../packets"
 import Delegate from "./delegate"
 
-class AgentMovementComplete extends Delegate {
+class AgentMovementCompleteDelegate extends Delegate {
 	private counter = 0
 
-	public async handle(packet: AgentMovementCompletePacket) {
+	public async handle(packet: AgentMovementComplete) {
 		this.client.emit("debug", "Agent movement complete...")
 
 		const client = this.client
@@ -91,4 +91,4 @@ class AgentMovementComplete extends Delegate {
 	}
 }
 
-export default AgentMovementComplete
+export default AgentMovementCompleteDelegate

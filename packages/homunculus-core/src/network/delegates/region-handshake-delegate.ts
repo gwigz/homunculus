@@ -1,7 +1,7 @@
 import { RegionHandshakeReply } from "../packets"
 import Delegate from "./delegate"
 
-class RegionHandshake extends Delegate {
+class RegionHandshakeDelegate extends Delegate {
 	public handle() {
 		this.client.emit("debug", "Region handshake complete...")
 
@@ -11,4 +11,4 @@ class RegionHandshake extends Delegate {
 	}
 }
 
-export default RegionHandshake
+export default RegionHandshakeDelegate

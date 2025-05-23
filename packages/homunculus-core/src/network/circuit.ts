@@ -144,7 +144,9 @@ class Circuit {
 	public register(delegates: Record<string, typeof Delegates.Delegate>) {
 		for (const Delegate of Object.values(delegates)) {
 			if (Delegate !== Delegates.Delegate) {
-				this.delegates[Delegate.name] = new Delegate(this)
+				this.delegates[Delegate.name.replace(/Delegate$/, "")] = new Delegate(
+					this,
+				)
 			}
 		}
 	}

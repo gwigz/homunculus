@@ -1,36 +1,33 @@
-import AgentDataUpdate from "./agent-data-update"
-import AgentMovementComplete from "./agent-movement-complete"
-import ChatFromSimulator from "./chat-from-simulator"
+import AgentDataUpdateDelegate from "./agent-data-update-delegate"
+import AgentMovementCompleteDelegate from "./agent-movement-complete-delegate"
+import ChatFromSimulatorDelegate from "./chat-from-simulator-delegate"
 import Delegate from "./delegate"
-import HealthMessage from "./health-message"
-import ImprovedTerseObjectUpdate from "./improved-terse-object-update"
-import KillObject from "./kill-object"
-import MapBlockReply from "./map-block-reply"
-import ObjectUpdate from "./object-update"
-import ObjectUpdateCached from "./object-update-cached"
-import ObjectUpdateCompressed from "./object-update-compressed"
-import PacketAck from "./packet-ack"
-import RegionHandshake from "./region-handshake"
-import StartPingCheck from "./start-ping-check"
-import UUIDNameReply from "./uuid-name-reply"
-
-// CloseCircuit
-// OpenCircuit
+import HealthMessageDelegate from "./health-message-delegate"
+import ImprovedTerseObjectUpdateDelegate from "./improved-terse-object-update-delegate"
+import KillObjectDelegate from "./kill-object-delegate"
+import MapBlockReplyDelegate from "./map-block-reply-delegate"
+import ObjectUpdateCachedDelegate from "./object-update-cached-delegate"
+import ObjectUpdateCompressedDelegate from "./object-update-compressed-delegate"
+import ObjectUpdateDelegate from "./object-update-delegate"
+import PacketAckDelegate from "./packet-ack-delegate"
+import RegionHandshakeDelegate from "./region-handshake-delegate"
+import StartPingCheckDelegate from "./start-ping-check-delegate"
+import UUIDNameReplyDelegate from "./uuid-name-reply-delegate"
 
 export {
-	AgentDataUpdate,
-	AgentMovementComplete,
-	ChatFromSimulator,
+	AgentDataUpdateDelegate,
+	AgentMovementCompleteDelegate,
+	ChatFromSimulatorDelegate,
 	Delegate,
-	HealthMessage,
-	ImprovedTerseObjectUpdate,
-	KillObject,
-	MapBlockReply,
-	ObjectUpdate,
-	ObjectUpdateCached,
-	ObjectUpdateCompressed,
-	PacketAck,
-	RegionHandshake,
-	StartPingCheck,
-	UUIDNameReply,
+	HealthMessageDelegate,
+	ImprovedTerseObjectUpdateDelegate,
+	KillObjectDelegate,
+	MapBlockReplyDelegate,
+	ObjectUpdateDelegate,
+	ObjectUpdateCachedDelegate,
+	ObjectUpdateCompressedDelegate,
+	PacketAckDelegate,
+	RegionHandshakeDelegate,
+	StartPingCheckDelegate,
+	UUIDNameReplyDelegate,
 }

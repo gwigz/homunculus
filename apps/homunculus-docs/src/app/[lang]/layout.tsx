@@ -4,6 +4,7 @@ import { Banner } from "fumadocs-ui/components/banner"
 // import type { Translations } from "fumadocs-ui/i18n"
 import { RootProvider } from "fumadocs-ui/provider"
 import { Inter, Oswald } from "next/font/google"
+import { baseUrl, createMetadata } from "@/lib/metadata"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -33,6 +34,7 @@ export const metadata = createMetadata({
 		default: "homunculus",
 	},
 	description: "Third-party library for interacting with Second Life",
+	metadataBase: baseUrl,
 })
 
 export default async function RootLayout({

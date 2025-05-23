@@ -4,6 +4,9 @@ Homunculus is a minimal set of Node.js packages that allows basic interactions w
 [Second Life](https://www.secondlife.com), utilizing the official
 [Second Life UDP protocol](http://wiki.secondlife.com/wiki/Protocol).
 
+Homunculus _is not affiliated with or sponsored by Linden Research, Linden Lab or
+Second Life._
+
 > [!CAUTION]
 >
 > **This library is a work in progress!**
@@ -32,6 +35,3 @@ Homunculus has been made possible thanks to these wonderful resources:
 - [`pyogp`](http://wiki.secondlife.com/wiki/PyOGP) by the late Enus Linden and their team
 - `node-omv` by Wolfspirit for their proof of concept
 - [`node-metaverse`](https://github.com/CasperTech/node-metaverse) for delaying my efforts on [`sljs`](https://github.com/gwigz/sljs-archive)
-
-Homunculus _is not affiliated with or sponsored by Linden Research, Linden Lab or
-Second Life._

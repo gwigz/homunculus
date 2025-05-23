@@ -1,0 +1,47 @@
+import "./global.css"
+
+// import type { Translations } from "fumadocs-ui/i18n"
+import { RootProvider } from "fumadocs-ui/provider"
+import { Inter } from "next/font/google"
+
+const inter = Inter({ subsets: ["latin"] })
+
+// // translations
+// const cn: Partial<Translations> = {
+// 	search: "Translated Content",
+// }
+
+// available languages that will be displayed on UI
+// make sure `locale` is consistent with your i18n config
+const locales = [
+	{
+		name: "English",
+		locale: "en",
+	},
+]
+
+export default async function RootLayout({
+	params,
+	children,
+}: {
+	params: Promise<{ lang: string }>
+	children: React.ReactNode
+}) {
+	const lang = (await params).lang
+
+	return (
+		<html lang={lang} className={inter.className} suppressHydrationWarning>
+			<body className="flex min-h-screen flex-col">
+				<RootProvider
+					i18n={{
+						locale: lang,
+						locales,
+						// translations: { cn }[lang],
+					}}
+				>
+					{children}
+				</RootProvider>
+			</body>
+		</html>
+	)
+}

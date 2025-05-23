@@ -1,14 +1,8 @@
 # Compiled code
 dist
 
-# Unfinished documentation stuff
-docs
+# Unfinished stuff
 NOTES.md
-
-# Unfinished tests
-tests
-bin
-bot.ts
 
 # Environment variables
 .env

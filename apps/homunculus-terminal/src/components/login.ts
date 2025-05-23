@@ -6,8 +6,8 @@ export function loginForm(
 ) {
 	const loginForm = blessed.form({
 		parent: screen,
-		width: "100%",
 		keys: true,
+		width: "100%",
 	})
 
 	blessed.text({
@@ -35,6 +35,7 @@ export function loginForm(
 		top: 3,
 		height: 3,
 		keys: true,
+		inputOnFocus: true,
 		border: {
 			type: "line",
 		},
@@ -58,6 +59,7 @@ export function loginForm(
 		top: 6,
 		height: 3,
 		keys: true,
+		inputOnFocus: true,
 		censor: true,
 		border: {
 			type: "line",

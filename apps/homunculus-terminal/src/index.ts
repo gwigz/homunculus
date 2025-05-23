@@ -43,6 +43,7 @@ const screen = blessed.screen({
 	title: "Homunculus Terminal",
 	smartCSR: true,
 	dockBorders: true,
+	grabKeys: true,
 })
 
 const client = new Client()

@@ -4,6 +4,15 @@ Node.js powered text client that allows basic interactions with the virtual worl
 [Second Life](https://www.secondlife.com), utilizing the official
 [Second Life UDP protocol](http://wiki.secondlife.com/wiki/Protocol).
 
+Homunculus _is not affiliated with or sponsored by Linden Research, Linden Lab or
+Second Life._
+
+> [!CAUTION]
+>
+> **This client is a work in progress!**
+>
+> It is not intended for use yet, it only features basic chat functionality, teleporting, and other features are not yet implemented.
+
 ## Features
 
 - Local chat interactions

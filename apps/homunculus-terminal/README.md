@@ -21,8 +21,6 @@ Second Life._
 
 ## Usage
 
-Currently requires [environment values](https://github.com/gwigz/homunculus/blob/main/.env.example) for login credentials, a more complete built-in login form will come later.
-
 ```shell
 npx @gwigz/homunculus-terminal
 
@@ -33,7 +31,9 @@ npx @gwigz/homunculus-terminal --start "uri:Hippo Hollow&128&128&2"
 bunx @gwigz/homunculus-terminal
 ```
 
-Use `/exit` or `/quit` to disconnect.
+Use escape key, `/exit`, or `/quit` to disconnect.
+
+Use [environment values](https://github.com/gwigz/homunculus/blob/main/.env.example) to persist credentials, built-in functionality is coming soon.
 
 <div align="center">
   <img src="./terminal.png" />

@@ -41,7 +41,7 @@
     },
     "apps/homunculus-terminal": {
       "name": "@gwigz/homunculus-terminal",
-      "version": "0.0.0-alpha.6",
+      "version": "0.0.0-alpha.7",
       "bin": {
         "homunculus": "./dist/index.mjs",
       },

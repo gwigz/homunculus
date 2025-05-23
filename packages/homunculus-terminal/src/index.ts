@@ -18,7 +18,7 @@ const cli = meow(
 		--start=<uri|last|home>
 
 	Examples
-	  $ homunculus --start="uri:Bug Island&128&128&0"
+	  $ homunculus --start="uri:Hippo Hollow&128&128&0"
 `,
 	{
 		importMeta: import.meta,
@@ -360,11 +360,9 @@ process.on("SIGINT", exit)
 process.on("SIGTERM", exit)
 
 try {
-	await client.connect(
-		process.env.SL_USERNAME!,
-		process.env.SL_PASSWORD!,
-		start,
-	)
+	await client.connect(process.env.SL_USERNAME, process.env.SL_PASSWORD, {
+		login: { start },
+	})
 } catch (error: unknown) {
 	logError(error instanceof Error ? error : new Error(String(error)))
 

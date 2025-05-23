@@ -1,6 +1,6 @@
 {
 	"title": "homunulus-core",
-	"description": "The client framework",
+	"description": "Client framework",
 	"icon": "PersonStanding",
 	"root": true,
 	"pages": ["---Introduction---", "index"]

@@ -27,6 +27,14 @@ const locales = [
 	},
 ]
 
+export const metadata = createMetadata({
+	title: {
+		template: "%s | homunculus",
+		default: "homunculus",
+	},
+	description: "Third-party library for interacting with Second Life",
+})
+
 export default async function RootLayout({
 	params,
 	children,

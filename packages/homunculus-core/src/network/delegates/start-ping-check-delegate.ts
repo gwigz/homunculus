@@ -3,7 +3,7 @@ import { CompletePingCheck } from "../packets"
 import Delegate from "./delegate"
 
 class StartPingCheckDelegate extends Delegate {
-	public handle(packet: StartPingCheck) {
+	public override handle(packet: StartPingCheck) {
 		this.circuit.send([new CompletePingCheck(packet.data)])
 	}
 }

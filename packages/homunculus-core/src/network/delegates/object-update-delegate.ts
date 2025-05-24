@@ -4,8 +4,8 @@ import { Constants } from "../../utilities"
 import type { ObjectUpdate as ObjectUpdatePacket } from "../packets"
 import Delegate from "./delegate"
 
-class ObjectUpdate extends Delegate {
-	public handle(packet: ObjectUpdatePacket) {
+class ObjectUpdateDelegate extends Delegate {
+	public override handle(packet: ObjectUpdatePacket) {
 		const handle = packet.data.regionData[0].regionHandle
 		const region = this.client.regions.get(handle)
 
@@ -55,4 +55,4 @@ class ObjectUpdate extends Delegate {
 	}
 }
 
-export default ObjectUpdate
+export default ObjectUpdateDelegate

@@ -2,7 +2,7 @@ import type { UUIDNameReply } from "../packets"
 import Delegate from "./delegate"
 
 class UUIDNameReplyDelegate extends Delegate {
-	public handle(packet: UUIDNameReply) {
+	public override handle(packet: UUIDNameReply) {
 		for (const data of packet.data.uuidNameBlock) {
 			this.findAgent(data.id)?.update({
 				firstName: data.firstName.toString().slice(0, -1),

@@ -8,7 +8,7 @@ import * as Types from "../types"
 import Delegate from "./delegate"
 
 class ImprovedTerseObjectUpdateDelegate extends Delegate {
-	public handle(packet: ImprovedTerseObjectUpdate) {
+	public override handle(packet: ImprovedTerseObjectUpdate) {
 		const handle = packet.data.regionData[0].regionHandle
 		const region = this.client.regions.get(handle)
 

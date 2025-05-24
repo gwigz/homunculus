@@ -1,10 +1,11 @@
 {
 	"name": "@gwigz/homunculus-terminal",
 	"description": "A third-party terminal client for interacting with Linden Lab's virtual world \"Second Life\"",
-	"version": "0.0.0-alpha.10",
+	"version": "0.0.0-alpha.19",
 	"author": "gwigz <gwigz@icloud.com>",
+	"license": "MIT",
 	"bugs": "https://github.com/gwigz/homunculus/issues",
-	"homepage": "https://github.com/gwigz/homunculus#readme",
+	"homepage": "https://homunculus.inworld.link/en/docs/terminal",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/gwigz/homunculus.git"
@@ -15,30 +16,31 @@
 		"second",
 		"secondlife"
 	],
-	"license": "MIT",
+	"type": "module",
+	"main": "./dist/index.js",
 	"files": [
 		"dist"
 	],
-	"main": "./dist/index.mjs",
 	"bin": {
-		"homunculus": "./dist/index.mjs"
+		"homunculus": "./dist/index.js"
 	},
 	"scripts": {
 		"dev": "bun run src/index.ts",
 		"lint": "biome lint .",
-		"prebuild": "rm -rf dist",
-		"build": "bun build ./src/index.ts --outfile ./dist/index.mjs --target node --external blessed --external sqlite3"
+		"prebuild": "rm -rf dist && tsc",
+		"build": "esbuild src/index.ts --bundle --platform=node --format=esm --packages=external --outdir=dist"
 	},
 	"dependencies": {
+		"@gwigz/homunculus-core": "workspace:*",
 		"blessed": "^0.1.81",
+		"dotenv": "^16.5.0",
+		"meow": "^13.2.0",
 		"sqlite3": "^5.1.7"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.0.0-beta.5",
-		"@gwigz/homunculus-core": "workspace:*",
 		"@types/blessed": "^0.1.25",
-		"@types/node": "^22.15.20",
-		"dotenv": "^16.5.0",
-		"meow": "^13.2.0"
+		"@types/node": "^22.15.21",
+		"esbuild": "^0.25.4"
 	}
 }

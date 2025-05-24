@@ -11,7 +11,7 @@ import Delegate from "./delegate"
 class AgentMovementCompleteDelegate extends Delegate {
 	private counter = 0
 
-	public async handle(packet: AgentMovementComplete) {
+	public override async handle(packet: AgentMovementComplete) {
 		this.client.emit("debug", "Agent movement complete...")
 
 		const client = this.client

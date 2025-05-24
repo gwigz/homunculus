@@ -4,7 +4,7 @@ import { UUID } from "../types"
 import Delegate from "./delegate"
 
 class ChatFromSimulatorDelegate extends Delegate {
-	public handle(packet: ChatFromSimulator) {
+	public override handle(packet: ChatFromSimulator) {
 		for (const data of packet.data.chatData) {
 			const chat = {
 				fromName: data.fromName.toString().slice(0, -1),
@@ -25,7 +25,7 @@ class ChatFromSimulatorDelegate extends Delegate {
 		}
 	}
 
-	get waiting() {
+	override get waiting() {
 		return !!this.client.nearby.listenerCount("chat")
 	}
 }

@@ -103,25 +103,28 @@ process.on("unhandledRejection", async (reason) => {
 process.on("SIGINT", async () => await exit())
 process.on("SIGTERM", async () => await exit())
 
-loginForm(screen, async ({ username, password }) => {
-	try {
-		const components = createChat(screen)
+loginForm(
+	screen,
+	async ({ username, password }: { username: string; password: string }) => {
+		try {
+			const components = createChat(screen)
 
-		setupChatHandlers(screen, components, client, exit)
+			setupChatHandlers(screen, components, client, exit)
 
-		screen.render()
+			screen.render()
 
-		await client.connect(username, password, {
-			login: { start },
-		})
-	} catch (error: unknown) {
-		logError(error instanceof Error ? error : new Error(String(error)))
+			await client.connect(username, password, {
+				login: { start },
+			})
+		} catch (error: unknown) {
+			logError(error instanceof Error ? error : new Error(String(error)))
 
-		await cleanup()
+			await cleanup()
 
-		console.error("Connection error:", error)
-		process.exit(1)
-	}
-})
+			console.error("Connection error:", error)
+			process.exit(1)
+		}
+	},
+)
 
 screen.render()

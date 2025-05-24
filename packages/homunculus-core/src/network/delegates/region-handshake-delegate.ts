@@ -2,7 +2,7 @@ import { RegionHandshakeReply } from "../packets"
 import Delegate from "./delegate"
 
 class RegionHandshakeDelegate extends Delegate {
-	public handle() {
+	public override handle() {
 		this.client.emit("debug", "Region handshake complete...")
 
 		this.circuit.send([

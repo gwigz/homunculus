@@ -2,7 +2,7 @@ import type { AgentDataUpdate } from "../packets"
 import Delegate from "./delegate"
 
 class AgentDataUpdateDelegate extends Delegate {
-	public handle(packet: AgentDataUpdate) {
+	public override handle(packet: AgentDataUpdate) {
 		const data = packet.data.agentData[0]
 		const self = this.client.self
 

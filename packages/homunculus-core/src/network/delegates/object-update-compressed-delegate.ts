@@ -84,7 +84,7 @@ const compressedObjectProperties: CompressedObjectProperties = [
 ]
 
 class ObjectUpdateCompressedDelegate extends Delegate {
-	public handle(packet: ObjectUpdateCompressed) {
+	public override handle(packet: ObjectUpdateCompressed) {
 		const handle = packet.data.regionData[0].regionHandle
 		const region = this.client.regions.get(handle)
 

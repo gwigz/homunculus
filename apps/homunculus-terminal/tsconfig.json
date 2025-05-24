@@ -1,3 +1,27 @@
 {
-	"extends": "../../tsconfig.json"
+	"compilerOptions": {
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"target": "ESNext",
+		"allowJs": true,
+		"resolveJsonModule": true,
+		"moduleResolution": "bundler",
+		"moduleDetection": "force",
+		"isolatedModules": true,
+		"verbatimModuleSyntax": true,
+		/* strictness */
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		/* NOT transpiling with TypeScript */
+		"module": "preserve",
+		"noEmit": true,
+		/* doesn't run in the DOM */
+		"lib": [
+			"ESNext"
+		]
+	},
+	"include": [
+		"src/**/*.ts"
+	]
 }

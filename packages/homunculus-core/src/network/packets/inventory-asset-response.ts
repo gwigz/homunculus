@@ -10,7 +10,7 @@ class InventoryAssetResponse extends Packet {
 	 * method of Packet, plus the buffer helper of the network namespace for
 	 * generating a lookup codes.
 	 */
-	public static id = 283
+	public static override id = 283
 
 	/**
 	 * Packet frequency. This value determines whether the message ID is 8, 16, or
@@ -18,20 +18,20 @@ class InventoryAssetResponse extends Packet {
 	 * frequencies and 32,000 in "Low". A message with a "Fixed" frequency also
 	 * defines its own ID and is considered to be a signal.
 	 */
-	public static frequency = 0
+	public static override frequency = 0
 
 	/**
 	 * If this value is true, the client cannot send this packet as circuits only
 	 * accept trusted packets from internal connections (to utility servers etc).
 	 */
-	public static trusted = true
+	public static override trusted = true
 
 	/**
 	 * States if this packet should use or be using zerocoding, to attempt to
 	 * compress the sequences of zeros in the message in order to reduce network
 	 * load.
 	 */
-	public static compression = false
+	public static override compression = false
 
 	/**
 	 * Determines the blocks that are are contained in the message and it's
@@ -39,7 +39,7 @@ class InventoryAssetResponse extends Packet {
 	 *
 	 * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
 	 */
-	public static format: Map<string, any> = new Map([
+	public static override format: Map<string, any> = new Map([
 		[
 			"queryData",
 			{

@@ -2,7 +2,7 @@ import type { MapBlockReply } from "../packets"
 import Delegate from "./delegate"
 
 class MapBlockReplyDelegate extends Delegate {
-	public handle(packet: MapBlockReply) {
+	public override handle(packet: MapBlockReply) {
 		for (const data of packet.data.data) {
 			const x = data.x * 256
 			const y = data.y * 256

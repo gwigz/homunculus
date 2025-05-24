@@ -1,5 +1,5 @@
-import Client from "./client"
-import * as Packets from "./network/packets"
-import { Constants } from "./utilities"
-
-export { Client, Constants, Packets }
+export * from "./client"
+export * as Packets from "./network/packets"
+export * from "./structures"
+export type { NearbyChatMessage, NearbyEvents } from "./structures/nearby"
+export { Constants } from "./utilities"

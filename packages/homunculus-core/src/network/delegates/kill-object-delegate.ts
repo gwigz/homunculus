@@ -2,7 +2,7 @@ import type { KillObject } from "../packets"
 import Delegate from "./delegate"
 
 class KillObjectDelegate extends Delegate {
-	public handle(packet: KillObject) {
+	public override handle(packet: KillObject) {
 		for (const region of this.client.regions.values()) {
 			for (const { id } of packet.data.objectData) {
 				if (!region.objects.has(id)) {

@@ -1,3 +1,1 @@
-import * as Constants from "./constants"
-
-export { Constants }
+export * as Constants from "./constants"

@@ -9,7 +9,7 @@ class CloseCircuit extends Packet {
 	 * method of Packet, plus the buffer helper of the network namespace for
 	 * generating a lookup codes.
 	 */
-	public static id = 4294967293
+	public static override id = 4294967293
 
 	/**
 	 * Packet frequency. This value determines whether the message ID is 8, 16, or
@@ -17,20 +17,20 @@ class CloseCircuit extends Packet {
 	 * frequencies and 32,000 in "Low". A message with a "Fixed" frequency also
 	 * defines its own ID and is considered to be a signal.
 	 */
-	public static frequency = 3
+	public static override frequency = 3
 
 	/**
 	 * If this value is true, the client cannot send this packet as circuits only
 	 * accept trusted packets from internal connections (to utility servers etc).
 	 */
-	public static trusted = false
+	public static override trusted = false
 
 	/**
 	 * States if this packet should use or be using zerocoding, to attempt to
 	 * compress the sequences of zeros in the message in order to reduce network
 	 * load.
 	 */
-	public static compression = false
+	public static override compression = false
 
 	/**
 	 * CloseCircuit constructor, can be passed either a fully

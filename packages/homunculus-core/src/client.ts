@@ -22,7 +22,7 @@ export interface ClientOptions {
 /**
  * The starting point for the Homunculus client.
  */
-class Client extends AsyncEventEmitter<ClientEvents> {
+export class Client extends AsyncEventEmitter<ClientEvents> {
 	/**
 	 * Contains values relating to your own avatar.
 	 */
@@ -219,5 +219,3 @@ class Client extends AsyncEventEmitter<ClientEvents> {
 		this.emit(Constants.ClientEvents.DEBUG, "Disconnected!")
 	}
 }
-
-export default Client

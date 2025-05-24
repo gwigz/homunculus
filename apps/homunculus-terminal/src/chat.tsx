@@ -6,6 +6,7 @@ import {
 import { Box, type DOMElement, measureElement, Text, useInput } from "ink"
 import TextInput from "ink-text-input"
 import { useCallback, useEffect, useRef, useState } from "react"
+import stripAnsi from "strip-ansi"
 import { useScreenSize } from "./hooks"
 import { logError } from "./logger"
 
@@ -24,31 +25,31 @@ const inaudibleChatTypes = [
 	Constants.ChatTypes.STOPPED,
 ] as number[]
 
+const chatInputHeight = 3
+
 export function Chat({ client, onExit }: ChatProps) {
 	const [messages, setMessages] = useState<Message[]>([])
 	const [input, setInput] = useState("")
 	const [nearbyInfo, setNearbyInfo] = useState<string[]>([])
 	const [scrollTop, setScrollTop] = useState(0)
-	const [isShiftPressed, setIsShiftPressed] = useState(false)
-	const [isControlPressed, setIsControlPressed] = useState(false)
-	const innerRef = useRef<DOMElement | null>(null)
+	const chatWrapperRef = useRef<DOMElement | null>(null)
 
 	const [, terminalHeight] = useScreenSize(() => {
-		const newTotalHeight = innerRef.current
-			? measureElement(innerRef.current).height
+		const newTotalHeight = chatWrapperRef.current
+			? measureElement(chatWrapperRef.current).height
 			: 0
 
-		setScrollTop(Math.max(0, newTotalHeight - (terminalHeight - 3)))
+		setScrollTop(
+			Math.max(0, newTotalHeight - (terminalHeight - chatInputHeight)),
+		)
 	})
 
-	const chatHeight = terminalHeight - 3
-
 	// calculate total scroll height and visible height
-	const totalHeight = innerRef.current
-		? measureElement(innerRef.current).height
+	const totalHeight = chatWrapperRef.current
+		? measureElement(chatWrapperRef.current).height
 		: 0
 
-	const visibleHeight = chatHeight
+	const visibleHeight = terminalHeight - chatInputHeight
 
 	// ensure scroll position is valid
 	useEffect(() => {
@@ -86,8 +87,8 @@ export function Chat({ client, onExit }: ChatProps) {
 
 				// scroll to bottom after heights are measured
 				setTimeout(() => {
-					const newTotalHeight = innerRef.current
-						? measureElement(innerRef.current).height
+					const newTotalHeight = chatWrapperRef.current
+						? measureElement(chatWrapperRef.current).height
 						: 0
 					setScrollTop(Math.max(0, newTotalHeight - visibleHeight))
 				}, 0)
@@ -159,16 +160,10 @@ export function Chat({ client, onExit }: ChatProps) {
 					client.nearby.say(message, channel)
 				}
 			} else {
-				if (isShiftPressed) {
-					client.nearby.whisper(message)
-				} else if (isControlPressed) {
-					client.nearby.shout(message)
-				} else {
-					client.nearby.say(message)
-				}
+				client.nearby.say(message)
 			}
 		},
-		[client.nearby, onExit, isShiftPressed, isControlPressed],
+		[client.nearby, onExit],
 	)
 
 	useEffect(() => {
@@ -243,46 +238,24 @@ export function Chat({ client, onExit }: ChatProps) {
 		return () => clearInterval(interval)
 	}, [updateNearbyInfo])
 
-	useInput(
-		useCallback(
-			(_, key) => {
-				if (key.upArrow) {
-					setScrollTop((prev) => Math.max(0, prev - 1))
-					return
-				}
-
-				if (key.downArrow) {
-					setScrollTop((prev) =>
-						Math.min(totalHeight - visibleHeight, prev + 1),
-					)
-					return
-				}
-
-				if (key.pageUp) {
-					setScrollTop((prev) => Math.max(0, prev - 10))
-					return
-				}
-
-				if (key.pageDown) {
-					setScrollTop((prev) =>
-						Math.min(totalHeight - visibleHeight, prev + 10),
-					)
-					return
-				}
-
-				setIsShiftPressed(key.shift)
-				setIsControlPressed(key.ctrl)
-			},
-			[totalHeight, visibleHeight],
-		),
-	)
+	useInput((_, key) => {
+		if (key.upArrow) {
+			setScrollTop((prev) => Math.max(0, prev - 1))
+		} else if (key.downArrow) {
+			setScrollTop((prev) => Math.min(totalHeight - visibleHeight, prev + 1))
+		} else if (key.pageUp) {
+			setScrollTop((prev) => Math.max(0, prev - 10))
+		} else if (key.pageDown) {
+			setScrollTop((prev) => Math.min(totalHeight - visibleHeight, prev + 10))
+		}
+	})
 
 	return (
-		<Box>
-			<Box flexDirection="column" flexGrow={1}>
-				<Box height={chatHeight} flexDirection="column" overflow="hidden">
+		<Box flexDirection="column" height={terminalHeight - 1}>
+			<Box flexGrow={1} flexDirection="row">
+				<Box flexGrow={1} flexDirection="column" overflow="hidden">
 					<Box
-						ref={innerRef}
+						ref={chatWrapperRef}
 						flexShrink={0}
 						flexDirection="column"
 						marginTop={-scrollTop}
@@ -306,7 +279,7 @@ export function Chat({ client, onExit }: ChatProps) {
 													: undefined
 									}
 								>
-									{chat.fromName?.replace(/ Resident$/, "")}
+									{stripAnsi(chat.fromName?.replace(/ Resident$/, "") ?? "")}
 								</Text>
 								{chat.chatType === Constants.ChatTypes.SHOUT
 									? " shouts: "
@@ -317,30 +290,58 @@ export function Chat({ client, onExit }: ChatProps) {
 											: chat.message?.startsWith("/me'")
 												? "'"
 												: ": "}
-								{chat.message?.startsWith("/me ")
-									? chat.message.substring(4)
-									: chat.message?.startsWith("/me'")
-										? chat.message.substring(4)
-										: chat.message}
+								<Text
+									color={
+										chat.chatType === Constants.ChatTypes.OWNERSAY
+											? "yellow"
+											: chat.sourceType === Constants.ChatSources.OBJECT
+												? "green"
+												: chat.sourceType === Constants.ChatSources.SYSTEM
+													? "cyan"
+													: undefined
+									}
+								>
+									{stripAnsi(
+										chat.message?.startsWith("/me ")
+											? chat.message.substring(4)
+											: chat.message?.startsWith("/me'")
+												? chat.message.substring(4)
+												: (chat.message ?? ""),
+									)}
+								</Text>
 							</Text>
 						))}
 					</Box>
 				</Box>
 
-				<Box marginTop={1}>
-					<TextInput
-						value={input}
-						onChange={setInput}
-						onSubmit={handleSubmit}
-						placeholder={'Type to nearby chat (↑/↓ to scroll, "/exit" to quit)'}
-					/>
+				<Box
+					width={20}
+					flexShrink={0}
+					marginLeft={2}
+					flexDirection="column"
+					overflow="hidden"
+				>
+					{nearbyInfo.map((line, i) => (
+						<Text key={`nearby-${i}-${line}`}>{line}</Text>
+					))}
 				</Box>
 			</Box>
 
-			<Box flexDirection="column" width={20} marginLeft={1} flexShrink={0}>
-				{nearbyInfo.map((line, i) => (
-					<Text key={`nearby-${i}-${line}`}>{line}</Text>
-				))}
+			<Box
+				borderStyle="single"
+				borderColor="gray"
+				borderDimColor
+				overflow="hidden"
+				borderLeft={false}
+				borderRight={false}
+				borderBottom={false}
+			>
+				<TextInput
+					value={input}
+					onChange={setInput}
+					onSubmit={handleSubmit}
+					placeholder={'Type to nearby chat (↑/↓ to scroll, "/exit" to quit)'}
+				/>
 			</Box>
 		</Box>
 	)

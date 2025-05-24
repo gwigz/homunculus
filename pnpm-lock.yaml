@@ -118,6 +118,9 @@ importers:
       react:
         specifier: ^18.2.0
         version: 18.3.1
+      strip-ansi:
+        specifier: ^7.1.0
+        version: 7.1.0
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.0.0-beta.5

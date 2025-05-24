@@ -61,4 +61,4 @@ process.on("unhandledRejection", async (reason) => {
 process.on("SIGINT", async () => await client.disconnect())
 process.on("SIGTERM", async () => await client.disconnect())
 
-render(<App client={client} />)
+render(<App client={client} start={start} />)

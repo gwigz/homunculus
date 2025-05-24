@@ -6,7 +6,7 @@ import { Login } from "./login"
 
 type AppState = "login" | "loading" | "chat"
 
-export function App({ client, start }: { client: Client; start: string }) {
+export function App({ client, start }: { client: Client; start?: string }) {
 	const [state, setState] = useState<AppState>("login")
 
 	async function handleLogin(username: string, password: string) {

@@ -4,7 +4,7 @@ process.title = "homunculus"
 
 import "dotenv/config"
 import assert from "node:assert"
-import { Client, Constants } from "@gwigz/homunculus-core"
+import { Client } from "@gwigz/homunculus-core"
 import { render } from "ink"
 import meow from "meow"
 import { App } from "./app"
@@ -40,33 +40,10 @@ assert(
 
 const client = new Client()
 
-async function cleanup() {
-	if (
-		client.status !== Constants.Status.IDLE &&
-		client.status !== Constants.Status.DISCONNECTED
-	) {
-		console.log("Disconnecting...")
-
-		await client.disconnect()
-		await new Promise((resolve) => setTimeout(resolve, 2000))
-	}
-}
-
-async function exit() {
-	try {
-		await cleanup()
-	} catch (error: unknown) {
-		logError(error instanceof Error ? error : new Error(String(error)))
-		console.error("Error during disconnect:", error)
-	}
-
-	process.exit(0)
-}
-
 process.on("uncaughtException", async (error) => {
 	logError(error)
 
-	await cleanup()
+	await client.disconnect()
 
 	console.error("Uncaught Exception:", error)
 	process.exit(1)
@@ -75,13 +52,13 @@ process.on("uncaughtException", async (error) => {
 process.on("unhandledRejection", async (reason) => {
 	logError(reason instanceof Error ? reason : new Error(String(reason)))
 
-	await cleanup()
+	await client.disconnect()
 
 	console.error("Unhandled Rejection:", reason)
 	process.exit(1)
 })
 
-process.on("SIGINT", async () => await exit())
-process.on("SIGTERM", async () => await exit())
+process.on("SIGINT", async () => await client.disconnect())
+process.on("SIGTERM", async () => await client.disconnect())
 
-render(<App client={client} start={start} onExit={exit} />)
+render(<App client={client} />)

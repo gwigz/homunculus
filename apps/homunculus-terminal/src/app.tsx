@@ -1,19 +1,20 @@
-import { Client } from "@gwigz/homunculus-core"
-import { useMemo, useState } from "react"
+import type { Client } from "@gwigz/homunculus-core"
+import { useState } from "react"
 import { Chat } from "./chat"
 import { Loading } from "./loading"
 import { Login } from "./login"
 
 type AppState = "login" | "loading" | "chat"
 
-export function App() {
+export function App({ client, start }: { client: Client; start: string }) {
 	const [state, setState] = useState<AppState>("login")
-	const client = useMemo(() => new Client(), [])
 
 	async function handleLogin(username: string, password: string) {
 		setState("loading")
 
-		await client.connect(username, password)
+		await client.connect(username, password, {
+			login: { start },
+		})
 	}
 
 	function handleReady() {

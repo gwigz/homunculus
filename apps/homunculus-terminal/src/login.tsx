@@ -18,8 +18,13 @@ export function Login({ onSubmit }: LoginProps) {
 	)
 
 	useInput((_, key) => {
-		if (key.return) {
-			if (activeField === "username") {
+		if (key.escape) {
+			process.exit(0)
+		} else if (key.return) {
+			if (activeField === "username" && password && !isSubmitting) {
+				setIsSubmitting(true)
+				onSubmit(username, password)
+			} else if (activeField === "username") {
 				setActiveField("password")
 			} else if (
 				activeField === "password" &&
@@ -30,46 +35,48 @@ export function Login({ onSubmit }: LoginProps) {
 				setIsSubmitting(true)
 				onSubmit(username, password)
 			}
-		} else if (key.tab) {
+		} else if (key.tab || key.downArrow || key.upArrow) {
 			setActiveField(activeField === "username" ? "password" : "username")
 		}
 	})
 
 	return (
 		<Box flexDirection="column">
-			<Box marginLeft={-1}>
-				{/* @ts-ignore */}
-				<BigText text="HOMUNCULUS" font="tiny" />
+			<Box flexDirection="column">
+				<Box marginLeft={-1}>
+					{/* @ts-ignore */}
+					<BigText text="HOMUNCULUS" font="tiny" />
+				</Box>
+
+				<Text>
+					Login to <Text bold>Second Life</Text>
+				</Text>
+
+				<Box marginTop={1}>
+					<Text color="gray">Username </Text>
+					<TextInput
+						value={username}
+						onChange={setUsername}
+						placeholder="Enter username"
+						focus={activeField === "username"}
+					/>
+				</Box>
+
+				<Box marginBottom={1}>
+					<Text color="gray">Password </Text>
+					<TextInput
+						value={password}
+						onChange={setPassword}
+						placeholder="Enter password"
+						mask="*"
+						focus={activeField === "password"}
+					/>
+				</Box>
+
+				<Text color="gray" italic dimColor>
+					Press tab or ↑/↓ to switch fields, enter to login, and escape to quit
+				</Text>
 			</Box>
-
-			<Text>
-				Login to <Text bold>Second Life</Text>
-			</Text>
-
-			<Box marginTop={1}>
-				<Text color="gray">Username </Text>
-				<TextInput
-					value={username}
-					onChange={setUsername}
-					placeholder="Enter username"
-					focus={activeField === "username"}
-				/>
-			</Box>
-
-			<Box marginBottom={1}>
-				<Text color="gray">Password </Text>
-				<TextInput
-					value={password}
-					onChange={setPassword}
-					placeholder="Enter password"
-					mask="*"
-					focus={activeField === "password"}
-				/>
-			</Box>
-
-			<Text color="gray" italic>
-				Press tab to switch fields, enter to login
-			</Text>
 		</Box>
 	)
 }

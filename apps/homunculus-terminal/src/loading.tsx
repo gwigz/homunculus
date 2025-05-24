@@ -30,7 +30,7 @@ export function Loading({ client, onReady }: LoadingProps) {
 				<Text> Connecting to Second Life...</Text>
 			</Box>
 
-			<Box flexDirection="column" marginTop={1}>
+			<Box flexDirection="column" marginTop={1} marginBottom={1}>
 				{debug.map((message) => (
 					<Text key={message} color="gray">
 						{message}

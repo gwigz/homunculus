@@ -3,16 +3,10 @@ import {
 	Constants,
 	type NearbyChatMessage,
 } from "@gwigz/homunculus-core"
-import {
-	Box,
-	type DOMElement,
-	measureElement,
-	Text,
-	useInput,
-	useStdout,
-} from "ink"
+import { Box, type DOMElement, measureElement, Text, useInput } from "ink"
 import TextInput from "ink-text-input"
 import { useCallback, useEffect, useRef, useState } from "react"
+import { useScreenSize } from "./hooks"
 import { logError } from "./logger"
 
 interface ChatProps {
@@ -29,32 +23,6 @@ const inaudibleChatTypes = [
 	Constants.ChatTypes.TYPING,
 	Constants.ChatTypes.STOPPED,
 ] as number[]
-
-function useScreenSize(onResize?: () => void) {
-	const { stdout } = useStdout()
-
-	const getSize = useCallback(
-		() => [stdout.columns, stdout.rows] as [width: number, height: number],
-		[stdout],
-	)
-
-	const [dimensions, setDimensions] = useState(getSize)
-
-	useEffect(() => {
-		const handler = () => {
-			setDimensions(getSize())
-			onResize?.()
-		}
-
-		stdout.on("resize", handler)
-
-		return () => {
-			stdout.off("resize", handler)
-		}
-	}, [stdout, getSize, onResize])
-
-	return dimensions
-}
 
 export function Chat({ client, onExit }: ChatProps) {
 	const [messages, setMessages] = useState<Message[]>([])

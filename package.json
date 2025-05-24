@@ -10,8 +10,8 @@
 	"author": "gwigz <gwigz@icloud.com>",
 	"bugs": "https://github.com/gwigz/homunculus/issues",
 	"scripts": {
-		"dev:terminal": "bun run ./apps/homunculus-terminal/src",
-		"build": "bun run --filter '*' build",
+		"dev:terminal": "pnpm --filter @gwigz/homunculus-terminal dev",
+		"build": "pnpm -r build",
 		"lint": "biome lint"
 	},
 	"dependencies": {},
@@ -28,8 +28,13 @@
 		"apps/*",
 		"packages/*"
 	],
-	"packageManager": "bun@1.2.9",
-	"patchedDependencies": {
-		"blessed@0.1.81": "patches/blessed@0.1.81.patch"
-	}
+	"overrides": {
+		"@gwigz/homunculus-terminal": {
+			"react": "18.2.0"
+		},
+		"@gwigz/homunculus-docs": {
+			"react": "19.1.0"
+		}
+	},
+	"packageManager": "pnpm@8.15.4"
 }

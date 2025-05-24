@@ -1,5 +1,6 @@
 {
 	"compilerOptions": {
+		"jsx": "react-jsx",
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"target": "ESNext",
@@ -18,10 +19,11 @@
 		"noEmit": true,
 		/* doesn't run in the DOM */
 		"lib": [
-			"ESNext"
+			"ESNext",
 		]
 	},
 	"include": [
-		"src/**/*.ts"
+		"src/**/*.ts",
+		"src/**/*.tsx"
 	]
 }

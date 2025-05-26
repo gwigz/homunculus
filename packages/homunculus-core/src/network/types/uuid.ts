@@ -1,3 +1,5 @@
+import { randomUUID } from "node:crypto"
+
 class UUID {
 	public static readonly size: number = 16
 	public static readonly zero: string = "00000000-0000-0000-0000-000000000000"
@@ -59,6 +61,13 @@ class UUID {
 		return size > 0
 			? new Array(size + (/\./.test(value) ? 2 : 1)).join("0") + value
 			: `${value}`
+	}
+
+	/**
+	 * Generates a random UUID (using `node:crypto.randomUUID`).
+	 */
+	public static random(): string {
+		return randomUUID()
 	}
 }
 

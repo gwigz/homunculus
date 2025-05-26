@@ -1,7 +1,9 @@
-import type { Client } from ".."
+import assert from "node:assert"
+import { randomUUID } from "node:crypto"
+import { type Client, UUID } from ".."
 import { cache, type RegionCache } from "../cache"
 import { AcknowledgeTimeoutError } from "../network/acknowledger"
-import { MapBlockRequest } from "../network/packets"
+import { EstateOwnerMessage, MapBlockRequest } from "../network/packets"
 import Agents from "./agents"
 import Entities from "./entities"
 
@@ -72,6 +74,29 @@ class Region {
 				this.client.emit("error", error as Error)
 			}
 		}
+	}
+
+	public async sendEstateMessage(message: string) {
+		assert(this.client.self?.name, "Cannot send estate message without a name")
+
+		assert(
+			this.client.self?.isEstateManager,
+			"Cannot send estate message without being an estate manager",
+		)
+
+		await this.client.send([
+			new EstateOwnerMessage({
+				agentData: { transactionId: UUID.zero },
+				methodData: {
+					method: "simulatormessage",
+					invoice: randomUUID(),
+				},
+				paramList: [
+					{ parameter: this.client.self.name },
+					{ parameter: message },
+				],
+			}),
+		])
 	}
 }
 

@@ -3,5 +3,5 @@
 	"description": "Client framework",
 	"icon": "PersonStanding",
 	"root": true,
-	"pages": ["---Introduction---", "index"]
+	"pages": ["---Introduction---", "index", "---Tips---", "sending-packets"]
 }

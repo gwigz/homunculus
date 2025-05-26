@@ -11,6 +11,7 @@
 	"bugs": "https://github.com/gwigz/homunculus/issues",
 	"scripts": {
 		"dev:terminal": "pnpm --filter @gwigz/homunculus-terminal dev",
+		"dev:docs": "pnpm --filter @gwigz/homunculus-docs dev",
 		"build": "pnpm -r build",
 		"lint": "biome lint",
 		"check": "biome check"

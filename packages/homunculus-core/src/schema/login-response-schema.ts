@@ -24,9 +24,9 @@ function camelCaseKeysDeep(object: any): any {
 
 const vectorSchema = z
 	.string()
-	.regex(/^\[r-?\d+\.\d+,\s*r-?\d+\.\d+,\s*r-?\d+\.\d+\]$/)
+	.regex(/^\[r-?\d+(\.\d+)?,\s*r-?\d+(\.\d+)?,\s*r-?\d+(\.\d+)?\]$/)
 	.transform((value) => {
-		const [x, y, z] = value.match(/\d+\.\d+/g)!
+		const [x, y, z] = value.match(/\d+(\.\d+)?/g)!
 
 		return new Vector3(Number(x), Number(y), Number(z))
 	})

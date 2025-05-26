@@ -1,3 +1,4 @@
+import assert from "node:assert"
 import { Constants } from "../utilities"
 import Acknowledger from "./acknowledger"
 import type Core from "./core"
@@ -45,7 +46,7 @@ class Circuit {
 		return this.core.self?.session
 	}
 
-	public send(packets: Array<Packet>) {
+	public send(packets: Array<Packet<any>>) {
 		if (this.dead) {
 			throw new Error(Constants.Errors.INACTIVE_CIRCUIT)
 		}
@@ -61,7 +62,7 @@ class Circuit {
 	/**
 	 * @todo Add a retry mechanism, not just a timeout.
 	 */
-	public sendReliable(packets: Array<Packet>, timeout = 10_000) {
+	public sendReliable(packets: Array<Packet<any>>, timeout = 10_000) {
 		for (const packet of packets) {
 			packet.reliable = true
 		}
@@ -123,19 +124,24 @@ class Circuit {
 
 		this.dead = false
 
+		assert(this.self?.key, "Avatar key is required")
+		assert(this.session, "Session is required")
+
 		await this.sendReliable(
 			[
 				new UseCircuitCode({
-					id: this.self?.key,
-					code: this.id,
-					session: this.session,
+					circuitCode: {
+						id: this.self.key,
+						code: this.id,
+						sessionId: this.session,
+					},
 				}),
 			],
 			30_000,
 		)
 
 		// TODO: timeout on AgentMovementComplete, currently we'll just hang if we don't get it
-		await this.sendReliable([new CompleteAgentMovement()], 30_000)
+		await this.sendReliable([new CompleteAgentMovement({})], 30_000)
 	}
 
 	/**

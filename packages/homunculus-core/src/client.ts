@@ -151,7 +151,7 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 	 *
 	 * @param packets Packets to send
 	 */
-	public send(packets: Array<Packet>) {
+	public send(packets: Array<Packet<any>>) {
 		return this.core.circuit?.send(packets)
 	}
 
@@ -161,7 +161,7 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 	 * @param packets Packets to send
 	 * @param timeout Timeout for reliable packets
 	 */
-	public sendReliable(packets: Array<Packet>, timeout = 10_000) {
+	public sendReliable(packets: Array<Packet<any>>, timeout = 10_000) {
 		return this.core.circuit?.sendReliable(packets, timeout)
 	}
 

@@ -20,24 +20,21 @@ class Deserializer {
 		return PacketLookup.find(buffer.id)
 	}
 
-	public convert(PacketConstructor: typeof Packet, buffer: PacketBuffer) {
-		const packet: Packet = new PacketConstructor()
-
-		packet.index = buffer.sequence
-		packet.reliable = buffer.reliable
+	public convert(PacketConstructor: typeof Packet<any>, buffer: PacketBuffer) {
+		const data: Record<string, Record<string, any>> = {}
 
 		if (PacketConstructor.format === undefined) {
-			return packet
+			return new PacketConstructor(data)
 		}
 
-		// set position and uncompress blocks, if we need too.
+		// set position and uncompress blocks, if we need too
 		buffer.prepare()
 
 		// parse everything...
 		for (const [block, format] of PacketConstructor.format) {
 			const quantity = format.quantity ? format.quantity : buffer.read(Types.U8)
 
-			packet.data[block] = []
+			data[block] = []
 
 			// loop through block dependant on quantity value...
 			for (let i = 0; i < quantity; i++) {
@@ -47,9 +44,14 @@ class Deserializer {
 					parameters[name] = buffer.read(Type)
 				}
 
-				packet.data[block].push(parameters)
+				data[block].push(parameters)
 			}
 		}
+
+		const packet: Packet<any> = new PacketConstructor(data)
+
+		packet.index = buffer.sequence
+		packet.reliable = buffer.reliable
 
 		return packet
 	}

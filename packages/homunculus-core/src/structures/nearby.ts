@@ -123,7 +123,7 @@ class Nearby extends AsyncEventEmitter<NearbyEvents> {
 	 */
 	public eject(key: string, ban = false) {
 		return this.client.send([
-			new EjectUser({ data: { target: key, flags: ban ? 1 : 0 } }),
+			new EjectUser({ data: { targetId: key, flags: ban ? 1 : 0 } }),
 		])
 	}
 
@@ -134,7 +134,7 @@ class Nearby extends AsyncEventEmitter<NearbyEvents> {
 	 */
 	public freeze(key: string) {
 		return this.client.send([
-			new FreezeUser({ data: { target: key, flags: 0 } }),
+			new FreezeUser({ data: { targetId: key, flags: 0 } }),
 		])
 	}
 
@@ -145,7 +145,7 @@ class Nearby extends AsyncEventEmitter<NearbyEvents> {
 	 */
 	public unfreeze(key: string) {
 		return this.client.send([
-			new FreezeUser({ data: { target: key, flags: 1 } }),
+			new FreezeUser({ data: { targetId: key, flags: 1 } }),
 		])
 	}
 }

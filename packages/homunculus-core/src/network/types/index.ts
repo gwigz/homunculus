@@ -1,4 +1,4 @@
-import Boolean from "./boolean"
+import Bool from "./bool"
 import Color4 from "./color-4"
 import F32 from "./f32"
 import F64 from "./f64"
@@ -24,7 +24,7 @@ import Vector3D from "./vector-3-d"
 import Vector4 from "./vector-4"
 
 export {
-	Boolean,
+	Bool,
 	Color4,
 	F32,
 	F64,
@@ -51,7 +51,7 @@ export {
 }
 
 export type Type =
-	| Boolean
+	| Bool
 	| Color4
 	| F32
 	| F64

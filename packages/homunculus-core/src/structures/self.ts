@@ -81,24 +81,26 @@ class Self {
 
 		return this.client.send([
 			new AgentUpdate({
-				bodyRotation: this.rotation,
-				headRotation: this.rotation,
-				state: this.state,
-				cameraCenter: this.position,
-				cameraAtAxis: [0.0, 0.0, 0.0],
-				cameraLeftAxis: [0.0, 0.0, 0.0],
-				cameraUpAxis: [0.0, 0.0, 0.0],
-				far: 20,
-				controlFlags: this.lastControlFlags,
-				flags: 0,
+				agentData: {
+					bodyRotation: this.rotation,
+					headRotation: this.rotation,
+					state: this.state,
+					cameraCenter: this.position,
+					cameraAtAxis: Vector3.zero,
+					cameraLeftAxis: Vector3.zero,
+					cameraUpAxis: Vector3.zero,
+					far: 20,
+					controlFlags: this.lastControlFlags,
+					flags: 0,
+				},
 			}),
 		])
 	}
 
-	public sitOnObject(target: string) {
+	public sitOnObject(targetId: string) {
 		return this.client.send([
 			new AgentRequestSit({
-				targetObject: { target, offset: [0, 0, 0.1] },
+				targetObject: { targetId, offset: Vector3.zero },
 			}),
 		])
 	}

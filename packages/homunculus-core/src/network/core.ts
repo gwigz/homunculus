@@ -97,7 +97,7 @@ class Core {
 	 * Disconnects the client from the current circuit.
 	 */
 	public async disconnect() {
-		await this.circuit?.send([new LogoutRequest()])
+		await this.circuit?.send([new LogoutRequest({})])
 	}
 }
 

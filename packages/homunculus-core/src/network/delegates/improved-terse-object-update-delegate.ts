@@ -28,7 +28,9 @@ class ImprovedTerseObjectUpdateDelegate extends Delegate {
 
 			if (!entity) {
 				this.circuit.send([
-					new RequestMultipleObjects({ objectData: { id, cacheMissType: 0 } }),
+					new RequestMultipleObjects({
+						objectData: [{ id, cacheMissType: 0 }],
+					}),
 				])
 
 				continue
@@ -37,7 +39,7 @@ class ImprovedTerseObjectUpdateDelegate extends Delegate {
 			entity.state = buffer.read(Types.U8)
 
 			// next byte defines if this update is for an avatar or not
-			if (buffer.read(Types.Boolean)) {
+			if (buffer.read(Types.Bool)) {
 				// this contains a normal and Z position for the avatars foot shadow,
 				// we don't use these at the moment for anything, so don't include them
 				// for now...

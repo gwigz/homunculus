@@ -1,17 +1,17 @@
-class Boolean {
+class Bool {
 	public static readonly size: number = 1
 
 	/**
 	 * Converts boolean input into a buffer representing an 8-bit unsigned
 	 * boolean.
 	 *
-	 * @param {boolean|number} boolean Boolean to convert
+	 * @param {boolean|number} bool Boolean to convert
 	 * @returns {Buffer}
 	 */
-	public static toBuffer(boolean: boolean | number): Buffer {
-		const buffer = Buffer.allocUnsafe(Boolean.size)
+	public static toBuffer(bool: boolean | number): Buffer {
+		const buffer = Buffer.allocUnsafe(Bool.size)
 
-		buffer.writeUInt8(Number(boolean), 0)
+		buffer.writeUInt8(Number(bool), 0)
 
 		return buffer
 	}
@@ -29,4 +29,4 @@ class Boolean {
 	}
 }
 
-export default Boolean
+export default Bool

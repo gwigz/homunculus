@@ -1,919 +1,479 @@
-import AbortXfer from "./abort-xfer"
-import AcceptCallingCard from "./accept-calling-card"
-import AcceptFriendship from "./accept-friendship"
-import ActivateGestures from "./activate-gestures"
-import ActivateGroup from "./activate-group"
-import AddCircuitCode from "./add-circuit-code"
-import AgentAlertMessage from "./agent-alert-message"
-import AgentAnimation from "./agent-animation"
-import AgentCachedTexture from "./agent-cached-texture"
-import AgentCachedTextureResponse from "./agent-cached-texture-response"
-import AgentDataUpdate from "./agent-data-update"
-import AgentDataUpdateRequest from "./agent-data-update-request"
-import AgentFOV from "./agent-fov"
-import AgentHeightWidth from "./agent-height-width"
-import AgentIsNowWearing from "./agent-is-now-wearing"
-import AgentMovementComplete from "./agent-movement-complete"
-import AgentPause from "./agent-pause"
-import AgentQuitCopy from "./agent-quit-copy"
-import AgentRequestSit from "./agent-request-sit"
-import AgentResume from "./agent-resume"
-import AgentSetAppearance from "./agent-set-appearance"
-import AgentSit from "./agent-sit"
-import AgentThrottle from "./agent-throttle"
-import AgentUpdate from "./agent-update"
-import AgentWearablesRequest from "./agent-wearables-request"
-import AgentWearablesUpdate from "./agent-wearables-update"
-import AlertMessage from "./alert-message"
-import AssetUploadComplete from "./asset-upload-complete"
-import AssetUploadRequest from "./asset-upload-request"
-import AtomicPassObject from "./atomic-pass-object"
-import AttachedSound from "./attached-sound"
-import AttachedSoundGainChange from "./attached-sound-gain-change"
-import AvatarAnimation from "./avatar-animation"
-import AvatarAppearance from "./avatar-appearance"
-import AvatarClassifiedReply from "./avatar-classified-reply"
-import AvatarGroupsReply from "./avatar-groups-reply"
-import AvatarInterestsReply from "./avatar-interests-reply"
-import AvatarInterestsUpdate from "./avatar-interests-update"
-import AvatarNotesReply from "./avatar-notes-reply"
-import AvatarNotesUpdate from "./avatar-notes-update"
-import AvatarPickerReply from "./avatar-picker-reply"
-import AvatarPickerRequest from "./avatar-picker-request"
-import AvatarPickerRequestBackend from "./avatar-picker-request-backend"
-import AvatarPicksReply from "./avatar-picks-reply"
-import AvatarPropertiesReply from "./avatar-properties-reply"
-import AvatarPropertiesRequest from "./avatar-properties-request"
-import AvatarPropertiesRequestBackend from "./avatar-properties-request-backend"
-import AvatarPropertiesUpdate from "./avatar-properties-update"
-import AvatarSitResponse from "./avatar-sit-response"
-import AvatarTextureUpdate from "./avatar-texture-update"
-import BulkUpdateInventory from "./bulk-update-inventory"
-import BuyObjectInventory from "./buy-object-inventory"
-import CameraConstraint from "./camera-constraint"
-import CancelAuction from "./cancel-auction"
-import ChangeInventoryItemFlags from "./change-inventory-item-flags"
-import ChangeUserRights from "./change-user-rights"
-import ChatFromSimulator from "./chat-from-simulator"
-import ChatFromViewer from "./chat-from-viewer"
-import ChatPass from "./chat-pass"
-import CheckParcelAuctions from "./check-parcel-auctions"
-import CheckParcelSales from "./check-parcel-sales"
-import ChildAgentAlive from "./child-agent-alive"
-import ChildAgentDying from "./child-agent-dying"
-import ChildAgentPositionUpdate from "./child-agent-position-update"
-import ChildAgentUnknown from "./child-agent-unknown"
-import ChildAgentUpdate from "./child-agent-update"
-import ClassifiedDelete from "./classified-delete"
-import ClassifiedGodDelete from "./classified-god-delete"
-import ClassifiedInfoReply from "./classified-info-reply"
-import ClassifiedInfoRequest from "./classified-info-request"
-import ClassifiedInfoUpdate from "./classified-info-update"
-import ClearFollowCamProperties from "./clear-follow-cam-properties"
-import CloseCircuit from "./close-circuit"
-import CoarseLocationUpdate from "./coarse-location-update"
-import CompleteAgentMovement from "./complete-agent-movement"
-import CompleteAuction from "./complete-auction"
-import CompletePingCheck from "./complete-ping-check"
-import ConfirmAuctionStart from "./confirm-auction-start"
-import ConfirmEnableSimulator from "./confirm-enable-simulator"
-import ConfirmXferPacket from "./confirm-xfer-packet"
-import CopyInventoryItem from "./copy-inventory-item"
-import CreateGroupReply from "./create-group-reply"
-import CreateGroupRequest from "./create-group-request"
-import CreateInventoryFolder from "./create-inventory-folder"
-import CreateInventoryItem from "./create-inventory-item"
-import CreateLandmarkForEvent from "./create-landmark-for-event"
-import CreateNewOutfitAttachments from "./create-new-outfit-attachments"
-import CreateTrustedCircuit from "./create-trusted-circuit"
-import CrossedRegion from "./crossed-region"
-import DataHomeLocationReply from "./data-home-location-reply"
-import DataHomeLocationRequest from "./data-home-location-request"
-import DataServerLogout from "./data-server-logout"
-import DeRezAck from "./de-rez-ack"
-import DeRezObject from "./de-rez-object"
-import DeactivateGestures from "./deactivate-gestures"
-import DeclineCallingCard from "./decline-calling-card"
-import DeclineFriendship from "./decline-friendship"
-import DenyTrustedCircuit from "./deny-trusted-circuit"
-import DerezContainer from "./derez-container"
-import DetachAttachmentIntoInv from "./detach-attachment-into-inv"
-import DirClassifiedQuery from "./dir-classified-query"
-import DirClassifiedQueryBackend from "./dir-classified-query-backend"
-import DirClassifiedReply from "./dir-classified-reply"
-import DirEventsReply from "./dir-events-reply"
-import DirFindQuery from "./dir-find-query"
-import DirFindQueryBackend from "./dir-find-query-backend"
-import DirGroupsReply from "./dir-groups-reply"
-import DirLandQuery from "./dir-land-query"
-import DirLandQueryBackend from "./dir-land-query-backend"
-import DirPeopleReply from "./dir-people-reply"
-import DirPlacesQuery from "./dir-places-query"
-import DirPlacesQueryBackend from "./dir-places-query-backend"
-import DirPlacesReply from "./dir-places-reply"
-import DisableSimulator from "./disable-simulator"
-import EconomyData from "./economy-data"
-import EconomyDataRequest from "./economy-data-request"
-import EdgeDataPacket from "./edge-data-packet"
-import EjectGroupMemberReply from "./eject-group-member-reply"
-import EjectGroupMemberRequest from "./eject-group-member-request"
-import EjectUser from "./eject-user"
-import EmailMessageReply from "./email-message-reply"
-import EmailMessageRequest from "./email-message-request"
-import EnableSimulator from "./enable-simulator"
-import EstateCovenantReply from "./estate-covenant-reply"
-import EstateCovenantRequest from "./estate-covenant-request"
-import EstateOwnerMessage from "./estate-owner-message"
-import EventGodDelete from "./event-god-delete"
-import EventInfoReply from "./event-info-reply"
-import EventInfoRequest from "./event-info-request"
-import EventLocationReply from "./event-location-reply"
-import EventLocationRequest from "./event-location-request"
-import EventNotificationAddRequest from "./event-notification-add-request"
-import EventNotificationRemoveRequest from "./event-notification-remove-request"
-import FeatureDisabled from "./feature-disabled"
-import FetchInventory from "./fetch-inventory"
-import FetchInventoryDescendents from "./fetch-inventory-descendents"
-import FetchInventoryReply from "./fetch-inventory-reply"
-import FindAgent from "./find-agent"
-import ForceObjectSelect from "./force-object-select"
-import ForceScriptControlRelease from "./force-script-control-release"
-import FormFriendship from "./form-friendship"
-import FreezeUser from "./freeze-user"
-import GenericError from "./generic-error"
-import GenericMessage from "./generic-message"
-import GetScriptRunning from "./get-script-running"
-import GodKickUser from "./god-kick-user"
-import GodUpdateRegionInfo from "./god-update-region-info"
-import GodlikeMessage from "./godlike-message"
-import GrantGodlikePowers from "./grant-godlike-powers"
-import GrantUserRights from "./grant-user-rights"
-import GroupAccountDetailsReply from "./group-account-details-reply"
-import GroupAccountDetailsRequest from "./group-account-details-request"
-import GroupAccountSummaryReply from "./group-account-summary-reply"
-import GroupAccountSummaryRequest from "./group-account-summary-request"
-import GroupAccountTransactionsReply from "./group-account-transactions-reply"
-import GroupAccountTransactionsRequest from "./group-account-transactions-request"
-import GroupActiveProposalItemReply from "./group-active-proposal-item-reply"
-import GroupActiveProposalsRequest from "./group-active-proposals-request"
-import GroupDataUpdate from "./group-data-update"
-import GroupMembersReply from "./group-members-reply"
-import GroupMembersRequest from "./group-members-request"
-import GroupNoticeAdd from "./group-notice-add"
-import GroupNoticeRequest from "./group-notice-request"
-import GroupNoticesListReply from "./group-notices-list-reply"
-import GroupNoticesListRequest from "./group-notices-list-request"
-import GroupProfileReply from "./group-profile-reply"
-import GroupProfileRequest from "./group-profile-request"
-import GroupRoleChanges from "./group-role-changes"
-import GroupRoleDataReply from "./group-role-data-reply"
-import GroupRoleDataRequest from "./group-role-data-request"
-import GroupRoleMembersReply from "./group-role-members-reply"
-import GroupRoleMembersRequest from "./group-role-members-request"
-import GroupRoleUpdate from "./group-role-update"
-import GroupTitleUpdate from "./group-title-update"
-import GroupTitlesReply from "./group-titles-reply"
-import GroupTitlesRequest from "./group-titles-request"
-import GroupVoteHistoryItemReply from "./group-vote-history-item-reply"
-import GroupVoteHistoryRequest from "./group-vote-history-request"
-import HealthMessage from "./health-message"
-import ImageData from "./image-data"
-import ImageNotInDatabase from "./image-not-in-database"
-import ImagePacket from "./image-packet"
-import ImprovedInstantMessage from "./improved-instant-message"
-import ImprovedTerseObjectUpdate from "./improved-terse-object-update"
-import InitiateDownload from "./initiate-download"
-import InternalScriptMail from "./internal-script-mail"
-import InventoryAssetResponse from "./inventory-asset-response"
-import InventoryDescendents from "./inventory-descendents"
-import InviteGroupRequest from "./invite-group-request"
-import InviteGroupResponse from "./invite-group-response"
-import JoinGroupReply from "./join-group-reply"
-import JoinGroupRequest from "./join-group-request"
-import KickUser from "./kick-user"
-import KickUserAck from "./kick-user-ack"
-import KillChildAgents from "./kill-child-agents"
-import KillObject from "./kill-object"
-import LandStatRequest from "./land-stat-request"
-import LayerData from "./layer-data"
-import LeaveGroupReply from "./leave-group-reply"
-import LeaveGroupRequest from "./leave-group-request"
-import LinkInventoryItem from "./link-inventory-item"
-import LiveHelpGroupReply from "./live-help-group-reply"
-import LiveHelpGroupRequest from "./live-help-group-request"
-import LoadURL from "./load-url"
-import LogDwellTime from "./log-dwell-time"
-import LogFailedMoneyTransaction from "./log-failed-money-transaction"
-import LogParcelChanges from "./log-parcel-changes"
-import LogTextMessage from "./log-text-message"
-import LogoutReply from "./logout-reply"
-import LogoutRequest from "./logout-request"
-import MapBlockReply from "./map-block-reply"
-import MapBlockRequest from "./map-block-request"
-import MapItemReply from "./map-item-reply"
-import MapItemRequest from "./map-item-request"
-import MapLayerReply from "./map-layer-reply"
-import MapLayerRequest from "./map-layer-request"
-import MapNameRequest from "./map-name-request"
-import MeanCollisionAlert from "./mean-collision-alert"
-import MergeParcel from "./merge-parcel"
-import ModifyLand from "./modify-land"
-import MoneyBalanceReply from "./money-balance-reply"
-import MoneyBalanceRequest from "./money-balance-request"
-import MoneyTransferBackend from "./money-transfer-backend"
-import MoneyTransferRequest from "./money-transfer-request"
-import MoveInventoryFolder from "./move-inventory-folder"
-import MoveInventoryItem from "./move-inventory-item"
-import MoveTaskInventory from "./move-task-inventory"
-import MultipleObjectUpdate from "./multiple-object-update"
-import MuteListRequest from "./mute-list-request"
-import MuteListUpdate from "./mute-list-update"
-import NameValuePair from "./name-value-pair"
-import NearestLandingRegionReply from "./nearest-landing-region-reply"
-import NearestLandingRegionRequest from "./nearest-landing-region-request"
-import NearestLandingRegionUpdated from "./nearest-landing-region-updated"
-import NeighborList from "./neighbor-list"
-import NetTest from "./net-test"
-import ObjectAdd from "./object-add"
-import ObjectAttach from "./object-attach"
-import ObjectBuy from "./object-buy"
-import ObjectCategory from "./object-category"
-import ObjectClickAction from "./object-click-action"
-import ObjectDeGrab from "./object-de-grab"
-import ObjectDelete from "./object-delete"
-import ObjectDelink from "./object-delink"
-import ObjectDescription from "./object-description"
-import ObjectDeselect from "./object-deselect"
-import ObjectDetach from "./object-detach"
-import ObjectDrop from "./object-drop"
-import ObjectDuplicate from "./object-duplicate"
-import ObjectDuplicateOnRay from "./object-duplicate-on-ray"
-import ObjectExportSelected from "./object-export-selected"
-import ObjectExtraParams from "./object-extra-params"
-import ObjectFlagUpdate from "./object-flag-update"
-import ObjectGrab from "./object-grab"
-import ObjectGrabUpdate from "./object-grab-update"
-import ObjectGroup from "./object-group"
-import ObjectImage from "./object-image"
-import ObjectIncludeInSearch from "./object-include-in-search"
-import ObjectLink from "./object-link"
-import ObjectMaterial from "./object-material"
-import ObjectName from "./object-name"
-import ObjectOwner from "./object-owner"
-import ObjectPermissions from "./object-permissions"
-import ObjectProperties from "./object-properties"
-import ObjectPropertiesFamily from "./object-properties-family"
-import ObjectRotation from "./object-rotation"
-import ObjectSaleInfo from "./object-sale-info"
-import ObjectSelect from "./object-select"
-import ObjectShape from "./object-shape"
-import ObjectSpinStart from "./object-spin-start"
-import ObjectSpinStop from "./object-spin-stop"
-import ObjectSpinUpdate from "./object-spin-update"
-import ObjectUpdate from "./object-update"
-import ObjectUpdateCached from "./object-update-cached"
-import ObjectUpdateCompressed from "./object-update-compressed"
-import OfferCallingCard from "./offer-calling-card"
-import OfflineNotification from "./offline-notification"
-import OnlineNotification from "./online-notification"
-import OpenCircuit from "./open-circuit"
-import Packet from "./packet"
-import PacketAck from "./packet-ack"
-import ParcelAccessListReply from "./parcel-access-list-reply"
-import ParcelAccessListRequest from "./parcel-access-list-request"
-import ParcelAccessListUpdate from "./parcel-access-list-update"
-import ParcelAuctions from "./parcel-auctions"
-import ParcelBuy from "./parcel-buy"
-import ParcelBuyPass from "./parcel-buy-pass"
-import ParcelClaim from "./parcel-claim"
-import ParcelDeedToGroup from "./parcel-deed-to-group"
-import ParcelDisableObjects from "./parcel-disable-objects"
-import ParcelDivide from "./parcel-divide"
-import ParcelDwellReply from "./parcel-dwell-reply"
-import ParcelDwellRequest from "./parcel-dwell-request"
-import ParcelGodForceOwner from "./parcel-god-force-owner"
-import ParcelGodMarkAsContent from "./parcel-god-mark-as-content"
-import ParcelInfoReply from "./parcel-info-reply"
-import ParcelInfoRequest from "./parcel-info-request"
-import ParcelJoin from "./parcel-join"
-import ParcelMediaCommandMessage from "./parcel-media-command-message"
-import ParcelMediaUpdate from "./parcel-media-update"
-import ParcelObjectOwnersRequest from "./parcel-object-owners-request"
-import ParcelOverlay from "./parcel-overlay"
-import ParcelProperties from "./parcel-properties"
-import ParcelPropertiesRequest from "./parcel-properties-request"
-import ParcelPropertiesRequestByID from "./parcel-properties-request-by-id"
-import ParcelPropertiesUpdate from "./parcel-properties-update"
-import ParcelReclaim from "./parcel-reclaim"
-import ParcelRelease from "./parcel-release"
-import ParcelRename from "./parcel-rename"
-import ParcelReturnObjects from "./parcel-return-objects"
-import ParcelSales from "./parcel-sales"
-import ParcelSelectObjects from "./parcel-select-objects"
-import ParcelSetOtherCleanTime from "./parcel-set-other-clean-time"
-import PayPriceReply from "./pay-price-reply"
-import PickDelete from "./pick-delete"
-import PickGodDelete from "./pick-god-delete"
-import PickInfoReply from "./pick-info-reply"
-import PickInfoUpdate from "./pick-info-update"
-import PlacesQuery from "./places-query"
-import PreloadSound from "./preload-sound"
-import PurgeInventoryDescendents from "./purge-inventory-descendents"
-import RebakeAvatarTextures from "./rebake-avatar-textures"
-import Redo from "./redo"
-import RegionHandleRequest from "./region-handle-request"
-import RegionHandshake from "./region-handshake"
-import RegionHandshakeReply from "./region-handshake-reply"
-import RegionIDAndHandleReply from "./region-id-and-handle-reply"
-import RegionInfo from "./region-info"
-import RegionPresenceRequestByHandle from "./region-presence-request-by-handle"
-import RegionPresenceRequestByRegionID from "./region-presence-request-by-region-id"
-import RegionPresenceResponse from "./region-presence-response"
-import RemoveAttachment from "./remove-attachment"
-import RemoveInventoryFolder from "./remove-inventory-folder"
-import RemoveInventoryItem from "./remove-inventory-item"
-import RemoveInventoryObjects from "./remove-inventory-objects"
-import RemoveMuteListEntry from "./remove-mute-list-entry"
-import RemoveNameValuePair from "./remove-name-value-pair"
-import RemoveParcel from "./remove-parcel"
-import RemoveTaskInventory from "./remove-task-inventory"
-import ReplyTaskInventory from "./reply-task-inventory"
-import ReportAutosaveCrash from "./report-autosave-crash"
-import RequestGodlikePowers from "./request-godlike-powers"
-import RequestImage from "./request-image"
-import RequestInventoryAsset from "./request-inventory-asset"
-import RequestMultipleObjects from "./request-multiple-objects"
-import RequestObjectPropertiesFamily from "./request-object-properties-family"
-import RequestParcelTransfer from "./request-parcel-transfer"
-import RequestPayPrice from "./request-pay-price"
-import RequestRegionInfo from "./request-region-info"
-import RequestTaskInventory from "./request-task-inventory"
-import RequestTrustedCircuit from "./request-trusted-circuit"
-import RequestXfer from "./request-xfer"
-import RetrieveInstantMessages from "./retrieve-instant-messages"
-import RevokePermissions from "./revoke-permissions"
-import RezMultipleAttachmentsFromInv from "./rez-multiple-attachments-from-inv"
-import RezObject from "./rez-object"
-import RezObjectFromNotecard from "./rez-object-from-notecard"
-import RezScript from "./rez-script"
-import RezSingleAttachmentFromInv from "./rez-single-attachment-from-inv"
-import RoutedMoneyBalanceReply from "./routed-money-balance-reply"
-import RpcChannelReply from "./rpc-channel-reply"
-import RpcChannelRequest from "./rpc-channel-request"
-import RpcScriptReplyInbound from "./rpc-script-reply-inbound"
-import RpcScriptRequestInbound from "./rpc-script-request-inbound"
-import SaveAssetIntoInventory from "./save-asset-into-inventory"
-import ScriptAnswerYes from "./script-answer-yes"
-import ScriptControlChange from "./script-control-change"
-import ScriptDataReply from "./script-data-reply"
-import ScriptDataRequest from "./script-data-request"
-import ScriptDialog from "./script-dialog"
-import ScriptDialogReply from "./script-dialog-reply"
-import ScriptMailRegistration from "./script-mail-registration"
-import ScriptQuestion from "./script-question"
-import ScriptReset from "./script-reset"
-import ScriptSensorReply from "./script-sensor-reply"
-import ScriptSensorRequest from "./script-sensor-request"
-import ScriptTeleportRequest from "./script-teleport-request"
-import SendPostcard from "./send-postcard"
-import SendXferPacket from "./send-xfer-packet"
-import SetAlwaysRun from "./set-always-run"
-import SetCPURatio from "./set-cpu-ratio"
-import SetFollowCamProperties from "./set-follow-cam-properties"
-import SetGroupAcceptNotices from "./set-group-accept-notices"
-import SetGroupContribution from "./set-group-contribution"
-import SetScriptRunning from "./set-script-running"
-import SetSimPresenceInDatabase from "./set-sim-presence-in-database"
-import SetSimStatusInDatabase from "./set-sim-status-in-database"
-import SetStartLocation from "./set-start-location"
-import SetStartLocationRequest from "./set-start-location-request"
-import SimCrashed from "./sim-crashed"
-import SimStats from "./sim-stats"
-import SimStatus from "./sim-status"
-import SimWideDeletes from "./sim-wide-deletes"
-import SimulatorLoad from "./simulator-load"
-import SimulatorMapUpdate from "./simulator-map-update"
-import SimulatorPresentAtLocation from "./simulator-present-at-location"
-import SimulatorReady from "./simulator-ready"
-import SimulatorSetMap from "./simulator-set-map"
-import SimulatorShutdownRequest from "./simulator-shutdown-request"
-import SimulatorViewerTimeMessage from "./simulator-viewer-time-message"
-import SoundTrigger from "./sound-trigger"
-import StartAuction from "./start-auction"
-import StartLure from "./start-lure"
-import StartPingCheck from "./start-ping-check"
-import StateSave from "./state-save"
-import SubscribeLoad from "./subscribe-load"
-import SystemKickUser from "./system-kick-user"
-import SystemMessage from "./system-message"
-import TallyVotes from "./tally-votes"
-import TelehubInfo from "./telehub-info"
-import TeleportCancel from "./teleport-cancel"
-import TeleportFailed from "./teleport-failed"
-import TeleportFinish from "./teleport-finish"
-import TeleportLandingStatusChanged from "./teleport-landing-status-changed"
-import TeleportLandmarkRequest from "./teleport-landmark-request"
-import TeleportLocal from "./teleport-local"
-import TeleportLocationRequest from "./teleport-location-request"
-import TeleportLureRequest from "./teleport-lure-request"
-import TeleportProgress from "./teleport-progress"
-import TeleportRequest from "./teleport-request"
-import TeleportStart from "./teleport-start"
-import TerminateFriendship from "./terminate-friendship"
-import TestMessage from "./test-message"
-import TrackAgent from "./track-agent"
-import TransferAbort from "./transfer-abort"
-import TransferInfo from "./transfer-info"
-import TransferInventory from "./transfer-inventory"
-import TransferInventoryAck from "./transfer-inventory-ack"
-import TransferPacket from "./transfer-packet"
-import TransferRequest from "./transfer-request"
-import Undo from "./undo"
-import UndoLand from "./undo-land"
-import UnsubscribeLoad from "./unsubscribe-load"
-import UpdateAttachment from "./update-attachment"
-import UpdateCreateInventoryItem from "./update-create-inventory-item"
-import UpdateGroupInfo from "./update-group-info"
-import UpdateInventoryFolder from "./update-inventory-folder"
-import UpdateInventoryItem from "./update-inventory-item"
-import UpdateMuteListEntry from "./update-mute-list-entry"
-import UpdateParcel from "./update-parcel"
-import UpdateSimulator from "./update-simulator"
-import UpdateTaskInventory from "./update-task-inventory"
-import UpdateUserInfo from "./update-user-info"
-import UseCachedMuteList from "./use-cached-mute-list"
-import UseCircuitCode from "./use-circuit-code"
-import UserInfoReply from "./user-info-reply"
-import UserInfoRequest from "./user-info-request"
-import UserReport from "./user-report"
-import UserReportInternal from "./user-report-internal"
-import UUIDGroupNameReply from "./uuid-group-name-reply"
-import UUIDGroupNameRequest from "./uuid-group-name-request"
-import UUIDNameReply from "./uuid-name-reply"
-import UUIDNameRequest from "./uuid-name-request"
-import VelocityInterpolateOff from "./velocity-interpolate-off"
-import VelocityInterpolateOn from "./velocity-interpolate-on"
-import ViewerEffect from "./viewer-effect"
-import ViewerFrozenMessage from "./viewer-frozen-message"
-import ViewerStartAuction from "./viewer-start-auction"
-
-export {
-	AbortXfer,
-	AcceptCallingCard,
-	AcceptFriendship,
-	ActivateGestures,
-	ActivateGroup,
-	AddCircuitCode,
-	AgentAlertMessage,
-	AgentAnimation,
-	AgentCachedTexture,
-	AgentCachedTextureResponse,
-	AgentDataUpdate,
-	AgentDataUpdateRequest,
-	AgentFOV,
-	AgentHeightWidth,
-	AgentIsNowWearing,
-	AgentMovementComplete,
-	AgentPause,
-	AgentQuitCopy,
-	AgentRequestSit,
-	AgentResume,
-	AgentSetAppearance,
-	AgentSit,
-	AgentThrottle,
-	AgentUpdate,
-	AgentWearablesRequest,
-	AgentWearablesUpdate,
-	AlertMessage,
-	AssetUploadComplete,
-	AssetUploadRequest,
-	AtomicPassObject,
-	AttachedSound,
-	AttachedSoundGainChange,
-	AvatarAnimation,
-	AvatarAppearance,
-	AvatarClassifiedReply,
-	AvatarGroupsReply,
-	AvatarInterestsReply,
-	AvatarInterestsUpdate,
-	AvatarNotesReply,
-	AvatarNotesUpdate,
-	AvatarPickerReply,
-	AvatarPickerRequest,
-	AvatarPickerRequestBackend,
-	AvatarPicksReply,
-	AvatarPropertiesReply,
-	AvatarPropertiesRequest,
-	AvatarPropertiesRequestBackend,
-	AvatarPropertiesUpdate,
-	AvatarSitResponse,
-	AvatarTextureUpdate,
-	BulkUpdateInventory,
-	BuyObjectInventory,
-	CameraConstraint,
-	CancelAuction,
-	ChangeInventoryItemFlags,
-	ChangeUserRights,
-	ChatFromSimulator,
-	ChatFromViewer,
-	ChatPass,
-	CheckParcelAuctions,
-	CheckParcelSales,
-	ChildAgentAlive,
-	ChildAgentDying,
-	ChildAgentPositionUpdate,
-	ChildAgentUnknown,
-	ChildAgentUpdate,
-	ClassifiedDelete,
-	ClassifiedGodDelete,
-	ClassifiedInfoReply,
-	ClassifiedInfoRequest,
-	ClassifiedInfoUpdate,
-	ClearFollowCamProperties,
-	CloseCircuit,
-	CoarseLocationUpdate,
-	CompleteAgentMovement,
-	CompleteAuction,
-	CompletePingCheck,
-	ConfirmAuctionStart,
-	ConfirmEnableSimulator,
-	ConfirmXferPacket,
-	CopyInventoryItem,
-	CreateGroupReply,
-	CreateGroupRequest,
-	CreateInventoryFolder,
-	CreateInventoryItem,
-	CreateLandmarkForEvent,
-	CreateNewOutfitAttachments,
-	CreateTrustedCircuit,
-	CrossedRegion,
-	DataHomeLocationReply,
-	DataHomeLocationRequest,
-	DataServerLogout,
-	DeactivateGestures,
-	DeclineCallingCard,
-	DeclineFriendship,
-	DenyTrustedCircuit,
-	DeRezAck,
-	DerezContainer,
-	DeRezObject,
-	DetachAttachmentIntoInv,
-	DirClassifiedQuery,
-	DirClassifiedQueryBackend,
-	DirClassifiedReply,
-	DirEventsReply,
-	DirFindQuery,
-	DirFindQueryBackend,
-	DirGroupsReply,
-	DirLandQuery,
-	DirLandQueryBackend,
-	DirPeopleReply,
-	DirPlacesQuery,
-	DirPlacesQueryBackend,
-	DirPlacesReply,
-	DisableSimulator,
-	EconomyData,
-	EconomyDataRequest,
-	EdgeDataPacket,
-	EjectGroupMemberReply,
-	EjectGroupMemberRequest,
-	EjectUser,
-	EmailMessageReply,
-	EmailMessageRequest,
-	EnableSimulator,
-	EstateCovenantReply,
-	EstateCovenantRequest,
-	EstateOwnerMessage,
-	EventGodDelete,
-	EventInfoReply,
-	EventInfoRequest,
-	EventLocationReply,
-	EventLocationRequest,
-	EventNotificationAddRequest,
-	EventNotificationRemoveRequest,
-	FeatureDisabled,
-	FetchInventory,
-	FetchInventoryDescendents,
-	FetchInventoryReply,
-	FindAgent,
-	ForceObjectSelect,
-	ForceScriptControlRelease,
-	FormFriendship,
-	FreezeUser,
-	GenericError,
-	GenericMessage,
-	GetScriptRunning,
-	GodKickUser,
-	GodlikeMessage,
-	GodUpdateRegionInfo,
-	GrantGodlikePowers,
-	GrantUserRights,
-	GroupAccountDetailsReply,
-	GroupAccountDetailsRequest,
-	GroupAccountSummaryReply,
-	GroupAccountSummaryRequest,
-	GroupAccountTransactionsReply,
-	GroupAccountTransactionsRequest,
-	GroupActiveProposalItemReply,
-	GroupActiveProposalsRequest,
-	GroupDataUpdate,
-	GroupMembersReply,
-	GroupMembersRequest,
-	GroupNoticeAdd,
-	GroupNoticeRequest,
-	GroupNoticesListReply,
-	GroupNoticesListRequest,
-	GroupProfileReply,
-	GroupProfileRequest,
-	GroupRoleChanges,
-	GroupRoleDataReply,
-	GroupRoleDataRequest,
-	GroupRoleMembersReply,
-	GroupRoleMembersRequest,
-	GroupRoleUpdate,
-	GroupTitlesReply,
-	GroupTitlesRequest,
-	GroupTitleUpdate,
-	GroupVoteHistoryItemReply,
-	GroupVoteHistoryRequest,
-	HealthMessage,
-	ImageData,
-	ImageNotInDatabase,
-	ImagePacket,
-	ImprovedInstantMessage,
-	ImprovedTerseObjectUpdate,
-	InitiateDownload,
-	InternalScriptMail,
-	InventoryAssetResponse,
-	InventoryDescendents,
-	InviteGroupRequest,
-	InviteGroupResponse,
-	JoinGroupReply,
-	JoinGroupRequest,
-	KickUser,
-	KickUserAck,
-	KillChildAgents,
-	KillObject,
-	LandStatRequest,
-	LayerData,
-	LeaveGroupReply,
-	LeaveGroupRequest,
-	LinkInventoryItem,
-	LiveHelpGroupReply,
-	LiveHelpGroupRequest,
-	LoadURL,
-	LogDwellTime,
-	LogFailedMoneyTransaction,
-	LogoutReply,
-	LogoutRequest,
-	LogParcelChanges,
-	LogTextMessage,
-	MapBlockReply,
-	MapBlockRequest,
-	MapItemReply,
-	MapItemRequest,
-	MapLayerReply,
-	MapLayerRequest,
-	MapNameRequest,
-	MeanCollisionAlert,
-	MergeParcel,
-	ModifyLand,
-	MoneyBalanceReply,
-	MoneyBalanceRequest,
-	MoneyTransferBackend,
-	MoneyTransferRequest,
-	MoveInventoryFolder,
-	MoveInventoryItem,
-	MoveTaskInventory,
-	MultipleObjectUpdate,
-	MuteListRequest,
-	MuteListUpdate,
-	NameValuePair,
-	NearestLandingRegionReply,
-	NearestLandingRegionRequest,
-	NearestLandingRegionUpdated,
-	NeighborList,
-	NetTest,
-	ObjectAdd,
-	ObjectAttach,
-	ObjectBuy,
-	ObjectCategory,
-	ObjectClickAction,
-	ObjectDeGrab,
-	ObjectDelete,
-	ObjectDelink,
-	ObjectDescription,
-	ObjectDeselect,
-	ObjectDetach,
-	ObjectDrop,
-	ObjectDuplicate,
-	ObjectDuplicateOnRay,
-	ObjectExportSelected,
-	ObjectExtraParams,
-	ObjectFlagUpdate,
-	ObjectGrab,
-	ObjectGrabUpdate,
-	ObjectGroup,
-	ObjectImage,
-	ObjectIncludeInSearch,
-	ObjectLink,
-	ObjectMaterial,
-	ObjectName,
-	ObjectOwner,
-	ObjectPermissions,
-	ObjectProperties,
-	ObjectPropertiesFamily,
-	ObjectRotation,
-	ObjectSaleInfo,
-	ObjectSelect,
-	ObjectShape,
-	ObjectSpinStart,
-	ObjectSpinStop,
-	ObjectSpinUpdate,
-	ObjectUpdate,
-	ObjectUpdateCached,
-	ObjectUpdateCompressed,
-	OfferCallingCard,
-	OfflineNotification,
-	OnlineNotification,
-	OpenCircuit,
-	Packet,
-	PacketAck,
-	ParcelAccessListReply,
-	ParcelAccessListRequest,
-	ParcelAccessListUpdate,
-	ParcelAuctions,
-	ParcelBuy,
-	ParcelBuyPass,
-	ParcelClaim,
-	ParcelDeedToGroup,
-	ParcelDisableObjects,
-	ParcelDivide,
-	ParcelDwellReply,
-	ParcelDwellRequest,
-	ParcelGodForceOwner,
-	ParcelGodMarkAsContent,
-	ParcelInfoReply,
-	ParcelInfoRequest,
-	ParcelJoin,
-	ParcelMediaCommandMessage,
-	ParcelMediaUpdate,
-	ParcelObjectOwnersRequest,
-	ParcelOverlay,
-	ParcelProperties,
-	ParcelPropertiesRequest,
-	ParcelPropertiesRequestByID,
-	ParcelPropertiesUpdate,
-	ParcelReclaim,
-	ParcelRelease,
-	ParcelRename,
-	ParcelReturnObjects,
-	ParcelSales,
-	ParcelSelectObjects,
-	ParcelSetOtherCleanTime,
-	PayPriceReply,
-	PickDelete,
-	PickGodDelete,
-	PickInfoReply,
-	PickInfoUpdate,
-	PlacesQuery,
-	PreloadSound,
-	PurgeInventoryDescendents,
-	RebakeAvatarTextures,
-	Redo,
-	RegionHandleRequest,
-	RegionHandshake,
-	RegionHandshakeReply,
-	RegionIDAndHandleReply,
-	RegionInfo,
-	RegionPresenceRequestByHandle,
-	RegionPresenceRequestByRegionID,
-	RegionPresenceResponse,
-	RemoveAttachment,
-	RemoveInventoryFolder,
-	RemoveInventoryItem,
-	RemoveInventoryObjects,
-	RemoveMuteListEntry,
-	RemoveNameValuePair,
-	RemoveParcel,
-	RemoveTaskInventory,
-	ReplyTaskInventory,
-	ReportAutosaveCrash,
-	RequestGodlikePowers,
-	RequestImage,
-	RequestInventoryAsset,
-	RequestMultipleObjects,
-	RequestObjectPropertiesFamily,
-	RequestParcelTransfer,
-	RequestPayPrice,
-	RequestRegionInfo,
-	RequestTaskInventory,
-	RequestTrustedCircuit,
-	RequestXfer,
-	RetrieveInstantMessages,
-	RevokePermissions,
-	RezMultipleAttachmentsFromInv,
-	RezObject,
-	RezObjectFromNotecard,
-	RezScript,
-	RezSingleAttachmentFromInv,
-	RoutedMoneyBalanceReply,
-	RpcChannelReply,
-	RpcChannelRequest,
-	RpcScriptReplyInbound,
-	RpcScriptRequestInbound,
-	SaveAssetIntoInventory,
-	ScriptAnswerYes,
-	ScriptControlChange,
-	ScriptDataReply,
-	ScriptDataRequest,
-	ScriptDialog,
-	ScriptDialogReply,
-	ScriptMailRegistration,
-	ScriptQuestion,
-	ScriptReset,
-	ScriptSensorReply,
-	ScriptSensorRequest,
-	ScriptTeleportRequest,
-	SendPostcard,
-	SendXferPacket,
-	SetAlwaysRun,
-	SetCPURatio,
-	SetFollowCamProperties,
-	SetGroupAcceptNotices,
-	SetGroupContribution,
-	SetScriptRunning,
-	SetSimPresenceInDatabase,
-	SetSimStatusInDatabase,
-	SetStartLocation,
-	SetStartLocationRequest,
-	SimCrashed,
-	SimStats,
-	SimStatus,
-	SimulatorLoad,
-	SimulatorMapUpdate,
-	SimulatorPresentAtLocation,
-	SimulatorReady,
-	SimulatorSetMap,
-	SimulatorShutdownRequest,
-	SimulatorViewerTimeMessage,
-	SimWideDeletes,
-	SoundTrigger,
-	StartAuction,
-	StartLure,
-	StartPingCheck,
-	StateSave,
-	SubscribeLoad,
-	SystemKickUser,
-	SystemMessage,
-	TallyVotes,
-	TelehubInfo,
-	TeleportCancel,
-	TeleportFailed,
-	TeleportFinish,
-	TeleportLandingStatusChanged,
-	TeleportLandmarkRequest,
-	TeleportLocal,
-	TeleportLocationRequest,
-	TeleportLureRequest,
-	TeleportProgress,
-	TeleportRequest,
-	TeleportStart,
-	TerminateFriendship,
-	TestMessage,
-	TrackAgent,
-	TransferAbort,
-	TransferInfo,
-	TransferInventory,
-	TransferInventoryAck,
-	TransferPacket,
-	TransferRequest,
-	Undo,
-	UndoLand,
-	UnsubscribeLoad,
-	UpdateAttachment,
-	UpdateCreateInventoryItem,
-	UpdateGroupInfo,
-	UpdateInventoryFolder,
-	UpdateInventoryItem,
-	UpdateMuteListEntry,
-	UpdateParcel,
-	UpdateSimulator,
-	UpdateTaskInventory,
-	UpdateUserInfo,
-	UseCachedMuteList,
-	UseCircuitCode,
-	UserInfoReply,
-	UserInfoRequest,
-	UserReport,
-	UserReportInternal,
-	UUIDGroupNameReply,
-	UUIDGroupNameRequest,
-	UUIDNameReply,
-	UUIDNameRequest,
-	VelocityInterpolateOff,
-	VelocityInterpolateOn,
-	ViewerEffect,
-	ViewerFrozenMessage,
-	ViewerStartAuction,
-}
+export * from "./abort-xfer"
+export * from "./accept-calling-card"
+export * from "./accept-friendship"
+export * from "./activate-gestures"
+export * from "./activate-group"
+export * from "./add-circuit-code"
+export * from "./agent-alert-message"
+export * from "./agent-animation"
+export * from "./agent-cached-texture"
+export * from "./agent-cached-texture-response"
+export * from "./agent-data-update"
+export * from "./agent-data-update-request"
+export * from "./agent-drop-group"
+export * from "./agent-fov"
+export * from "./agent-group-data-update"
+export * from "./agent-height-width"
+export * from "./agent-is-now-wearing"
+export * from "./agent-movement-complete"
+export * from "./agent-pause"
+export * from "./agent-quit-copy"
+export * from "./agent-request-sit"
+export * from "./agent-resume"
+export * from "./agent-set-appearance"
+export * from "./agent-sit"
+export * from "./agent-throttle"
+export * from "./agent-update"
+export * from "./agent-wearables-request"
+export * from "./agent-wearables-update"
+export * from "./alert-message"
+export * from "./asset-upload-complete"
+export * from "./asset-upload-request"
+export * from "./atomic-pass-object"
+export * from "./attached-sound"
+export * from "./attached-sound-gain-change"
+export * from "./avatar-animation"
+export * from "./avatar-appearance"
+export * from "./avatar-classified-reply"
+export * from "./avatar-groups-reply"
+export * from "./avatar-interests-reply"
+export * from "./avatar-interests-update"
+export * from "./avatar-notes-reply"
+export * from "./avatar-notes-update"
+export * from "./avatar-picker-reply"
+export * from "./avatar-picker-request"
+export * from "./avatar-picker-request-backend"
+export * from "./avatar-picks-reply"
+export * from "./avatar-properties-reply"
+export * from "./avatar-properties-request"
+export * from "./avatar-properties-request-backend"
+export * from "./avatar-properties-update"
+export * from "./avatar-sit-response"
+export * from "./avatar-texture-update"
+export * from "./bulk-update-inventory"
+export * from "./buy-object-inventory"
+export * from "./camera-constraint"
+export * from "./cancel-auction"
+export * from "./change-inventory-item-flags"
+export * from "./change-user-rights"
+export * from "./chat-from-simulator"
+export * from "./chat-from-viewer"
+export * from "./chat-pass"
+export * from "./check-parcel-auctions"
+export * from "./check-parcel-sales"
+export * from "./child-agent-alive"
+export * from "./child-agent-dying"
+export * from "./child-agent-position-update"
+export * from "./child-agent-unknown"
+export * from "./child-agent-update"
+export * from "./classified-delete"
+export * from "./classified-god-delete"
+export * from "./classified-info-reply"
+export * from "./classified-info-request"
+export * from "./classified-info-update"
+export * from "./clear-follow-cam-properties"
+export * from "./close-circuit"
+export * from "./coarse-location-update"
+export * from "./complete-agent-movement"
+export * from "./complete-auction"
+export * from "./complete-ping-check"
+export * from "./confirm-auction-start"
+export * from "./confirm-enable-simulator"
+export * from "./confirm-xfer-packet"
+export * from "./copy-inventory-from-notecard"
+export * from "./copy-inventory-item"
+export * from "./create-group-reply"
+export * from "./create-group-request"
+export * from "./create-inventory-folder"
+export * from "./create-inventory-item"
+export * from "./create-landmark-for-event"
+export * from "./create-new-outfit-attachments"
+export * from "./create-trusted-circuit"
+export * from "./crossed-region"
+export * from "./data-home-location-reply"
+export * from "./data-home-location-request"
+export * from "./data-server-logout"
+export * from "./de-rez-ack"
+export * from "./de-rez-object"
+export * from "./deactivate-gestures"
+export * from "./decline-calling-card"
+export * from "./decline-friendship"
+export * from "./deny-trusted-circuit"
+export * from "./derez-container"
+export * from "./detach-attachment-into-inv"
+export * from "./dir-classified-query"
+export * from "./dir-classified-query-backend"
+export * from "./dir-classified-reply"
+export * from "./dir-events-reply"
+export * from "./dir-find-query"
+export * from "./dir-find-query-backend"
+export * from "./dir-groups-reply"
+export * from "./dir-land-query"
+export * from "./dir-land-query-backend"
+export * from "./dir-land-reply"
+export * from "./dir-people-reply"
+export * from "./dir-places-query"
+export * from "./dir-places-query-backend"
+export * from "./dir-places-reply"
+export * from "./dir-popular-query"
+export * from "./dir-popular-query-backend"
+export * from "./dir-popular-reply"
+export * from "./disable-simulator"
+export * from "./economy-data"
+export * from "./economy-data-request"
+export * from "./edge-data-packet"
+export * from "./eject-group-member-reply"
+export * from "./eject-group-member-request"
+export * from "./eject-user"
+export * from "./email-message-reply"
+export * from "./email-message-request"
+export * from "./enable-simulator"
+export * from "./estate-covenant-reply"
+export * from "./estate-covenant-request"
+export * from "./estate-owner-message"
+export * from "./event-god-delete"
+export * from "./event-info-reply"
+export * from "./event-info-request"
+export * from "./event-location-reply"
+export * from "./event-location-request"
+export * from "./event-notification-add-request"
+export * from "./event-notification-remove-request"
+export * from "./feature-disabled"
+export * from "./fetch-inventory"
+export * from "./fetch-inventory-descendents"
+export * from "./fetch-inventory-reply"
+export * from "./find-agent"
+export * from "./force-object-select"
+export * from "./force-script-control-release"
+export * from "./form-friendship"
+export * from "./freeze-user"
+export * from "./generic-error"
+export * from "./generic-message"
+export * from "./generic-streaming-message"
+export * from "./get-script-running"
+export * from "./god-kick-user"
+export * from "./god-update-region-info"
+export * from "./godlike-message"
+export * from "./grant-godlike-powers"
+export * from "./grant-user-rights"
+export * from "./group-account-details-reply"
+export * from "./group-account-details-request"
+export * from "./group-account-summary-reply"
+export * from "./group-account-summary-request"
+export * from "./group-account-transactions-reply"
+export * from "./group-account-transactions-request"
+export * from "./group-active-proposal-item-reply"
+export * from "./group-active-proposals-request"
+export * from "./group-data-update"
+export * from "./group-members-reply"
+export * from "./group-members-request"
+export * from "./group-notice-add"
+export * from "./group-notice-request"
+export * from "./group-notices-list-reply"
+export * from "./group-notices-list-request"
+export * from "./group-profile-reply"
+export * from "./group-profile-request"
+export * from "./group-proposal-ballot"
+export * from "./group-role-changes"
+export * from "./group-role-data-reply"
+export * from "./group-role-data-request"
+export * from "./group-role-members-reply"
+export * from "./group-role-members-request"
+export * from "./group-role-update"
+export * from "./group-title-update"
+export * from "./group-titles-reply"
+export * from "./group-titles-request"
+export * from "./group-vote-history-item-reply"
+export * from "./group-vote-history-request"
+export * from "./health-message"
+export * from "./image-data"
+export * from "./image-not-in-database"
+export * from "./image-packet"
+export * from "./improved-instant-message"
+export * from "./improved-terse-object-update"
+export * from "./initiate-download"
+export * from "./internal-script-mail"
+export * from "./inventory-asset-response"
+export * from "./inventory-descendents"
+export * from "./invite-group-request"
+export * from "./invite-group-response"
+export * from "./join-group-reply"
+export * from "./join-group-request"
+export * from "./kick-user"
+export * from "./kick-user-ack"
+export * from "./kill-child-agents"
+export * from "./kill-object"
+export * from "./land-stat-reply"
+export * from "./land-stat-request"
+export * from "./large-generic-message"
+export * from "./layer-data"
+export * from "./leave-group-reply"
+export * from "./leave-group-request"
+export * from "./link-inventory-item"
+export * from "./live-help-group-reply"
+export * from "./live-help-group-request"
+export * from "./load-url"
+export * from "./log-dwell-time"
+export * from "./log-failed-money-transaction"
+export * from "./log-parcel-changes"
+export * from "./log-text-message"
+export * from "./logout-reply"
+export * from "./logout-request"
+export * from "./map-block-reply"
+export * from "./map-block-request"
+export * from "./map-item-reply"
+export * from "./map-item-request"
+export * from "./map-layer-reply"
+export * from "./map-layer-request"
+export * from "./map-name-request"
+export * from "./mean-collision-alert"
+export * from "./merge-parcel"
+export * from "./modify-land"
+export * from "./money-balance-reply"
+export * from "./money-balance-request"
+export * from "./money-transfer-backend"
+export * from "./money-transfer-request"
+export * from "./move-inventory-folder"
+export * from "./move-inventory-item"
+export * from "./move-task-inventory"
+export * from "./multiple-object-update"
+export * from "./mute-list-request"
+export * from "./mute-list-update"
+export * from "./name-value-pair"
+export * from "./nearest-landing-region-reply"
+export * from "./nearest-landing-region-request"
+export * from "./nearest-landing-region-updated"
+export * from "./neighbor-list"
+export * from "./net-test"
+export * from "./object-add"
+export * from "./object-animation"
+export * from "./object-attach"
+export * from "./object-buy"
+export * from "./object-category"
+export * from "./object-click-action"
+export * from "./object-de-grab"
+export * from "./object-delete"
+export * from "./object-delink"
+export * from "./object-description"
+export * from "./object-deselect"
+export * from "./object-detach"
+export * from "./object-drop"
+export * from "./object-duplicate"
+export * from "./object-duplicate-on-ray"
+export * from "./object-export-selected"
+export * from "./object-extra-params"
+export * from "./object-flag-update"
+export * from "./object-grab"
+export * from "./object-grab-update"
+export * from "./object-group"
+export * from "./object-image"
+export * from "./object-include-in-search"
+export * from "./object-link"
+export * from "./object-material"
+export * from "./object-name"
+export * from "./object-owner"
+export * from "./object-permissions"
+export * from "./object-position"
+export * from "./object-properties"
+export * from "./object-properties-family"
+export * from "./object-rotation"
+export * from "./object-sale-info"
+export * from "./object-scale"
+export * from "./object-select"
+export * from "./object-shape"
+export * from "./object-spin-start"
+export * from "./object-spin-stop"
+export * from "./object-spin-update"
+export * from "./object-update"
+export * from "./object-update-cached"
+export * from "./object-update-compressed"
+export * from "./offer-calling-card"
+export * from "./offline-notification"
+export * from "./online-notification"
+export * from "./open-circuit"
+export * from "./packet"
+export * from "./packet-ack"
+export * from "./parcel-access-list-reply"
+export * from "./parcel-access-list-request"
+export * from "./parcel-access-list-update"
+export * from "./parcel-auctions"
+export * from "./parcel-buy"
+export * from "./parcel-buy-pass"
+export * from "./parcel-claim"
+export * from "./parcel-deed-to-group"
+export * from "./parcel-disable-objects"
+export * from "./parcel-divide"
+export * from "./parcel-dwell-reply"
+export * from "./parcel-dwell-request"
+export * from "./parcel-god-force-owner"
+export * from "./parcel-god-mark-as-content"
+export * from "./parcel-info-reply"
+export * from "./parcel-info-request"
+export * from "./parcel-join"
+export * from "./parcel-media-command-message"
+export * from "./parcel-media-update"
+export * from "./parcel-object-owners-reply"
+export * from "./parcel-object-owners-request"
+export * from "./parcel-overlay"
+export * from "./parcel-properties"
+export * from "./parcel-properties-request"
+export * from "./parcel-properties-request-by-id"
+export * from "./parcel-properties-update"
+export * from "./parcel-reclaim"
+export * from "./parcel-release"
+export * from "./parcel-rename"
+export * from "./parcel-return-objects"
+export * from "./parcel-sales"
+export * from "./parcel-select-objects"
+export * from "./parcel-set-other-clean-time"
+export * from "./pay-price-reply"
+export * from "./pick-delete"
+export * from "./pick-god-delete"
+export * from "./pick-info-reply"
+export * from "./pick-info-update"
+export * from "./places-query"
+export * from "./places-reply"
+export * from "./preload-sound"
+export * from "./purge-inventory-descendents"
+export * from "./rebake-avatar-textures"
+export * from "./redo"
+export * from "./region-handle-request"
+export * from "./region-handshake"
+export * from "./region-handshake-reply"
+export * from "./region-id-and-handle-reply"
+export * from "./region-info"
+export * from "./region-presence-request-by-handle"
+export * from "./region-presence-request-by-region-id"
+export * from "./region-presence-response"
+export * from "./remove-attachment"
+export * from "./remove-inventory-folder"
+export * from "./remove-inventory-item"
+export * from "./remove-inventory-objects"
+export * from "./remove-mute-list-entry"
+export * from "./remove-name-value-pair"
+export * from "./remove-parcel"
+export * from "./remove-task-inventory"
+export * from "./reply-task-inventory"
+export * from "./report-autosave-crash"
+export * from "./request-godlike-powers"
+export * from "./request-image"
+export * from "./request-inventory-asset"
+export * from "./request-multiple-objects"
+export * from "./request-object-properties-family"
+export * from "./request-parcel-transfer"
+export * from "./request-pay-price"
+export * from "./request-region-info"
+export * from "./request-task-inventory"
+export * from "./request-trusted-circuit"
+export * from "./request-xfer"
+export * from "./retrieve-instant-messages"
+export * from "./revoke-permissions"
+export * from "./rez-multiple-attachments-from-inv"
+export * from "./rez-object"
+export * from "./rez-object-from-notecard"
+export * from "./rez-restore-to-world"
+export * from "./rez-script"
+export * from "./rez-single-attachment-from-inv"
+export * from "./routed-money-balance-reply"
+export * from "./rpc-channel-reply"
+export * from "./rpc-channel-request"
+export * from "./rpc-script-reply-inbound"
+export * from "./rpc-script-request-inbound"
+export * from "./rpc-script-request-inbound-forward"
+export * from "./save-asset-into-inventory"
+export * from "./script-answer-yes"
+export * from "./script-control-change"
+export * from "./script-data-reply"
+export * from "./script-data-request"
+export * from "./script-dialog"
+export * from "./script-dialog-reply"
+export * from "./script-mail-registration"
+export * from "./script-question"
+export * from "./script-reset"
+export * from "./script-running-reply"
+export * from "./script-sensor-reply"
+export * from "./script-sensor-request"
+export * from "./script-teleport-request"
+export * from "./send-postcard"
+export * from "./send-xfer-packet"
+export * from "./set-always-run"
+export * from "./set-cpu-ratio"
+export * from "./set-follow-cam-properties"
+export * from "./set-group-accept-notices"
+export * from "./set-group-contribution"
+export * from "./set-script-running"
+export * from "./set-sim-presence-in-database"
+export * from "./set-sim-status-in-database"
+export * from "./set-start-location"
+export * from "./set-start-location-request"
+export * from "./sim-crashed"
+export * from "./sim-stats"
+export * from "./sim-status"
+export * from "./sim-wide-deletes"
+export * from "./simulator-load"
+export * from "./simulator-map-update"
+export * from "./simulator-present-at-location"
+export * from "./simulator-ready"
+export * from "./simulator-set-map"
+export * from "./simulator-shutdown-request"
+export * from "./simulator-viewer-time-message"
+export * from "./sound-trigger"
+export * from "./start-auction"
+export * from "./start-group-proposal"
+export * from "./start-lure"
+export * from "./start-ping-check"
+export * from "./state-save"
+export * from "./subscribe-load"
+export * from "./system-kick-user"
+export * from "./system-message"
+export * from "./tally-votes"
+export * from "./telehub-info"
+export * from "./teleport-cancel"
+export * from "./teleport-failed"
+export * from "./teleport-finish"
+export * from "./teleport-landing-status-changed"
+export * from "./teleport-landmark-request"
+export * from "./teleport-local"
+export * from "./teleport-location-request"
+export * from "./teleport-lure-request"
+export * from "./teleport-progress"
+export * from "./teleport-request"
+export * from "./teleport-start"
+export * from "./terminate-friendship"
+export * from "./test-message"
+export * from "./track-agent"
+export * from "./transfer-abort"
+export * from "./transfer-info"
+export * from "./transfer-inventory"
+export * from "./transfer-inventory-ack"
+export * from "./transfer-packet"
+export * from "./transfer-request"
+export * from "./undo"
+export * from "./undo-land"
+export * from "./unsubscribe-load"
+export * from "./update-attachment"
+export * from "./update-create-inventory-item"
+export * from "./update-group-info"
+export * from "./update-inventory-folder"
+export * from "./update-inventory-item"
+export * from "./update-mute-list-entry"
+export * from "./update-parcel"
+export * from "./update-simulator"
+export * from "./update-task-inventory"
+export * from "./update-user-info"
+export * from "./use-cached-mute-list"
+export * from "./use-circuit-code"
+export * from "./user-info-reply"
+export * from "./user-info-request"
+export * from "./user-report"
+export * from "./user-report-internal"
+export * from "./uuid-group-name-reply"
+export * from "./uuid-group-name-request"
+export * from "./uuid-name-reply"
+export * from "./uuid-name-request"
+export * from "./velocity-interpolate-off"
+export * from "./velocity-interpolate-on"
+export * from "./viewer-effect"
+export * from "./viewer-frozen-message"
+export * from "./viewer-start-auction"
+export * from "./viewer-stats"

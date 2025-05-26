@@ -25,7 +25,7 @@ class Delegate {
 	/**
 	 * Handler received and parsed Packet objects.
 	 */
-	public handle(_packet: Packets.Packet) {
+	public handle(_packet: Packets.Packet<any>) {
 		// ...
 	}
 }

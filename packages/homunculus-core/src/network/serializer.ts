@@ -14,7 +14,7 @@ class Serializer {
 	) {}
 
 	public convert(
-		packet: Packet,
+		packet: Packet<any>,
 		reliable?: boolean,
 	): [buffer: Buffer, index: number] {
 		if (!(packet instanceof Packet)) {
@@ -116,7 +116,7 @@ class Serializer {
 	public parse(block: string, format: any, data: any = {}): Buffer {
 		const array = []
 
-		// Attempt to fill optional parts of agent data blocks.
+		// attempt to fill optional parts of agent data blocks
 		if (block === "agentData") {
 			for (const [name] of format.parameters) {
 				if (name in data) {
@@ -124,11 +124,11 @@ class Serializer {
 				}
 
 				switch (name) {
-					case "agent":
+					case "agentId":
 						data.agent = this.circuit.self?.key
 						break
 
-					case "session":
+					case "sessionId":
 						data.session = this.circuit.session
 						break
 
@@ -136,12 +136,10 @@ class Serializer {
 						data.circuitCode = this.circuit.id
 						break
 
+					case "estateId":
 					case "flags":
-						data.flags = 0
-						break
-
-					case "estate":
-						data.estate = 0
+					case "godLevel":
+						data[name] = 0
 						break
 
 					case "godlike":

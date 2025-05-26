@@ -109,18 +109,20 @@ class Agent {
 
 		return this.client.send([
 			new ImprovedInstantMessage({
-				id: this.client.self.session,
-				dialog: 0,
-				timestamp: 0,
-				fromGroup: false,
-				fromAgentName: this.client.self.name,
-				message: `${message}\x00`,
-				toAgent: this.key,
-				offline: 0,
-				parentEstate: 0,
-				region: UUID.zero,
-				position: Vector3.zero,
-				binaryBucket: null,
+				messageBlock: {
+					id: this.client.self.session!,
+					dialog: 0,
+					timestamp: 0,
+					fromGroup: false,
+					fromAgentName: this.client.self.name!,
+					message: `${message}\x00`,
+					toAgentId: this.key,
+					offline: 0,
+					parentEstateId: 0,
+					regionId: UUID.zero,
+					position: Vector3.zero,
+					binaryBucket: "",
+				},
 			}),
 		])
 	}

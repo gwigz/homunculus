@@ -10,5 +10,8 @@
 	},
 	"[html]": {
 		"editor.formatOnSave": false
+	},
+	"[jsonc]": {
+		"editor.defaultFormatter": "biomejs.biome"
 	}
 }

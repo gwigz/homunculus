@@ -12,7 +12,8 @@
 	"scripts": {
 		"dev:terminal": "pnpm --filter @gwigz/homunculus-terminal dev",
 		"build": "pnpm -r build",
-		"lint": "biome lint"
+		"lint": "biome lint",
+		"check": "biome check"
 	},
 	"dependencies": {},
 	"devDependencies": {

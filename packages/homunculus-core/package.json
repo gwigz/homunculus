@@ -28,6 +28,7 @@
 	"scripts": {
 		"dev": "bun run ./src/index.ts",
 		"lint": "biome lint .",
+		"check": "biome check .",
 		"prebuild": "rm -rf dist && tsc",
 		"build": "esbuild src/index.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/index.js",
 		"precodegen": "find ./src/network/packets -type f ! -name 'packet.ts' -delete",

@@ -9,7 +9,11 @@
 		"ignoreUnknown": false,
 		"includes": [
 			"**",
-			"!package.json"
+			"!package.json",
+			"!**/node_modules/**",
+			"!**/dist/**",
+			"!**/.source/**",
+			"!**/.next/**"
 		]
 	},
 	"assist": {
@@ -18,10 +22,7 @@
 				"organizeImports": {
 					"level": "on",
 					"options": {
-						"groups": [
-							":URL:",
-							":NODE:"
-						]
+						"groups": [":URL:", ":NODE:"]
 					}
 				}
 			}
@@ -54,11 +55,7 @@
 					"level": "warn",
 					"fix": "safe",
 					"options": {
-						"functions": [
-							"clsx",
-							"cva",
-							"cn"
-						]
+						"functions": ["clsx", "cva", "cn"]
 					}
 				}
 			},

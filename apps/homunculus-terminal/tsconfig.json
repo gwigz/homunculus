@@ -18,12 +18,7 @@
 		"module": "preserve",
 		"noEmit": true,
 		/* doesn't run in the DOM */
-		"lib": [
-			"ESNext",
-		]
+		"lib": ["ESNext"]
 	},
-	"include": [
-		"src/**/*.ts",
-		"src/**/*.tsx"
-	]
+	"include": ["src/**/*.ts", "src/**/*.tsx"]
 }

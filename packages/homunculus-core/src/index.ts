@@ -1,5 +1,8 @@
 export * from "./client"
+export { Delegate } from "./network/delegates"
+export type { Packet } from "./network/packets"
 export * as Packets from "./network/packets"
+export * from "./network/types"
 export * from "./structures"
 export type { NearbyChatMessage, NearbyEvents } from "./structures/nearby"
 export { Constants } from "./utilities"

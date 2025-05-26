@@ -14,14 +14,14 @@ import { Packet } from "./packet"
 
 export interface CopyInventoryItemData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	inventoryData?: {
 		callbackId: number
-		oldAgentId: string | Buffer
-		oldItemId: string | Buffer
-		newFolderId: string | Buffer
+		oldAgentId: string
+		oldItemId: string
+		newFolderId: string
 		newName: string | Buffer
 	}[]
 }

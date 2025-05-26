@@ -3,11 +3,10 @@ import Delegate from "./delegate"
 
 class AgentDataUpdateDelegate extends Delegate {
 	public override handle(packet: AgentDataUpdate) {
-		const data = packet.data.agentData[0]
+		const data = packet.data.agentData!
 		const self = this.client.self
 
 		if (self) {
-			self.key = data.agent
 			self.firstName = data.firstName.toString("utf8").slice(0, -1)
 			self.lastName = data.lastName.toString("utf8").slice(0, -1)
 		}

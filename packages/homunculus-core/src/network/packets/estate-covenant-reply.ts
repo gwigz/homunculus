@@ -14,10 +14,10 @@ import { Packet } from "./packet"
 
 export interface EstateCovenantReplyData {
 	data?: {
-		covenantId: string | Buffer
+		covenantId: string
 		covenantTimestamp: number
 		estateName: string | Buffer
-		estateOwnerId: string | Buffer
+		estateOwnerId: string
 	}
 }
 

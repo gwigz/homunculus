@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface ObjectSpinStartData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	objectData?: {
-		objectId: string | Buffer
+		objectId: string
 	}
 }
 

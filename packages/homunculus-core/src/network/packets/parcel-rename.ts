@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface ParcelRenameData {
 	parcelData?: {
-		parcelId: string | Buffer
+		parcelId: string
 		newName: string | Buffer
 	}[]
 }

@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface RegionPresenceResponseData {
 	regionData?: {
-		regionId: string | Buffer
+		regionId: string
 		regionHandle: number | bigint
 		internalRegionIp: Types.IP
 		externalRegionIp: Types.IP

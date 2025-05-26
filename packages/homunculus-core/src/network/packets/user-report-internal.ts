@@ -16,18 +16,18 @@ export interface UserReportInternalData {
 	reportData?: {
 		reportType: number
 		category: number
-		reporterId: string | Buffer
+		reporterId: string
 		viewerPosition: Types.Vector3
 		agentPosition: Types.Vector3
-		screenshotId: string | Buffer
-		objectId: string | Buffer
-		ownerId: string | Buffer
-		lastOwnerId: string | Buffer
-		creatorId: string | Buffer
-		regionId: string | Buffer
-		abuserId: string | Buffer
+		screenshotId: string
+		objectId: string
+		ownerId: string
+		lastOwnerId: string
+		creatorId: string
+		regionId: string
+		abuserId: string
 		abuseRegionName: string | Buffer
-		abuseRegionId: string | Buffer
+		abuseRegionId: string
 		summary: string | Buffer
 		details: string | Buffer
 		versionString: string | Buffer

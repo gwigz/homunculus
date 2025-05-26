@@ -9,15 +9,17 @@ import Delegate from "./delegate"
 
 class ImprovedTerseObjectUpdateDelegate extends Delegate {
 	public override handle(packet: ImprovedTerseObjectUpdate) {
-		const handle = packet.data.regionData[0].regionHandle
+		const handle = packet.data.regionData!.regionHandle
 		const region = this.client.regions.get(handle)
 
 		if (!region) {
 			throw Error(Constants.Errors.UNEXPECTED_OBJECT_UPDATE)
 		}
 
-		for (const { data } of packet.data.objectData) {
-			const buffer = new PacketBuffer(data, true)
+		const missing = [] as number[]
+
+		for (const { data } of packet.data.objectData!) {
+			const buffer = new PacketBuffer(data as Buffer, true)
 
 			if (buffer.length !== 44 && buffer.length !== 60) {
 				throw Error(Constants.Errors.UNEXPECTED_OBJECT_UPDATE_LENGTH)
@@ -27,11 +29,7 @@ class ImprovedTerseObjectUpdateDelegate extends Delegate {
 			const entity = region.objects.get(id)
 
 			if (!entity) {
-				this.circuit.send([
-					new RequestMultipleObjects({
-						objectData: [{ id, cacheMissType: 0 }],
-					}),
-				])
+				missing.push(id)
 
 				continue
 			}
@@ -70,6 +68,18 @@ class ImprovedTerseObjectUpdateDelegate extends Delegate {
 				this.client.self.position = entity.position!
 				this.client.self.rotation = entity.rotation!
 			}
+		}
+
+		// TODO: automatically chunk packets?
+		for (let i = 0; i < missing.length; i += 255) {
+			this.circuit.send([
+				new RequestMultipleObjects({
+					objectData: missing.slice(i, i + 255).map((id) => ({
+						id,
+						cacheMissType: 0,
+					})),
+				}),
+			])
 		}
 	}
 }

@@ -20,7 +20,7 @@ class AgentMovementCompleteDelegate extends Delegate {
 
 		assert(self, "Self not found")
 
-		const data = packet.data.data[0]
+		const data = packet.data.data!
 
 		// const sim = packet.data.simData[0]
 		// const simulator = this.client.simulator
@@ -33,12 +33,12 @@ class AgentMovementCompleteDelegate extends Delegate {
 		// TODO: setup an actual objects for region handle (so we can have sugar for
 		// global to local transformations).
 		self.offset = new Vector3(
-			Number(data.regionHandle >> 32n),
-			Number(data.regionHandle & 0xffffffffn),
+			Number((data.regionHandle as bigint) >> 32n),
+			Number((data.regionHandle as bigint) & 0xffffffffn),
 			0,
 		)
 
-		const region = new Region(client, { handle: data.regionHandle })
+		const region = new Region(client, { handle: data.regionHandle as bigint })
 
 		client.region = region
 		client.regions.set(data.regionHandle.toString(), region)

@@ -14,14 +14,14 @@ import { Packet } from "./packet"
 
 export interface DeRezObjectData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	agentBlock?: {
-		groupId: string | Buffer
+		groupId: string
 		destination: number
-		destinationId: string | Buffer
-		transactionId: string | Buffer
+		destinationId: string
+		transactionId: string
 		packetCount: number
 		packetNumber: number
 	}

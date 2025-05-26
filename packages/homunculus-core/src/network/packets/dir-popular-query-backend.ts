@@ -14,10 +14,10 @@ import { Packet } from "./packet"
 
 export interface DirPopularQueryBackendData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	queryData?: {
-		queryId: string | Buffer
+		queryId: string
 		queryFlags: number
 		estateId: number
 		godlike: boolean

@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface GroupNoticeAddData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	messageBlock?: {
-		toGroupId: string | Buffer
-		id: string | Buffer
+		toGroupId: string
+		id: string
 		dialog: number
 		fromAgentName: string | Buffer
 		message: string | Buffer

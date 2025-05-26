@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface SetStartLocationData {
 	startLocationData?: {
-		agentId: string | Buffer
-		regionId: string | Buffer
+		agentId: string
+		regionId: string
 		locationId: number
 		regionHandle: number | bigint
 		locationPos: Types.Vector3

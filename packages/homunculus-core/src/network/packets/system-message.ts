@@ -15,7 +15,8 @@ import { Packet } from "./packet"
 export interface SystemMessageData {
 	methodData?: {
 		method: string | Buffer
-		invoice: string | Buffer
+		invoice: string
+		digest: string | Buffer
 	}
 	paramList?: {
 		parameter: string | Buffer
@@ -36,6 +37,7 @@ export class SystemMessage extends Packet<SystemMessageData> {
 				parameters: new Map<string, Types.Type>([
 					["method", Types.Variable1],
 					["invoice", Types.UUID],
+					["digest", Types.Fixed32],
 				]),
 			},
 		],

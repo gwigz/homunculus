@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface AssetUploadRequestData {
 	assetBlock?: {
-		transactionId: string | Buffer
+		transactionId: string
 		type: number
 		tempfile: boolean
 		storeLocal: boolean

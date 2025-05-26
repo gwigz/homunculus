@@ -14,13 +14,13 @@ import { Packet } from "./packet"
 
 export interface CreateInventoryItemData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	inventoryBlock?: {
 		callbackId: number
-		folderId: string | Buffer
-		transactionId: string | Buffer
+		folderId: string
+		transactionId: string
 		nextOwnerMask: number
 		type: number
 		invType: number

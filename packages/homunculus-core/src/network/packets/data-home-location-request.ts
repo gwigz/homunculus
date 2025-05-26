@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface DataHomeLocationRequestData {
 	info?: {
-		agentId: string | Buffer
+		agentId: string
 		kickedFromEstateId: number
 	}
 	agentInfo?: {

@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface ObjectFlagUpdateData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 		objectLocalId: number
 		usePhysics: boolean
 		isTemporary: boolean

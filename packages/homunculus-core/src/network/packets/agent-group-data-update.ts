@@ -14,13 +14,13 @@ import { Packet } from "./packet"
 
 export interface AgentGroupDataUpdateData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	groupData?: {
-		groupId: string | Buffer
+		groupId: string
 		groupPowers: number | bigint
 		acceptNotices: boolean
-		groupInsigniaId: string | Buffer
+		groupInsigniaId: string
 		contribution: number
 		groupName: string | Buffer
 	}[]

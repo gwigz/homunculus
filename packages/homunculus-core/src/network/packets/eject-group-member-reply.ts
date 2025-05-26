@@ -14,10 +14,10 @@ import { Packet } from "./packet"
 
 export interface EjectGroupMemberReplyData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	groupData?: {
-		groupId: string | Buffer
+		groupId: string
 	}
 	ejectData?: {
 		success: boolean

@@ -14,18 +14,18 @@ import { Packet } from "./packet"
 
 export interface ParcelAccessListUpdateData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	data?: {
 		flags: number
 		localId: number
-		transactionId: string | Buffer
+		transactionId: string
 		sequenceId: number
 		sections: number
 	}
 	list?: {
-		id: string | Buffer
+		id: string
 		time: number
 		flags: number
 	}[]

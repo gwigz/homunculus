@@ -14,9 +14,9 @@ import { Packet } from "./packet"
 
 export interface PreloadSoundData {
 	dataBlock?: {
-		objectId: string | Buffer
-		ownerId: string | Buffer
-		soundId: string | Buffer
+		objectId: string
+		ownerId: string
+		soundId: string
 	}[]
 }
 

@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface MapItemReplyData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 		flags?: number
 	}
 	requestData?: {
@@ -23,7 +23,7 @@ export interface MapItemReplyData {
 	data?: {
 		x: number
 		y: number
-		id: string | Buffer
+		id: string
 		extra: number
 		extra2: number
 		name: string | Buffer

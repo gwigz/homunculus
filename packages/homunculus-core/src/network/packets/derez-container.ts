@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface DerezContainerData {
 	data?: {
-		objectId: string | Buffer
+		objectId: string
 		delete: boolean
 	}
 }

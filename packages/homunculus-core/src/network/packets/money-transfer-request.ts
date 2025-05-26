@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface MoneyTransferRequestData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	moneyData?: {
-		sourceId: string | Buffer
-		destId: string | Buffer
+		sourceId: string
+		destId: string
 		flags: number
 		amount: number
 		aggregatePermNextOwner: number

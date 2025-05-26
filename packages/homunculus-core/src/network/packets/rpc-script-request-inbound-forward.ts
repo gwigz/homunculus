@@ -16,9 +16,9 @@ export interface RpcScriptRequestInboundForwardData {
 	dataBlock?: {
 		rPCServerIp: Types.IP
 		rPCServerPort: Types.Port
-		taskId: string | Buffer
-		itemId: string | Buffer
-		channelId: string | Buffer
+		taskId: string
+		itemId: string
+		channelId: string
 		intValue: number
 		stringValue: string | Buffer
 	}

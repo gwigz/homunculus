@@ -14,13 +14,13 @@ import { Packet } from "./packet"
 
 export interface DirClassifiedReplyData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	queryData?: {
-		queryId: string | Buffer
+		queryId: string
 	}
 	queryReplies?: {
-		classifiedId: string | Buffer
+		classifiedId: string
 		name: string | Buffer
 		classifiedFlags: number
 		creationDate: number

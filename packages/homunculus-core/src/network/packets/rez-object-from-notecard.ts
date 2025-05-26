@@ -14,16 +14,16 @@ import { Packet } from "./packet"
 
 export interface RezObjectFromNotecardData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
-		groupId: string | Buffer
+		agentId?: string
+		sessionId?: string
+		groupId: string
 	}
 	rezData?: {
-		fromTaskId: string | Buffer
+		fromTaskId: string
 		bypassRaycast: number
 		rayStart: Types.Vector3
 		rayEnd: Types.Vector3
-		rayTargetId: string | Buffer
+		rayTargetId: string
 		rayEndIsIntersection: boolean
 		rezSelected: boolean
 		removeItem: boolean
@@ -33,11 +33,11 @@ export interface RezObjectFromNotecardData {
 		nextOwnerMask: number
 	}
 	notecardData?: {
-		notecardItemId: string | Buffer
-		objectId: string | Buffer
+		notecardItemId: string
+		objectId: string
 	}
 	inventoryData?: {
-		itemId: string | Buffer
+		itemId: string
 	}[]
 }
 

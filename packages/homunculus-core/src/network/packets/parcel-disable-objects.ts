@@ -14,18 +14,18 @@ import { Packet } from "./packet"
 
 export interface ParcelDisableObjectsData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	parcelData?: {
 		localId: number
 		returnType: number
 	}
 	taskIDs?: {
-		taskId: string | Buffer
+		taskId: string
 	}[]
 	ownerIDs?: {
-		ownerId: string | Buffer
+		ownerId: string
 	}[]
 }
 

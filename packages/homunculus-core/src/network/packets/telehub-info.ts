@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface TelehubInfoData {
 	telehubBlock?: {
-		objectId: string | Buffer
+		objectId: string
 		objectName: string | Buffer
 		telehubPos: Types.Vector3
 		telehubRot: Types.Quaternion

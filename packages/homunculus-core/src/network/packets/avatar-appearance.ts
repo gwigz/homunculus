@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface AvatarAppearanceData {
 	sender?: {
-		id: string | Buffer
+		id: string
 		isTrial: boolean
 	}
 	objectData?: {
@@ -32,7 +32,7 @@ export interface AvatarAppearanceData {
 		hoverHeight: Types.Vector3
 	}[]
 	attachmentBlock?: {
-		id: string | Buffer
+		id: string
 		attachmentPoint: number
 	}[]
 }

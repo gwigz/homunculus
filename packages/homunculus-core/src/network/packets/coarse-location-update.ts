@@ -23,7 +23,7 @@ export interface CoarseLocationUpdateData {
 		prey: number
 	}
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}[]
 }
 

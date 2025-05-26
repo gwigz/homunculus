@@ -14,9 +14,9 @@ import { Packet } from "./packet"
 
 export interface ObjectGroupData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
-		groupId: string | Buffer
+		agentId?: string
+		sessionId?: string
+		groupId: string
 	}
 	objectData?: {
 		objectLocalId: number

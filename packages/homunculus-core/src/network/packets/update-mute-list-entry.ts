@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface UpdateMuteListEntryData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	muteData?: {
-		muteId: string | Buffer
+		muteId: string
 		muteName: string | Buffer
 		muteType: number
 		muteFlags: number

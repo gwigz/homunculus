@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface LogDwellTimeData {
 	dwellInfo?: {
-		agentId: string | Buffer
-		sessionId: string | Buffer
+		agentId: string
+		sessionId: string
 		duration: number
 		simName: string | Buffer
 		regionX: number

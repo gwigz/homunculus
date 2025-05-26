@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface SetGroupAcceptNoticesData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	data?: {
-		groupId: string | Buffer
+		groupId: string
 		acceptNotices: boolean
 	}
 	newData?: {

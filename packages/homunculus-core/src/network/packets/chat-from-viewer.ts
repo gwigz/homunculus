@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface ChatFromViewerData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	chatData?: {
 		message: string | Buffer

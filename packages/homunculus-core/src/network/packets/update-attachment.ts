@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface UpdateAttachmentData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	attachmentBlock?: {
 		attachmentPoint: number
@@ -23,6 +23,29 @@ export interface UpdateAttachmentData {
 	operationData?: {
 		addItem: boolean
 		useExistingAsset: boolean
+	}
+	inventoryData?: {
+		itemId: string
+		folderId: string
+		creatorId: string
+		ownerId: string
+		groupId: string
+		baseMask: number
+		ownerMask: number
+		groupMask: number
+		everyoneMask: number
+		nextOwnerMask: number
+		groupOwned: boolean
+		assetId: string
+		type: number
+		invType: number
+		flags: number
+		saleType: number
+		salePrice: number
+		name: string | Buffer
+		description: string | Buffer
+		creationDate: number
+		crc: number
 	}
 }
 
@@ -59,6 +82,35 @@ export class UpdateAttachment extends Packet<UpdateAttachmentData> {
 				parameters: new Map<string, Types.Type>([
 					["addItem", Types.Bool],
 					["useExistingAsset", Types.Bool],
+				]),
+			},
+		],
+		[
+			"inventoryData",
+			{
+				quantity: 1,
+				parameters: new Map<string, Types.Type>([
+					["itemId", Types.UUID],
+					["folderId", Types.UUID],
+					["creatorId", Types.UUID],
+					["ownerId", Types.UUID],
+					["groupId", Types.UUID],
+					["baseMask", Types.U32],
+					["ownerMask", Types.U32],
+					["groupMask", Types.U32],
+					["everyoneMask", Types.U32],
+					["nextOwnerMask", Types.U32],
+					["groupOwned", Types.Bool],
+					["assetId", Types.UUID],
+					["type", Types.S8],
+					["invType", Types.S8],
+					["flags", Types.U32],
+					["saleType", Types.U8],
+					["salePrice", Types.S32],
+					["name", Types.Variable1],
+					["description", Types.Variable1],
+					["creationDate", Types.S32],
+					["crc", Types.U32],
 				]),
 			},
 		],

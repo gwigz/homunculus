@@ -17,10 +17,10 @@ export const Errors = {
 		"Unknown packet, needs to be defined within the packets utility file, and tested if nessecery: ",
 	INACTIVE_CIRCUIT: "Cannot send packets over inactive circuit.",
 	HANDSHAKE_ACTIVE_CIRCUIT: "Cannot send handshake to active circuit.",
-	MISSING_BLOCK: "Missing packet block, packet will not be sent.",
+	MISSING_BLOCK: "Missing packet block (%s), packet will not be sent.",
 	INVALID_BLOCK_QUANTITY:
 		"Quantity requirement of packet block not met or above 255, packet will not be sent.",
-	MISSING_PARAMETER: "Missing packet parameters, packet will not be sent.",
+	MISSING_PARAMETER: "Missing packet parameter (%s), packet will not be sent.",
 	INVALID_PARAMETER_TYPE: "Method parameter invalid.",
 	UNEXPECTED_OBJECT_UPDATE: "Recieved object update for unknown region!",
 	UNEXPECTED_OBJECT_UPDATE_LENGTH: "Unexpected object update length!",

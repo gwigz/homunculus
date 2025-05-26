@@ -14,14 +14,15 @@ import { Packet } from "./packet"
 
 export interface ViewerEffectData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	effect?: {
-		id: string | Buffer
-		agentId: string | Buffer
+		id: string
+		agentId: string
 		type: number
 		duration: number
+		color: Types.Color4
 		typeData: string | Buffer
 	}[]
 }
@@ -51,6 +52,7 @@ export class ViewerEffect extends Packet<ViewerEffectData> {
 					["agentId", Types.UUID],
 					["type", Types.U8],
 					["duration", Types.F32],
+					["color", Types.Color4],
 					["typeData", Types.Variable1],
 				]),
 			},

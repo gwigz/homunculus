@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface PlacesQueryData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
-		queryId: string | Buffer
+		agentId?: string
+		sessionId?: string
+		queryId: string
 	}
 	transactionData?: {
-		transactionId: string | Buffer
+		transactionId: string
 	}
 	queryData?: {
 		queryText: string | Buffer

@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface RequestPayPriceData {
 	objectData?: {
-		objectId: string | Buffer
+		objectId: string
 	}
 }
 

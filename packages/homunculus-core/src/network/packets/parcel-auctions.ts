@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface ParcelAuctionsData {
 	parcelData?: {
-		parcelId: string | Buffer
-		winnerId: string | Buffer
+		parcelId: string
+		winnerId: string
 	}[]
 }
 

@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface TeleportLocalData {
 	info?: {
-		agentId: string | Buffer
+		agentId: string
 		locationId: number
 		position: Types.Vector3
 		lookAt: Types.Vector3

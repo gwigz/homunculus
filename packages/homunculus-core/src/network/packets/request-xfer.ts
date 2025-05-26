@@ -19,7 +19,7 @@ export interface RequestXferData {
 		filePath: number
 		deleteOnCompletion: boolean
 		useBigPackets: boolean
-		vFileId: string | Buffer
+		vFileId: string
 		vFileType: number
 	}
 }

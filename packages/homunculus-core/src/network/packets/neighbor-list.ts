@@ -18,7 +18,7 @@ export interface NeighborListData {
 		port: Types.Port
 		publicIp: Types.IP
 		publicPort: Types.Port
-		regionId: string | Buffer
+		regionId: string
 		name: string | Buffer
 		simAccess: number
 	}[]

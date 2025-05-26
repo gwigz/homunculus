@@ -18,7 +18,7 @@ export interface SimCrashedData {
 		regionY: number
 	}
 	users?: {
-		agentId: string | Buffer
+		agentId: string
 	}[]
 }
 

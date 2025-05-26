@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface FormFriendshipData {
 	agentBlock?: {
-		sourceId: string | Buffer
-		destId: string | Buffer
+		sourceId: string
+		destId: string
 	}
 }
 

@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface DetachAttachmentIntoInvData {
 	objectData?: {
-		agentId: string | Buffer
-		itemId: string | Buffer
+		agentId: string
+		itemId: string
 	}
 }
 

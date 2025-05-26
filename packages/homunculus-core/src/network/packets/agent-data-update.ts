@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface AgentDataUpdateData {
 	agentData: {
-		agentId?: string | Buffer
+		agentId?: string
 		firstName: string | Buffer
 		lastName: string | Buffer
 		groupTitle: string | Buffer
-		activeGroupId: string | Buffer
+		activeGroupId: string
 		groupPowers: number | bigint
 		groupName: string | Buffer
 	}

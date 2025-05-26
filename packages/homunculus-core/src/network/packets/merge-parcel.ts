@@ -14,10 +14,10 @@ import { Packet } from "./packet"
 
 export interface MergeParcelData {
 	masterParcelData?: {
-		masterId: string | Buffer
+		masterId: string
 	}
 	slaveParcelData?: {
-		slaveId: string | Buffer
+		slaveId: string
 	}[]
 }
 

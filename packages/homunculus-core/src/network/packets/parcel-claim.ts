@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface ParcelClaimData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	data?: {
-		groupId: string | Buffer
+		groupId: string
 		isGroupOwned: boolean
 		final: boolean
 	}

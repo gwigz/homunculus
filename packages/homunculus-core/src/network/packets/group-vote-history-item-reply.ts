@@ -14,19 +14,19 @@ import { Packet } from "./packet"
 
 export interface GroupVoteHistoryItemReplyData {
 	agentData: {
-		agentId?: string | Buffer
-		groupId: string | Buffer
+		agentId?: string
+		groupId: string
 	}
 	transactionData?: {
-		transactionId: string | Buffer
+		transactionId: string
 		totalNumItems: number
 	}
 	historyItemData?: {
-		voteId: string | Buffer
+		voteId: string
 		terseDateId: string | Buffer
 		startDateTime: string | Buffer
 		endDateTime: string | Buffer
-		voteInitiator: string | Buffer
+		voteInitiator: string
 		voteType: string | Buffer
 		voteResult: string | Buffer
 		majority: number
@@ -34,7 +34,7 @@ export interface GroupVoteHistoryItemReplyData {
 		proposalText: string | Buffer
 	}
 	voteItem?: {
-		candidateId: string | Buffer
+		candidateId: string
 		voteCast: string | Buffer
 		numVotes: number
 	}[]

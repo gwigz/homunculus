@@ -14,13 +14,13 @@ import { Packet } from "./packet"
 
 export interface GroupRoleChangesData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
-		groupId: string | Buffer
+		agentId?: string
+		sessionId?: string
+		groupId: string
 	}
 	roleChange?: {
-		roleId: string | Buffer
-		memberId: string | Buffer
+		roleId: string
+		memberId: string
 		change: number
 	}[]
 }

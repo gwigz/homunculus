@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface AvatarInterestsReplyData {
 	agentData: {
-		agentId?: string | Buffer
-		avatarId: string | Buffer
+		agentId?: string
+		avatarId: string
 	}
 	propertiesData?: {
 		wantToMask: number

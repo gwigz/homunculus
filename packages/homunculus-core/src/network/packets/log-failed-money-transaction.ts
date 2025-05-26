@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface LogFailedMoneyTransactionData {
 	transactionData?: {
-		transactionId: string | Buffer
+		transactionId: string
 		transactionTime: number
 		transactionType: number
-		sourceId: string | Buffer
-		destId: string | Buffer
+		sourceId: string
+		destId: string
 		flags: number
 		amount: number
 		simulatorIp: Types.IP

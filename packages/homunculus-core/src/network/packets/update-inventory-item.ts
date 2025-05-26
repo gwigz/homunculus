@@ -14,24 +14,24 @@ import { Packet } from "./packet"
 
 export interface UpdateInventoryItemData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
-		transactionId: string | Buffer
+		agentId?: string
+		sessionId?: string
+		transactionId: string
 	}
 	inventoryData?: {
-		itemId: string | Buffer
-		folderId: string | Buffer
+		itemId: string
+		folderId: string
 		callbackId: number
-		creatorId: string | Buffer
-		ownerId: string | Buffer
-		groupId: string | Buffer
+		creatorId: string
+		ownerId: string
+		groupId: string
 		baseMask: number
 		ownerMask: number
 		groupMask: number
 		everyoneMask: number
 		nextOwnerMask: number
 		groupOwned: boolean
-		transactionId: string | Buffer
+		transactionId: string
 		type: number
 		invType: number
 		flags: number

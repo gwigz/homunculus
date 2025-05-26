@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface ScriptSensorReplyData {
 	requester?: {
-		sourceId: string | Buffer
+		sourceId: string
 	}
 	sensedData?: {
-		objectId: string | Buffer
-		ownerId: string | Buffer
-		groupId: string | Buffer
+		objectId: string
+		ownerId: string
+		groupId: string
 		position: Types.Vector3
 		velocity: Types.Vector3
 		rotation: Types.Quaternion

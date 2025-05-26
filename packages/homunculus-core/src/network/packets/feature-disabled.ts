@@ -15,8 +15,8 @@ import { Packet } from "./packet"
 export interface FeatureDisabledData {
 	failureInfo?: {
 		errorMessage: string | Buffer
-		agentId: string | Buffer
-		transactionId: string | Buffer
+		agentId: string
+		transactionId: string
 	}
 }
 

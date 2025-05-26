@@ -42,10 +42,6 @@ class Circuit {
 		return this.core.self
 	}
 
-	get session() {
-		return this.core.self?.session
-	}
-
 	public send(packets: Array<Packet<any>>) {
 		if (this.dead) {
 			throw new Error(Constants.Errors.INACTIVE_CIRCUIT)
@@ -125,7 +121,7 @@ class Circuit {
 		this.dead = false
 
 		assert(this.self?.key, "Avatar key is required")
-		assert(this.session, "Session is required")
+		assert(this.self?.sessionId, "Session is required")
 
 		await this.sendReliable(
 			[
@@ -133,7 +129,7 @@ class Circuit {
 					circuitCode: {
 						id: this.self.key,
 						code: this.id,
-						sessionId: this.session,
+						sessionId: this.self?.sessionId,
 					},
 				}),
 			],
@@ -150,6 +146,7 @@ class Circuit {
 	public register(delegates: Record<string, typeof Delegates.Delegate>) {
 		for (const Delegate of Object.values(delegates)) {
 			if (Delegate !== Delegates.Delegate) {
+				// TODO: don't use constructor names for values
 				this.delegates[Delegate.name.replace(/Delegate$/, "")] = new Delegate(
 					this,
 				)

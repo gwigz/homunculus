@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface ParcelInfoReplyData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	data?: {
-		parcelId: string | Buffer
-		ownerId: string | Buffer
+		parcelId: string
+		ownerId: string
 		name: string | Buffer
 		desc: string | Buffer
 		actualArea: number
@@ -28,7 +28,7 @@ export interface ParcelInfoReplyData {
 		globalY: number
 		globalZ: number
 		simName: string | Buffer
-		snapshotId: string | Buffer
+		snapshotId: string
 		dwell: number
 		salePrice: number
 		auctionId: number

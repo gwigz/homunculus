@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface RequestImageData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	requestImage?: {
-		image: string | Buffer
+		image: string
 		discardLevel: number
 		downloadPriority: number
 		packet: number

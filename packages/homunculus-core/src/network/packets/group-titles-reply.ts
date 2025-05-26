@@ -14,13 +14,13 @@ import { Packet } from "./packet"
 
 export interface GroupTitlesReplyData {
 	agentData: {
-		agentId?: string | Buffer
-		groupId: string | Buffer
-		requestId: string | Buffer
+		agentId?: string
+		groupId: string
+		requestId: string
 	}
 	groupData?: {
 		title: string | Buffer
-		roleId: string | Buffer
+		roleId: string
 		selected: boolean
 	}[]
 }

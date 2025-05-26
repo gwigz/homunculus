@@ -14,13 +14,13 @@ import { Packet } from "./packet"
 
 export interface BuyObjectInventoryData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	data?: {
-		objectId: string | Buffer
-		itemId: string | Buffer
-		folderId: string | Buffer
+		objectId: string
+		itemId: string
+		folderId: string
 	}
 }
 

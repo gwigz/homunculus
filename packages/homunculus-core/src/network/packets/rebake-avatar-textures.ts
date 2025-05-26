@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface RebakeAvatarTexturesData {
 	textureData?: {
-		textureId: string | Buffer
+		textureId: string
 	}
 }
 

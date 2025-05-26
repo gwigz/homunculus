@@ -15,8 +15,8 @@ import { Packet } from "./packet"
 export interface LoadURLData {
 	data?: {
 		objectName: string | Buffer
-		objectId: string | Buffer
-		ownerId: string | Buffer
+		objectId: string
+		ownerId: string
 		ownerIsGroup: boolean
 		message: string | Buffer
 		url: string | Buffer

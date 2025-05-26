@@ -14,16 +14,16 @@ import { Packet } from "./packet"
 
 export interface GroupActiveProposalItemReplyData {
 	agentData: {
-		agentId?: string | Buffer
-		groupId: string | Buffer
+		agentId?: string
+		groupId: string
 	}
 	transactionData?: {
-		transactionId: string | Buffer
+		transactionId: string
 		totalNumItems: number
 	}
 	proposalData?: {
-		voteId: string | Buffer
-		voteInitiator: string | Buffer
+		voteId: string
+		voteInitiator: string
 		terseDateId: string | Buffer
 		startDateTime: string | Buffer
 		endDateTime: string | Buffer

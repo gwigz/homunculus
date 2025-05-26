@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface ClearFollowCamPropertiesData {
 	objectData?: {
-		objectId: string | Buffer
+		objectId: string
 	}
 }
 

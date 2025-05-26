@@ -1,4 +1,4 @@
-import { Client, Constants } from "../src"
+import { Client, Constants, Quaternion } from "../src"
 
 const client = new Client()
 const controls = Object.values(Constants.ControlFlags)
@@ -35,7 +35,7 @@ client.on("ready", () => {
 		const cos = Math.cos(angle / 2)
 		const sin = Math.sin(angle / 2)
 
-		self.rotation = [0, 0, sin, cos]
+		self.rotation = new Quaternion(0, 0, sin, cos)
 		self.sendAgentUpdate()
 	}, 100)
 })

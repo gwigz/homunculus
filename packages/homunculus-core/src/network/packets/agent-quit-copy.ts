@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface AgentQuitCopyData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	fuseBlock?: {
 		viewerCircuitCode: number

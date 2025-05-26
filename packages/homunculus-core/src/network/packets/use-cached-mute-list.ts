@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface UseCachedMuteListData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 }
 

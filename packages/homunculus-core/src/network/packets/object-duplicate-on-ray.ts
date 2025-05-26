@@ -14,16 +14,16 @@ import { Packet } from "./packet"
 
 export interface ObjectDuplicateOnRayData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
-		groupId: string | Buffer
+		agentId?: string
+		sessionId?: string
+		groupId: string
 		rayStart: Types.Vector3
 		rayEnd: Types.Vector3
 		bypassRaycast: boolean
 		rayEndIsIntersection: boolean
 		copyCenters: boolean
 		copyRotates: boolean
-		rayTargetId: string | Buffer
+		rayTargetId: string
 		duplicateFlags: number
 	}
 	objectData?: {

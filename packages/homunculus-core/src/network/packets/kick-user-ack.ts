@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface KickUserAckData {
 	userInfo?: {
-		sessionId: string | Buffer
+		sessionId: string
 		flags: number
 	}
 }

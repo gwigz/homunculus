@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface AttachedSoundGainChangeData {
 	dataBlock?: {
-		objectId: string | Buffer
+		objectId: string
 		gain: number
 	}
 }

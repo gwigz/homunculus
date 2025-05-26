@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface GetScriptRunningData {
 	script?: {
-		objectId: string | Buffer
-		itemId: string | Buffer
+		objectId: string
+		itemId: string
 	}
 }
 

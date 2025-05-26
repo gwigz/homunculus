@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface TeleportRequestData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	info?: {
-		regionId: string | Buffer
+		regionId: string
 		position: Types.Vector3
 		lookAt: Types.Vector3
 	}

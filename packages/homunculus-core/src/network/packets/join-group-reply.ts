@@ -14,10 +14,10 @@ import { Packet } from "./packet"
 
 export interface JoinGroupReplyData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	groupData?: {
-		groupId: string | Buffer
+		groupId: string
 		success: boolean
 	}
 }

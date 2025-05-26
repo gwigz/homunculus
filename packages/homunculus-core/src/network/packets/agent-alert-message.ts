@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface AgentAlertMessageData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	alertData?: {
 		modal: boolean

@@ -14,10 +14,10 @@ import { Packet } from "./packet"
 
 export interface DataServerLogoutData {
 	userData?: {
-		agentId: string | Buffer
+		agentId: string
 		viewerIp: Types.IP
 		disconnect: boolean
-		sessionId: string | Buffer
+		sessionId: string
 	}
 }
 

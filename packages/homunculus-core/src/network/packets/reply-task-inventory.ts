@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface ReplyTaskInventoryData {
 	inventoryData?: {
-		taskId: string | Buffer
+		taskId: string
 		serial: number
 		filename: string | Buffer
 	}

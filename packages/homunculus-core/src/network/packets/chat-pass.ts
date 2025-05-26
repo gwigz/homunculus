@@ -16,8 +16,8 @@ export interface ChatPassData {
 	chatData?: {
 		channel: number
 		position: Types.Vector3
-		id: string | Buffer
-		ownerId: string | Buffer
+		id: string
+		ownerId: string
 		name: string | Buffer
 		sourceType: number
 		type: number

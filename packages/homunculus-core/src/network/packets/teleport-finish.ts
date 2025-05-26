@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface TeleportFinishData {
 	info?: {
-		agentId: string | Buffer
+		agentId: string
 		locationId: number
 		simIp: Types.IP
 		simPort: Types.Port

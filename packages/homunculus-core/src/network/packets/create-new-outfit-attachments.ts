@@ -14,15 +14,15 @@ import { Packet } from "./packet"
 
 export interface CreateNewOutfitAttachmentsData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	headerData?: {
-		newFolderId: string | Buffer
+		newFolderId: string
 	}
 	objectData?: {
-		oldItemId: string | Buffer
-		oldFolderId: string | Buffer
+		oldItemId: string
+		oldFolderId: string
 	}[]
 }
 

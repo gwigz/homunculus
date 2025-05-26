@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface RequestGodlikePowersData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	requestBlock?: {
 		godlike: boolean
-		token: string | Buffer
+		token: string
 	}
 }
 

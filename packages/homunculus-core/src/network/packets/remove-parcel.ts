@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface RemoveParcelData {
 	parcelData?: {
-		parcelId: string | Buffer
+		parcelId: string
 	}[]
 }
 

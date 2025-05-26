@@ -14,10 +14,10 @@ import { Packet } from "./packet"
 
 export interface ChangeUserRightsData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	rights?: {
-		agentRelated: string | Buffer
+		agentRelated: string
 		relatedRights: number
 	}[]
 }

@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface AvatarPropertiesRequestBackendData {
 	agentData: {
-		agentId?: string | Buffer
-		avatarId: string | Buffer
+		agentId?: string
+		avatarId: string
 		godLevel?: number
 		webProfilesDisabled: boolean
 	}

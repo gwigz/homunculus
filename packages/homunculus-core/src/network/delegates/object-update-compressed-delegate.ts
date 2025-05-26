@@ -86,15 +86,15 @@ const compressedObjectProperties: CompressedObjectProperties = [
 
 class ObjectUpdateCompressedDelegate extends Delegate {
 	public override handle(packet: ObjectUpdateCompressed) {
-		const handle = packet.data.regionData[0].regionHandle
+		const handle = packet.data.regionData!.regionHandle
 		const region = this.client.regions.get(handle)
 
 		if (!region) {
 			throw Error(Constants.Errors.UNEXPECTED_OBJECT_UPDATE)
 		}
 
-		for (const data of packet.data.objectData) {
-			const buffer = new PacketBuffer(data.data, true)
+		for (const data of packet.data.objectData!) {
+			const buffer = new PacketBuffer(data.data as Buffer, true)
 			const flags = data.updateFlags
 			const key = buffer.read(Types.UUID) as string
 			const id = buffer.read(Types.U32) as number

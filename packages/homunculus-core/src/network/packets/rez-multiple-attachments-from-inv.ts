@@ -14,14 +14,25 @@ import { Packet } from "./packet"
 
 export interface RezMultipleAttachmentsFromInvData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	headerData?: {
-		compoundMsgId: string | Buffer
+		compoundMsgId: string
 		totalObjects: number
 		firstDetachAll: boolean
 	}
+	objectData?: {
+		itemId: string
+		ownerId: string
+		attachmentPt: number
+		itemFlags: number
+		groupMask: number
+		everyoneMask: number
+		nextOwnerMask: number
+		name: string | Buffer
+		description: string | Buffer
+	}[]
 }
 
 export class RezMultipleAttachmentsFromInv extends Packet<RezMultipleAttachmentsFromInvData> {
@@ -49,6 +60,22 @@ export class RezMultipleAttachmentsFromInv extends Packet<RezMultipleAttachments
 					["compoundMsgId", Types.UUID],
 					["totalObjects", Types.U8],
 					["firstDetachAll", Types.Bool],
+				]),
+			},
+		],
+		[
+			"objectData",
+			{
+				parameters: new Map<string, Types.Type>([
+					["itemId", Types.UUID],
+					["ownerId", Types.UUID],
+					["attachmentPt", Types.U8],
+					["itemFlags", Types.U32],
+					["groupMask", Types.U32],
+					["everyoneMask", Types.U32],
+					["nextOwnerMask", Types.U32],
+					["name", Types.Variable1],
+					["description", Types.Variable1],
 				]),
 			},
 		],

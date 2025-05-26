@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface ParcelDwellReplyData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	data?: {
 		localId: number
-		parcelId: string | Buffer
+		parcelId: string
 		dwell: number
 	}
 }

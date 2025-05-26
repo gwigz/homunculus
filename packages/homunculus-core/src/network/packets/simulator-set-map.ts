@@ -16,7 +16,7 @@ export interface SimulatorSetMapData {
 	mapData?: {
 		regionHandle: number | bigint
 		type: number
-		mapImage: string | Buffer
+		mapImage: string
 	}
 }
 

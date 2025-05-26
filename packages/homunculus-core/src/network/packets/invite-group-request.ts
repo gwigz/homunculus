@@ -14,15 +14,15 @@ import { Packet } from "./packet"
 
 export interface InviteGroupRequestData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	groupData?: {
-		groupId: string | Buffer
+		groupId: string
 	}
 	inviteData?: {
-		inviteeId: string | Buffer
-		roleId: string | Buffer
+		inviteeId: string
+		roleId: string
 	}[]
 }
 

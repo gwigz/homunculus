@@ -17,7 +17,7 @@ export interface SimulatorReadyData {
 		simName: string | Buffer
 		simAccess: number
 		regionFlags: number
-		regionId: string | Buffer
+		regionId: string
 		estateId: number
 		parentEstateId: number
 	}

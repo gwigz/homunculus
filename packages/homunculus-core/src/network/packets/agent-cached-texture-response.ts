@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface AgentCachedTextureResponseData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 		serialNum: number
 	}
 	wearableData?: {
-		textureId: string | Buffer
+		textureId: string
 		textureIndex: number
 		hostName: string | Buffer
 	}[]

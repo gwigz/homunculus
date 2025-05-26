@@ -14,14 +14,14 @@ import { Packet } from "./packet"
 
 export interface GroupActiveProposalsRequestData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	groupData?: {
-		groupId: string | Buffer
+		groupId: string
 	}
 	transactionData?: {
-		transactionId: string | Buffer
+		transactionId: string
 	}
 }
 

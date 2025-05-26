@@ -6,7 +6,7 @@ class RegionHandshakeDelegate extends Delegate {
 		this.client.emit("debug", "Region handshake complete...")
 
 		this.client.self!.isEstateManager =
-			packet.data.regionInfo.isEstateManager === true
+			packet.data.regionInfo!.isEstateManager === true
 
 		this.circuit.send([
 			new RegionHandshakeReply({ regionInfo: { flags: 1 | 4 } }),

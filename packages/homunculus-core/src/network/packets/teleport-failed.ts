@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface TeleportFailedData {
 	info?: {
-		agentId: string | Buffer
+		agentId: string
 		reason: string | Buffer
 	}
 	alertInfo?: {

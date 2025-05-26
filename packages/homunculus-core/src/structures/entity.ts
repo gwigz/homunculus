@@ -146,7 +146,7 @@ class Entity {
 					value:
 						typeof data.text.value === "string"
 							? data.text.value
-							: data.text.value.toString("utf8"),
+							: data.text.value.toString("utf8").slice(0, -1),
 
 					color:
 						data.text.color instanceof Color4

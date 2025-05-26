@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface UserInfoReplyData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	userData?: {
 		iMViaEMail: boolean

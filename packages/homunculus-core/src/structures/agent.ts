@@ -110,7 +110,7 @@ class Agent {
 		return this.client.send([
 			new ImprovedInstantMessage({
 				messageBlock: {
-					id: this.client.self.session!,
+					id: this.key,
 					dialog: 0,
 					timestamp: 0,
 					fromGroup: false,

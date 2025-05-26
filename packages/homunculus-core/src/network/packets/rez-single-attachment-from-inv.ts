@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface RezSingleAttachmentFromInvData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	objectData?: {
-		itemId: string | Buffer
-		ownerId: string | Buffer
+		itemId: string
+		ownerId: string
 		attachmentPt: number
 		itemFlags: number
 		groupMask: number

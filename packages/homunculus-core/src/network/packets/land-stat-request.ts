@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface LandStatRequestData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	requestData?: {
 		reportType: number

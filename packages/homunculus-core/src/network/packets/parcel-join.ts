@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface ParcelJoinData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	parcelData?: {
 		west: number

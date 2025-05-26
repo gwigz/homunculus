@@ -15,7 +15,7 @@ import { Packet } from "./packet"
 export interface ParcelMediaUpdateData {
 	dataBlock?: {
 		mediaUrl: string | Buffer
-		mediaId: string | Buffer
+		mediaId: string
 		mediaAutoScale: number
 	}
 	dataBlockExtended?: {

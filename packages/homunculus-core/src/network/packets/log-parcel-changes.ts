@@ -14,18 +14,18 @@ import { Packet } from "./packet"
 
 export interface LogParcelChangesData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	regionData?: {
 		regionHandle: number | bigint
 	}
 	parcelData?: {
-		parcelId: string | Buffer
-		ownerId: string | Buffer
+		parcelId: string
+		ownerId: string
 		isOwnerGroup: boolean
 		actualArea: number
 		action: number
-		transactionId: string | Buffer
+		transactionId: string
 	}[]
 }
 

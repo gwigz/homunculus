@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface KillChildAgentsData {
 	iDBlock?: {
-		agentId: string | Buffer
+		agentId: string
 	}
 }
 

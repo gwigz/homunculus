@@ -14,10 +14,10 @@ import { Packet } from "./packet"
 
 export interface AvatarNotesReplyData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	data?: {
-		targetId: string | Buffer
+		targetId: string
 		notes: string | Buffer
 	}
 }

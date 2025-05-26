@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface ClassifiedGodDeleteData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	data?: {
-		classifiedId: string | Buffer
-		queryId: string | Buffer
+		classifiedId: string
+		queryId: string
 	}
 }
 

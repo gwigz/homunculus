@@ -14,17 +14,17 @@ import { Packet } from "./packet"
 
 export interface GroupProfileReplyData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	groupData?: {
-		groupId: string | Buffer
+		groupId: string
 		name: string | Buffer
 		charter: string | Buffer
 		showInList: boolean
 		memberTitle: string | Buffer
 		powersMask: number | bigint
-		insigniaId: string | Buffer
-		founderId: string | Buffer
+		insigniaId: string
+		founderId: string
 		membershipFee: number
 		openEnrollment: boolean
 		money: number
@@ -32,7 +32,7 @@ export interface GroupProfileReplyData {
 		groupRolesCount: number
 		allowPublish: boolean
 		maturePublish: boolean
-		ownerRole: string | Buffer
+		ownerRole: string
 	}
 }
 

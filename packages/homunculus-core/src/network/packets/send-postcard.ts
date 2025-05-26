@@ -14,9 +14,9 @@ import { Packet } from "./packet"
 
 export interface SendPostcardData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
-		assetId: string | Buffer
+		agentId?: string
+		sessionId?: string
+		assetId: string
 		posGlobal: Types.Vector3D
 		to: string | Buffer
 		from: string | Buffer

@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface UUIDGroupNameRequestData {
 	uuidNameBlock?: {
-		id: string | Buffer
+		id: string
 	}[]
 }
 

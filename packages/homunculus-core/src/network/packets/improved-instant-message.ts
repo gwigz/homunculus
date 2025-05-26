@@ -14,18 +14,18 @@ import { Packet } from "./packet"
 
 export interface ImprovedInstantMessageData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	messageBlock?: {
 		fromGroup: boolean
-		toAgentId: string | Buffer
+		toAgentId: string
 		parentEstateId: number
-		regionId: string | Buffer
+		regionId: string
 		position: Types.Vector3
 		offline: number
 		dialog: number
-		id: string | Buffer
+		id: string
 		timestamp: number
 		fromAgentName: string | Buffer
 		message: string | Buffer

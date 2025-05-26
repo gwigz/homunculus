@@ -14,10 +14,10 @@ import { Packet } from "./packet"
 
 export interface ObjectAnimationData {
 	sender?: {
-		id: string | Buffer
+		id: string
 	}
 	animationList?: {
-		animId: string | Buffer
+		animId: string
 		animSequenceId: number
 	}[]
 }

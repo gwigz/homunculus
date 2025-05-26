@@ -14,7 +14,8 @@ import { Packet } from "./packet"
 
 export interface CreateTrustedCircuitData {
 	dataBlock?: {
-		endPointId: string | Buffer
+		endPointId: string
+		digest: string | Buffer
 	}
 }
 
@@ -29,7 +30,10 @@ export class CreateTrustedCircuit extends Packet<CreateTrustedCircuitData> {
 			"dataBlock",
 			{
 				quantity: 1,
-				parameters: new Map<string, Types.Type>([["endPointId", Types.UUID]]),
+				parameters: new Map<string, Types.Type>([
+					["endPointId", Types.UUID],
+					["digest", Types.Fixed32],
+				]),
 			},
 		],
 	])

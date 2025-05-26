@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface TransferInventoryData {
 	infoBlock?: {
-		sourceId: string | Buffer
-		destId: string | Buffer
-		transactionId: string | Buffer
+		sourceId: string
+		destId: string
+		transactionId: string
 	}
 	inventoryBlock?: {
-		inventoryId: string | Buffer
+		inventoryId: string
 		type: number
 	}[]
 }

@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface ParcelObjectOwnersReplyData {
 	data?: {
-		ownerId: string | Buffer
+		ownerId: string
 		isGroupOwned: boolean
 		count: number
 		onlineStatus: boolean

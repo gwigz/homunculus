@@ -14,17 +14,17 @@ import { Packet } from "./packet"
 
 export interface ClassifiedInfoUpdateData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	data?: {
-		classifiedId: string | Buffer
+		classifiedId: string
 		category: number
 		name: string | Buffer
 		desc: string | Buffer
-		parcelId: string | Buffer
+		parcelId: string
 		parentEstate: number
-		snapshotId: string | Buffer
+		snapshotId: string
 		posGlobal: Types.Vector3D
 		classifiedFlags: number
 		priceForListing: number

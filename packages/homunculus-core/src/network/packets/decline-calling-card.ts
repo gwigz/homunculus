@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface DeclineCallingCardData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	transactionBlock?: {
-		transactionId: string | Buffer
+		transactionId: string
 	}
 }
 

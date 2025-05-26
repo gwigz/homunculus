@@ -14,15 +14,15 @@ import { Packet } from "./packet"
 
 export interface GroupMembersReplyData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	groupData?: {
-		groupId: string | Buffer
-		requestId: string | Buffer
+		groupId: string
+		requestId: string
 		memberCount: number
 	}
 	memberData?: {
-		agentId: string | Buffer
+		agentId: string
 		contribution: number
 		onlineStatus: string | Buffer
 		agentPowers: number | bigint

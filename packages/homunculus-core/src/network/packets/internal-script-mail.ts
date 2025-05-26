@@ -15,7 +15,7 @@ import { Packet } from "./packet"
 export interface InternalScriptMailData {
 	dataBlock?: {
 		from: string | Buffer
-		to: string | Buffer
+		to: string
 		subject: string | Buffer
 		body: string | Buffer
 	}

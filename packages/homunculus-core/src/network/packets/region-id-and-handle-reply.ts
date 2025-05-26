@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface RegionIDAndHandleReplyData {
 	replyBlock?: {
-		regionId: string | Buffer
+		regionId: string
 		regionHandle: number | bigint
 	}
 }

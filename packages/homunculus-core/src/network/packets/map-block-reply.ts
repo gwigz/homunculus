@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface MapBlockReplyData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 		flags?: number
 	}
 	data?: {
@@ -25,7 +25,7 @@ export interface MapBlockReplyData {
 		regionFlags: number
 		waterHeight: number
 		agents: number
-		mapImageId: string | Buffer
+		mapImageId: string
 	}[]
 }
 

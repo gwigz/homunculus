@@ -14,9 +14,9 @@ import { Packet } from "./packet"
 
 export interface RpcChannelReplyData {
 	dataBlock?: {
-		taskId: string | Buffer
-		itemId: string | Buffer
-		channelId: string | Buffer
+		taskId: string
+		itemId: string
+		channelId: string
 	}
 }
 

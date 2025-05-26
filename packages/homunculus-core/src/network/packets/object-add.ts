@@ -14,9 +14,9 @@ import { Packet } from "./packet"
 
 export interface ObjectAddData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
-		groupId: string | Buffer
+		agentId?: string
+		sessionId?: string
+		groupId: string
 	}
 	objectData?: {
 		pCode: number
@@ -43,7 +43,7 @@ export interface ObjectAddData {
 		bypassRaycast: number
 		rayStart: Types.Vector3
 		rayEnd: Types.Vector3
-		rayTargetId: string | Buffer
+		rayTargetId: string
 		rayEndIsIntersection: number
 		scale: Types.Vector3
 		rotation: Types.Quaternion

@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface StartAuctionData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	parcelData?: {
-		parcelId: string | Buffer
-		snapshotId: string | Buffer
+		parcelId: string
+		snapshotId: string
 		name: string | Buffer
 	}
 }

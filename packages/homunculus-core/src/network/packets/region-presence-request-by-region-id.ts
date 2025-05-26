@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface RegionPresenceRequestByRegionIDData {
 	regionData?: {
-		regionId: string | Buffer
+		regionId: string
 	}[]
 }
 

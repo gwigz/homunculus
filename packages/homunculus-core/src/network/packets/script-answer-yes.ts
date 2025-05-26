@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface ScriptAnswerYesData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	data?: {
-		taskId: string | Buffer
-		itemId: string | Buffer
+		taskId: string
+		itemId: string
 		questions: number
 	}
 }

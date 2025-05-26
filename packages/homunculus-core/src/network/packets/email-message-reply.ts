@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface EmailMessageReplyData {
 	dataBlock?: {
-		objectId: string | Buffer
+		objectId: string
 		more: number
 		time: number
 		fromAddress: string | Buffer

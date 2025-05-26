@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface StateSaveData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	dataBlock?: {
 		filename: string | Buffer

@@ -21,7 +21,7 @@ export interface ParcelPropertiesData {
 		otherCount: number
 		publicCount: number
 		localId: number
-		ownerId: string | Buffer
+		ownerId: string
 		isGroupOwned: boolean
 		auctionId: number
 		claimDate: number
@@ -48,14 +48,14 @@ export interface ParcelPropertiesData {
 		desc: string | Buffer
 		musicUrl: string | Buffer
 		mediaUrl: string | Buffer
-		mediaId: string | Buffer
+		mediaId: string
 		mediaAutoScale: number
-		groupId: string | Buffer
+		groupId: string
 		passPrice: number
 		passHours: number
 		category: number
-		authBuyerId: string | Buffer
-		snapshotId: string | Buffer
+		authBuyerId: string
+		snapshotId: string
 		userLocation: Types.Vector3
 		userLookAt: Types.Vector3
 		landingType: number

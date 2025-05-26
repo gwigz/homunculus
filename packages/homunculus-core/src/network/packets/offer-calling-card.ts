@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface OfferCallingCardData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	agentBlock?: {
-		destId: string | Buffer
-		transactionId: string | Buffer
+		destId: string
+		transactionId: string
 	}
 }
 

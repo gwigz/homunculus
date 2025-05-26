@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface SetSimStatusInDatabaseData {
 	data?: {
-		regionId: string | Buffer
+		regionId: string
 		hostName: string | Buffer
 		x: number
 		y: number

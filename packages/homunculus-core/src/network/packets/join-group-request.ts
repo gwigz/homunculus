@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface JoinGroupRequestData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	groupData?: {
-		groupId: string | Buffer
+		groupId: string
 	}
 }
 

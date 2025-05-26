@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface SetGroupContributionData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	data?: {
-		groupId: string | Buffer
+		groupId: string
 		contribution: number
 	}
 }

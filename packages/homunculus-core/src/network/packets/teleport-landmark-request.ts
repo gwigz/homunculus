@@ -14,9 +14,9 @@ import { Packet } from "./packet"
 
 export interface TeleportLandmarkRequestData {
 	info?: {
-		agentId: string | Buffer
-		sessionId: string | Buffer
-		landmarkId: string | Buffer
+		agentId: string
+		sessionId: string
+		landmarkId: string
 	}
 }
 

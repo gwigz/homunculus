@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface TrackAgentData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	targetData?: {
-		preyId: string | Buffer
+		preyId: string
 	}
 }
 

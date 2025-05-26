@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface RedoData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
-		groupId: string | Buffer
+		agentId?: string
+		sessionId?: string
+		groupId: string
 	}
 	objectData?: {
-		objectId: string | Buffer
+		objectId: string
 	}[]
 }
 

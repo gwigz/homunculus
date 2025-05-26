@@ -14,14 +14,14 @@ import { Packet } from "./packet"
 
 export interface AvatarAnimationData {
 	sender?: {
-		id: string | Buffer
+		id: string
 	}
 	animationList?: {
-		animId: string | Buffer
+		animId: string
 		animSequenceId: number
 	}[]
 	animationSourceList?: {
-		objectId: string | Buffer
+		objectId: string
 	}[]
 	physicalAvatarEventList?: {
 		typeData: string | Buffer

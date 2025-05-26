@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface SetSimPresenceInDatabaseData {
 	simData?: {
-		regionId: string | Buffer
+		regionId: string
 		hostName: string | Buffer
 		gridX: number
 		gridY: number

@@ -14,22 +14,22 @@ import { Packet } from "./packet"
 
 export interface RezRestoreToWorldData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	inventoryData?: {
-		itemId: string | Buffer
-		folderId: string | Buffer
-		creatorId: string | Buffer
-		ownerId: string | Buffer
-		groupId: string | Buffer
+		itemId: string
+		folderId: string
+		creatorId: string
+		ownerId: string
+		groupId: string
 		baseMask: number
 		ownerMask: number
 		groupMask: number
 		everyoneMask: number
 		nextOwnerMask: number
 		groupOwned: boolean
-		transactionId: string | Buffer
+		transactionId: string
 		type: number
 		invType: number
 		flags: number

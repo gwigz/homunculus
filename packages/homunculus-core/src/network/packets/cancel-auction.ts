@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface CancelAuctionData {
 	parcelData?: {
-		parcelId: string | Buffer
+		parcelId: string
 	}[]
 }
 

@@ -15,8 +15,8 @@ import { Packet } from "./packet"
 export interface AddCircuitCodeData {
 	circuitCode?: {
 		code: number
-		sessionId: string | Buffer
-		agentId: string | Buffer
+		sessionId: string
+		agentId: string
 	}
 }
 

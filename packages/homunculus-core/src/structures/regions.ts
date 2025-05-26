@@ -9,22 +9,22 @@ export interface RegionsEvents {
 class Regions extends AsyncEventEmitter<RegionsEvents> {
 	private regions = new Map<string, Region>()
 
-	public has(handle: string | bigint) {
+	public has(handle: string | number | bigint) {
 		return this.regions.has(handle.toString())
 	}
 
-	public get(handle: string | bigint) {
+	public get(handle: string | number | bigint) {
 		return this.regions.get(handle.toString())
 	}
 
-	public set(handle: string | bigint, region: Region) {
+	public set(handle: string | number | bigint, region: Region) {
 		this.regions.set(handle.toString(), region)
 		this.emit("set", region)
 
 		return this
 	}
 
-	public delete(handle: string | bigint) {
+	public delete(handle: string | number | bigint) {
 		this.emit("delete", handle.toString())
 
 		return this.regions.delete(handle.toString())

@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface AgentUpdateData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 		bodyRotation: Types.Quaternion
 		headRotation: Types.Quaternion
 		state: number

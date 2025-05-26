@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface SystemKickUserData {
 	agentInfo?: {
-		agentId: string | Buffer
+		agentId: string
 	}[]
 }
 

@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface RegionHandleRequestData {
 	requestBlock?: {
-		regionId: string | Buffer
+		regionId: string
 	}
 }
 

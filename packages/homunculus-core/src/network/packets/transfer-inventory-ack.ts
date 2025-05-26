@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface TransferInventoryAckData {
 	infoBlock?: {
-		transactionId: string | Buffer
-		inventoryId: string | Buffer
+		transactionId: string
+		inventoryId: string
 	}
 }
 

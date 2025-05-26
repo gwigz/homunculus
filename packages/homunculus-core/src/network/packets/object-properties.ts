@@ -14,10 +14,10 @@ import { Packet } from "./packet"
 
 export interface ObjectPropertiesData {
 	objectData?: {
-		objectId: string | Buffer
-		creatorId: string | Buffer
-		ownerId: string | Buffer
-		groupId: string | Buffer
+		objectId: string
+		creatorId: string
+		ownerId: string
+		groupId: string
 		creationDate: number | bigint
 		baseMask: number
 		ownerMask: number
@@ -32,10 +32,10 @@ export interface ObjectPropertiesData {
 		aggregatePermTexturesOwner: number
 		category: number
 		inventorySerial: number
-		itemId: string | Buffer
-		folderId: string | Buffer
-		fromTaskId: string | Buffer
-		lastOwnerId: string | Buffer
+		itemId: string
+		folderId: string
+		fromTaskId: string
+		lastOwnerId: string
 		name: string | Buffer
 		description: string | Buffer
 		touchName: string | Buffer

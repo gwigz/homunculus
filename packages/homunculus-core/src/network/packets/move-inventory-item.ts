@@ -14,13 +14,13 @@ import { Packet } from "./packet"
 
 export interface MoveInventoryItemData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 		stamp: boolean
 	}
 	inventoryData?: {
-		itemId: string | Buffer
-		folderId: string | Buffer
+		itemId: string
+		folderId: string
 		newName: string | Buffer
 	}[]
 }

@@ -6,10 +6,13 @@ class UUID {
 	 * Converts string input into a buffer representing a UUID.
 	 *
 	 * @todo Optimize this, it's probably not that good
-	 * @param {string} uuid UUID string to convert
-	 * @returns {Buffer}
+	 * @param uuid UUID string to convert
 	 */
-	public static toBuffer(uuid: string): Buffer {
+	public static toBuffer(uuid: string | Buffer): Buffer {
+		if (typeof uuid !== "string") {
+			return uuid
+		}
+
 		const bytes = []
 		const parts = uuid.split("-")
 
@@ -28,7 +31,6 @@ class UUID {
 	 * @todo Optimize this, it's probably not that good
 	 * @param buffer Buffer to convert
 	 * @param position Position to read from
-	 * @returns {string}
 	 */
 	public static fromBuffer(buffer: Buffer, position = 0): string {
 		let output = ""
@@ -48,9 +50,8 @@ class UUID {
 	/**
 	 * Zero padding helper function, may be moved.
 	 *
-	 * @param {string} value Character to pad
+	 * @param value Character to pad
 	 * @param width Number of characters to zero pad
-	 * @returns {string}
 	 */
 	public static pad(value: string, width: number): string {
 		const size = width - value.length

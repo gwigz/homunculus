@@ -15,8 +15,8 @@ import { Packet } from "./packet"
 export interface UseCircuitCodeData {
 	circuitCode?: {
 		code: number
-		sessionId: string | Buffer
-		id: string | Buffer
+		sessionId: string
+		id: string
 	}
 }
 

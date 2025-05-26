@@ -14,9 +14,9 @@ import { Packet } from "./packet"
 
 export interface AvatarPickerRequestData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
-		queryId: string | Buffer
+		agentId?: string
+		sessionId?: string
+		queryId: string
 	}
 	data?: {
 		name: string | Buffer

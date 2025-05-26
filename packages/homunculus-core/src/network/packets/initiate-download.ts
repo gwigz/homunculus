@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface InitiateDownloadData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	fileData?: {
 		simFilename: string | Buffer

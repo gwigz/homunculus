@@ -14,15 +14,15 @@ import { Packet } from "./packet"
 
 export interface StartLureData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	info?: {
 		lureType: number
 		message: string | Buffer
 	}
 	targetData?: {
-		targetId: string | Buffer
+		targetId: string
 	}[]
 }
 

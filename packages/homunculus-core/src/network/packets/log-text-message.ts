@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface LogTextMessageData {
 	dataBlock?: {
-		fromAgentId: string | Buffer
-		toAgentId: string | Buffer
+		fromAgentId: string
+		toAgentId: string
 		globalX: number
 		globalY: number
 		time: number

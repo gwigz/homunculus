@@ -14,10 +14,10 @@ import { Packet } from "./packet"
 
 export interface RequestInventoryAssetData {
 	queryData?: {
-		queryId: string | Buffer
-		agentId: string | Buffer
-		ownerId: string | Buffer
-		itemId: string | Buffer
+		queryId: string
+		agentId: string
+		ownerId: string
+		itemId: string
 	}
 }
 

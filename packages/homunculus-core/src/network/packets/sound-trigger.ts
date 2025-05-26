@@ -14,10 +14,10 @@ import { Packet } from "./packet"
 
 export interface SoundTriggerData {
 	soundData?: {
-		soundId: string | Buffer
-		ownerId: string | Buffer
-		objectId: string | Buffer
-		parentId: string | Buffer
+		soundId: string
+		ownerId: string
+		objectId: string
+		parentId: string
 		handle: number | bigint
 		position: Types.Vector3
 		gain: number

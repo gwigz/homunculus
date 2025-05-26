@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface CreateInventoryFolderData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	folderData?: {
-		folderId: string | Buffer
-		parentId: string | Buffer
+		folderId: string
+		parentId: string
 		type: number
 		name: string | Buffer
 	}

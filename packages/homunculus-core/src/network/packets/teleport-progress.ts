@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface TeleportProgressData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	info?: {
 		teleportFlags: number

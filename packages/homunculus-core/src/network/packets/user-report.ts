@@ -14,19 +14,19 @@ import { Packet } from "./packet"
 
 export interface UserReportData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	reportData?: {
 		reportType: number
 		category: number
 		position: Types.Vector3
 		checkFlags: number
-		screenshotId: string | Buffer
-		objectId: string | Buffer
-		abuserId: string | Buffer
+		screenshotId: string
+		objectId: string
+		abuserId: string
 		abuseRegionName: string | Buffer
-		abuseRegionId: string | Buffer
+		abuseRegionId: string
 		summary: string | Buffer
 		details: string | Buffer
 		versionString: string | Buffer

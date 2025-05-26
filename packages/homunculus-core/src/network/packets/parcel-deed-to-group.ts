@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface ParcelDeedToGroupData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	data?: {
-		groupId: string | Buffer
+		groupId: string
 		localId: number
 	}
 }

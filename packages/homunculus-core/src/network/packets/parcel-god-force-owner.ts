@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface ParcelGodForceOwnerData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	data?: {
-		ownerId: string | Buffer
+		ownerId: string
 		localId: number
 	}
 }

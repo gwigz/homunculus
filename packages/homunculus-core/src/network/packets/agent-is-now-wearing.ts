@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface AgentIsNowWearingData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	wearableData?: {
-		itemId: string | Buffer
+		itemId: string
 		wearableType: number
 	}[]
 }

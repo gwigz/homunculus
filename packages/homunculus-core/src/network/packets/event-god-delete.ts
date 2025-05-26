@@ -14,14 +14,14 @@ import { Packet } from "./packet"
 
 export interface EventGodDeleteData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	eventData?: {
 		eventId: number
 	}
 	queryData?: {
-		queryId: string | Buffer
+		queryId: string
 		queryText: string | Buffer
 		queryFlags: number
 		queryStart: number

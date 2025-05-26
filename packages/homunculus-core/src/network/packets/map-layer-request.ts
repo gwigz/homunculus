@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface MapLayerRequestData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 		flags?: number
 		estateId?: number
 		godlike?: boolean

@@ -14,29 +14,29 @@ import { Packet } from "./packet"
 
 export interface BulkUpdateInventoryData {
 	agentData: {
-		agentId?: string | Buffer
-		transactionId: string | Buffer
+		agentId?: string
+		transactionId: string
 	}
 	folderData?: {
-		folderId: string | Buffer
-		parentId: string | Buffer
+		folderId: string
+		parentId: string
 		type: number
 		name: string | Buffer
 	}[]
 	itemData?: {
-		itemId: string | Buffer
+		itemId: string
 		callbackId: number
-		folderId: string | Buffer
-		creatorId: string | Buffer
-		ownerId: string | Buffer
-		groupId: string | Buffer
+		folderId: string
+		creatorId: string
+		ownerId: string
+		groupId: string
 		baseMask: number
 		ownerMask: number
 		groupMask: number
 		everyoneMask: number
 		nextOwnerMask: number
 		groupOwned: boolean
-		assetId: string | Buffer
+		assetId: string
 		type: number
 		invType: number
 		flags: number

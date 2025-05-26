@@ -14,13 +14,13 @@ import { Packet } from "./packet"
 
 export interface ObjectOwnerData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	headerData?: {
 		override: boolean
-		ownerId: string | Buffer
-		groupId: string | Buffer
+		ownerId: string
+		groupId: string
 	}
 	objectData?: {
 		objectLocalId: number

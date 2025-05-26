@@ -14,14 +14,14 @@ import { Packet } from "./packet"
 
 export interface LinkInventoryItemData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	inventoryBlock?: {
 		callbackId: number
-		folderId: string | Buffer
-		transactionId: string | Buffer
-		oldItemId: string | Buffer
+		folderId: string
+		transactionId: string
+		oldItemId: string
 		type: number
 		invType: number
 		name: string | Buffer

@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface ViewerStatsData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 		ip: Types.IP
 		startTime: number
 		runTime: number

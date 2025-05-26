@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface DirClassifiedQueryData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	queryData?: {
-		queryId: string | Buffer
+		queryId: string
 		queryText: string | Buffer
 		queryFlags: number
 		category: number

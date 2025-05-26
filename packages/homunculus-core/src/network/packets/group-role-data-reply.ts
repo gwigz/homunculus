@@ -14,15 +14,15 @@ import { Packet } from "./packet"
 
 export interface GroupRoleDataReplyData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	groupData?: {
-		groupId: string | Buffer
-		requestId: string | Buffer
+		groupId: string
+		requestId: string
 		roleCount: number
 	}
 	roleData?: {
-		roleId: string | Buffer
+		roleId: string
 		name: string | Buffer
 		title: string | Buffer
 		description: string | Buffer

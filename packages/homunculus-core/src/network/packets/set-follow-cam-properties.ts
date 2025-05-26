@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface SetFollowCamPropertiesData {
 	objectData?: {
-		objectId: string | Buffer
+		objectId: string
 	}
 	cameraProperty?: {
 		type: number

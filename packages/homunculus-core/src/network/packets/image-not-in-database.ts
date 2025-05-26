@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface ImageNotInDatabaseData {
 	imageId?: {
-		id: string | Buffer
+		id: string
 	}
 }
 

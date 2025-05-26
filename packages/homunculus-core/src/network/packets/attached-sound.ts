@@ -14,9 +14,9 @@ import { Packet } from "./packet"
 
 export interface AttachedSoundData {
 	dataBlock?: {
-		soundId: string | Buffer
-		objectId: string | Buffer
-		ownerId: string | Buffer
+		soundId: string
+		objectId: string
+		ownerId: string
 		gain: number
 		flags: number
 	}

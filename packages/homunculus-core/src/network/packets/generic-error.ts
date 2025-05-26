@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface GenericErrorData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	data?: {
 		code: number
 		token: string | Buffer
-		id: string | Buffer
+		id: string
 		system: string | Buffer
 		message: string | Buffer
 		data: string | Buffer

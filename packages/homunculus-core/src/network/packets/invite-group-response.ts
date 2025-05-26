@@ -14,10 +14,10 @@ import { Packet } from "./packet"
 
 export interface InviteGroupResponseData {
 	inviteData?: {
-		agentId: string | Buffer
-		inviteeId: string | Buffer
-		groupId: string | Buffer
-		roleId: string | Buffer
+		agentId: string
+		inviteeId: string
+		groupId: string
+		roleId: string
 		membershipFee: number
 	}
 }

@@ -5,8 +5,8 @@ import { Quaternion, Vector3 } from "../network/types"
 class Self {
 	public key: string
 
-	/** Session ID */
-	public session?: string
+	public sessionId: string
+	public circuitCode: number
 
 	public firstName?: string
 	public lastName?: string
@@ -38,7 +38,8 @@ class Self {
 		public readonly client: Client,
 		data: {
 			key: string
-			session: string
+			sessionId: string
+			circuitCode: number
 			firstName: string
 			lastName: string
 			lookAt?: Vector3
@@ -46,7 +47,8 @@ class Self {
 		},
 	) {
 		this.key = data.key
-		this.session = data.session
+		this.sessionId = data.sessionId
+		this.circuitCode = data.circuitCode
 		this.firstName = data.firstName
 		this.lastName = data.lastName
 		this.lookAt = data.lookAt ?? Vector3.one

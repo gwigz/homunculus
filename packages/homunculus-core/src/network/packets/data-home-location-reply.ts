@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface DataHomeLocationReplyData {
 	info?: {
-		agentId: string | Buffer
+		agentId: string
 		regionHandle: number | bigint
 		position: Types.Vector3
 		lookAt: Types.Vector3

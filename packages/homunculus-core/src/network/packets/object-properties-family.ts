@@ -15,9 +15,9 @@ import { Packet } from "./packet"
 export interface ObjectPropertiesFamilyData {
 	objectData?: {
 		requestFlags: number
-		objectId: string | Buffer
-		ownerId: string | Buffer
-		groupId: string | Buffer
+		objectId: string
+		ownerId: string
+		groupId: string
 		baseMask: number
 		ownerMask: number
 		groupMask: number
@@ -27,7 +27,7 @@ export interface ObjectPropertiesFamilyData {
 		saleType: number
 		salePrice: number
 		category: number
-		lastOwnerId: string | Buffer
+		lastOwnerId: string
 		name: string | Buffer
 		description: string | Buffer
 	}

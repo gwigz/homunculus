@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface EventLocationReplyData {
 	queryData?: {
-		queryId: string | Buffer
+		queryId: string
 	}
 	eventData?: {
 		success: boolean
-		regionId: string | Buffer
+		regionId: string
 		regionPos: Types.Vector3
 	}
 }

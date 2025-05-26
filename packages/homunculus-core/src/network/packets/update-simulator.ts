@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface UpdateSimulatorData {
 	simulatorInfo?: {
-		regionId: string | Buffer
+		regionId: string
 		simName: string | Buffer
 		estateId: number
 		simAccess: number

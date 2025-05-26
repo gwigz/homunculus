@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface GroupAccountDetailsRequestData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
-		groupId: string | Buffer
+		agentId?: string
+		sessionId?: string
+		groupId: string
 	}
 	moneyData?: {
-		requestId: string | Buffer
+		requestId: string
 		intervalDays: number
 		currentInterval: number
 	}

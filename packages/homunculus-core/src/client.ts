@@ -130,7 +130,8 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 
 		this.self = new Self(this, {
 			key: response.agentId,
-			session: response.sessionId,
+			sessionId: response.sessionId,
+			circuitCode: response.circuitCode,
 			firstName: response.firstName,
 			lastName: response.lastName,
 			lookAt: response.lookAt,

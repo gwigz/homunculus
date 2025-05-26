@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface CrossedRegionData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	regionData?: {
 		simIp: Types.IP

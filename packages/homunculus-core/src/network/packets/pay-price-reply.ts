@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface PayPriceReplyData {
 	objectData?: {
-		objectId: string | Buffer
+		objectId: string
 		defaultPayPrice: number
 	}
 	buttonData?: {

@@ -16,8 +16,8 @@ export interface ChildAgentAliveData {
 	agentData: {
 		regionHandle: number | bigint
 		viewerCircuitCode: number
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 }
 

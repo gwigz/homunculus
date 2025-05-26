@@ -14,9 +14,9 @@ import { Packet } from "./packet"
 
 export interface ScriptSensorRequestData {
 	requester?: {
-		sourceId: string | Buffer
-		requestId: string | Buffer
-		searchId: string | Buffer
+		sourceId: string
+		requestId: string
+		searchId: string
 		searchPos: Types.Vector3
 		searchDir: Types.Quaternion
 		searchName: string | Buffer

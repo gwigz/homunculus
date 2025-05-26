@@ -14,19 +14,19 @@ import { Packet } from "./packet"
 
 export interface ScriptDialogData {
 	data?: {
-		objectId: string | Buffer
+		objectId: string
 		firstName: string | Buffer
 		lastName: string | Buffer
 		objectName: string | Buffer
 		message: string | Buffer
 		chatChannel: number
-		imageId: string | Buffer
+		imageId: string
 	}
 	buttons?: {
 		buttonLabel: string | Buffer
 	}[]
 	ownerData?: {
-		ownerId: string | Buffer
+		ownerId: string
 	}[]
 }
 

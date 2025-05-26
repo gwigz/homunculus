@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface AvatarClassifiedReplyData {
 	agentData: {
-		agentId?: string | Buffer
-		targetId: string | Buffer
+		agentId?: string
+		targetId: string
 	}
 	data?: {
-		classifiedId: string | Buffer
+		classifiedId: string
 		name: string | Buffer
 	}[]
 }

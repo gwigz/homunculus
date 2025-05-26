@@ -18,8 +18,8 @@ export interface KickUserData {
 		targetPort: Types.Port
 	}
 	userInfo?: {
-		agentId: string | Buffer
-		sessionId: string | Buffer
+		agentId: string
+		sessionId: string
 		reason: string | Buffer
 	}
 }

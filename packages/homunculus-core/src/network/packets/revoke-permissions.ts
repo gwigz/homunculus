@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface RevokePermissionsData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	data?: {
-		objectId: string | Buffer
+		objectId: string
 		objectPermissions: number
 	}
 }

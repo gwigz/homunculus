@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface OfflineNotificationData {
 	agentBlock?: {
-		agentId: string | Buffer
+		agentId: string
 	}[]
 }
 

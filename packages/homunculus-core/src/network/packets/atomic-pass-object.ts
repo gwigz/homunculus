@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface AtomicPassObjectData {
 	taskData?: {
-		taskId: string | Buffer
+		taskId: string
 		attachmentNeedsSave: boolean
 	}
 }

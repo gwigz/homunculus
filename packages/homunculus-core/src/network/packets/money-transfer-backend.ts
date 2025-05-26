@@ -14,16 +14,16 @@ import { Packet } from "./packet"
 
 export interface MoneyTransferBackendData {
 	moneyData?: {
-		transactionId: string | Buffer
+		transactionId: string
 		transactionTime: number
-		sourceId: string | Buffer
-		destId: string | Buffer
+		sourceId: string
+		destId: string
 		flags: number
 		amount: number
 		aggregatePermNextOwner: number
 		aggregatePermInventory: number
 		transactionType: number
-		regionId: string | Buffer
+		regionId: string
 		gridX: number
 		gridY: number
 		description: string | Buffer

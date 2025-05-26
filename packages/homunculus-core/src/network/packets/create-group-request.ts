@@ -14,14 +14,14 @@ import { Packet } from "./packet"
 
 export interface CreateGroupRequestData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	groupData?: {
 		name: string | Buffer
 		charter: string | Buffer
 		showInList: boolean
-		insigniaId: string | Buffer
+		insigniaId: string
 		membershipFee: number
 		openEnrollment: boolean
 		allowPublish: boolean

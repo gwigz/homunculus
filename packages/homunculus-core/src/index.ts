@@ -1,5 +1,6 @@
 export * from "./client"
 export { Delegate } from "./network/delegates"
+export * from "./network/helpers"
 export type { Packet } from "./network/packets"
 export * as Packets from "./network/packets"
 export * from "./network/types"

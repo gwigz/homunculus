@@ -16,7 +16,7 @@ export interface ScriptMailRegistrationData {
 	dataBlock?: {
 		targetIp: string | Buffer
 		targetPort: Types.Port
-		taskId: string | Buffer
+		taskId: string
 		flags: number
 	}
 }

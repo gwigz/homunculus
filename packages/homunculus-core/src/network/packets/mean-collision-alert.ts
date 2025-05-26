@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface MeanCollisionAlertData {
 	meanCollision?: {
-		victim: string | Buffer
-		perp: string | Buffer
+		victim: string
+		perp: string
 		time: number
 		mag: number
 		type: number

@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface AvatarSitResponseData {
 	sitObject?: {
-		id: string | Buffer
+		id: string
 	}
 	sitTransform?: {
 		autoPilot: boolean

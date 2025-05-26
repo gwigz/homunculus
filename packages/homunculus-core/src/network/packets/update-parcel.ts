@@ -14,9 +14,9 @@ import { Packet } from "./packet"
 
 export interface UpdateParcelData {
 	parcelData?: {
-		parcelId: string | Buffer
+		parcelId: string
 		regionHandle: number | bigint
-		ownerId: string | Buffer
+		ownerId: string
 		groupOwned: boolean
 		status: number
 		name: string | Buffer
@@ -29,10 +29,10 @@ export interface UpdateParcelData {
 		showDir: boolean
 		isForSale: boolean
 		category: number
-		snapshotId: string | Buffer
+		snapshotId: string
 		userLocation: Types.Vector3
 		salePrice: number
-		authorizedBuyerId: string | Buffer
+		authorizedBuyerId: string
 		allowPublish: boolean
 		maturePublish: boolean
 	}

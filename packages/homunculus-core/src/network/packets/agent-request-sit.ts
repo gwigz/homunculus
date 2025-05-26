@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface AgentRequestSitData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	targetObject?: {
-		targetId: string | Buffer
+		targetId: string
 		offset: Types.Vector3
 	}
 }

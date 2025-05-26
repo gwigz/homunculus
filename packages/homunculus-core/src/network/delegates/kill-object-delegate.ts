@@ -4,7 +4,7 @@ import Delegate from "./delegate"
 class KillObjectDelegate extends Delegate {
 	public override handle(packet: KillObject) {
 		for (const region of this.client.regions.values()) {
-			for (const { id } of packet.data.objectData) {
+			for (const { id } of packet.data.objectData!) {
 				if (!region.objects.has(id)) {
 					continue
 				}

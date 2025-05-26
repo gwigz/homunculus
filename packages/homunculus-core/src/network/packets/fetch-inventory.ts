@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface FetchInventoryData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	inventoryData?: {
-		ownerId: string | Buffer
-		itemId: string | Buffer
+		ownerId: string
+		itemId: string
 	}[]
 }
 

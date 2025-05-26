@@ -14,16 +14,16 @@ import { Packet } from "./packet"
 
 export interface AvatarGroupsReplyData {
 	agentData: {
-		agentId?: string | Buffer
-		avatarId: string | Buffer
+		agentId?: string
+		avatarId: string
 	}
 	groupData?: {
 		groupPowers: number | bigint
 		acceptNotices: boolean
 		groupTitle: string | Buffer
-		groupId: string | Buffer
+		groupId: string
 		groupName: string | Buffer
-		groupInsigniaId: string | Buffer
+		groupInsigniaId: string
 	}[]
 	newGroupData?: {
 		listInProfile: boolean

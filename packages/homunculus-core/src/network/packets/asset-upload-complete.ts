@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface AssetUploadCompleteData {
 	assetBlock?: {
-		uuid: string | Buffer
+		uuid: string
 		type: number
 		success: boolean
 	}

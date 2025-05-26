@@ -14,10 +14,10 @@ import { Packet } from "./packet"
 
 export interface GroupTitleUpdateData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
-		groupId: string | Buffer
-		titleRoleId: string | Buffer
+		agentId?: string
+		sessionId?: string
+		groupId: string
+		titleRoleId: string
 	}
 }
 

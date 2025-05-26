@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface ScriptResetData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	script?: {
-		objectId: string | Buffer
-		itemId: string | Buffer
+		objectId: string
+		itemId: string
 	}
 }
 

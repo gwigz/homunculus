@@ -14,10 +14,10 @@ import { Packet } from "./packet"
 
 export interface DirFindQueryBackendData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	queryData?: {
-		queryId: string | Buffer
+		queryId: string
 		queryText: string | Buffer
 		queryFlags: number
 		queryStart: number

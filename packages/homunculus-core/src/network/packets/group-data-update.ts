@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface GroupDataUpdateData {
 	agentGroupData?: {
-		agentId: string | Buffer
-		groupId: string | Buffer
+		agentId: string
+		groupId: string
 		agentPowers: number | bigint
 		groupTitle: string | Buffer
 	}[]

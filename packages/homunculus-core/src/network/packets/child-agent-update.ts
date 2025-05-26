@@ -16,8 +16,8 @@ export interface ChildAgentUpdateData {
 	agentData: {
 		regionHandle: number | bigint
 		viewerCircuitCode: number
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 		agentPos: Types.Vector3
 		agentVel: Types.Vector3
 		center: Types.Vector3
@@ -36,22 +36,22 @@ export interface ChildAgentUpdateData {
 		energyLevel: number
 		godLevel?: number
 		alwaysRun: boolean
-		preyAgent: string | Buffer
+		preyAgent: string
 		agentAccess: number
 		agentTextures: string | Buffer
-		activeGroupId: string | Buffer
+		activeGroupId: string
 	}
 	groupData?: {
-		groupId: string | Buffer
+		groupId: string
 		groupPowers: number | bigint
 		acceptNotices: boolean
 	}[]
 	animationData?: {
-		animation: string | Buffer
-		objectId: string | Buffer
+		animation: string
+		objectId: string
 	}[]
 	granterBlock?: {
-		granterId: string | Buffer
+		granterId: string
 	}[]
 	nVPairData?: {
 		nVPairs: string | Buffer

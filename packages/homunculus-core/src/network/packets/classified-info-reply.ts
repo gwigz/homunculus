@@ -14,19 +14,19 @@ import { Packet } from "./packet"
 
 export interface ClassifiedInfoReplyData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	data?: {
-		classifiedId: string | Buffer
-		creatorId: string | Buffer
+		classifiedId: string
+		creatorId: string
 		creationDate: number
 		expirationDate: number
 		category: number
 		name: string | Buffer
 		desc: string | Buffer
-		parcelId: string | Buffer
+		parcelId: string
 		parentEstate: number
-		snapshotId: string | Buffer
+		snapshotId: string
 		simName: string | Buffer
 		posGlobal: Types.Vector3D
 		parcelName: string | Buffer

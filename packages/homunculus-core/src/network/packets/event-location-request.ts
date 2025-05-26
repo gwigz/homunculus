@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface EventLocationRequestData {
 	queryData?: {
-		queryId: string | Buffer
+		queryId: string
 	}
 	eventData?: {
 		eventId: number

@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface RemoveInventoryItemData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	inventoryData?: {
-		itemId: string | Buffer
+		itemId: string
 	}[]
 }
 

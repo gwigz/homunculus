@@ -14,14 +14,14 @@ import { Packet } from "./packet"
 
 export interface CreateLandmarkForEventData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	eventData?: {
 		eventId: number
 	}
 	inventoryBlock?: {
-		folderId: string | Buffer
+		folderId: string
 		name: string | Buffer
 	}
 }

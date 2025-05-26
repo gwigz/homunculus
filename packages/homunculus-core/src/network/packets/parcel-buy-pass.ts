@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface ParcelBuyPassData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	parcelData?: {
 		localId: number

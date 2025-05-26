@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface MoneyBalanceReplyData {
 	moneyData?: {
-		agentId: string | Buffer
-		transactionId: string | Buffer
+		agentId: string
+		transactionId: string
 		transactionSuccess: boolean
 		moneyBalance: number
 		squareMetersCredit: number
@@ -24,9 +24,9 @@ export interface MoneyBalanceReplyData {
 	}
 	transactionInfo?: {
 		transactionType: number
-		sourceId: string | Buffer
+		sourceId: string
 		isSourceGroup: boolean
-		destId: string | Buffer
+		destId: string
 		isDestGroup: boolean
 		amount: number
 		itemDescription: string | Buffer

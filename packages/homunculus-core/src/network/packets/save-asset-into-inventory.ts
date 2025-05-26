@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface SaveAssetIntoInventoryData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	inventoryData?: {
-		itemId: string | Buffer
-		newAssetId: string | Buffer
+		itemId: string
+		newAssetId: string
 	}
 }
 

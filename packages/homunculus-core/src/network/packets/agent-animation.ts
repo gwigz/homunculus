@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface AgentAnimationData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	animationList?: {
-		animId: string | Buffer
+		animId: string
 		startAnim: boolean
 	}[]
 	physicalAvatarEventList?: {

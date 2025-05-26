@@ -14,9 +14,9 @@ import { Packet } from "./packet"
 
 export interface AvatarPropertiesRequestData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
-		avatarId: string | Buffer
+		agentId?: string
+		sessionId?: string
+		avatarId: string
 	}
 }
 

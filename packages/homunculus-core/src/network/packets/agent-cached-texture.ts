@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface AgentCachedTextureData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 		serialNum: number
 	}
 	wearableData?: {
-		id: string | Buffer
+		id: string
 		textureIndex: number
 	}[]
 }

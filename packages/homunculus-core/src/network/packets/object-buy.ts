@@ -14,10 +14,10 @@ import { Packet } from "./packet"
 
 export interface ObjectBuyData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
-		groupId: string | Buffer
-		categoryId: string | Buffer
+		agentId?: string
+		sessionId?: string
+		groupId: string
+		categoryId: string
 	}
 	objectData?: {
 		objectLocalId: number

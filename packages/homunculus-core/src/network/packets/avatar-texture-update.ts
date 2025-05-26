@@ -14,16 +14,16 @@ import { Packet } from "./packet"
 
 export interface AvatarTextureUpdateData {
 	agentData: {
-		agentId?: string | Buffer
+		agentId?: string
 		texturesChanged: boolean
 	}
 	wearableData?: {
-		cacheId: string | Buffer
+		cacheId: string
 		textureIndex: number
 		hostName: string | Buffer
 	}[]
 	textureData?: {
-		textureId: string | Buffer
+		textureId: string
 	}[]
 }
 

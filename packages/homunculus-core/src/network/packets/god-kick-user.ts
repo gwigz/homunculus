@@ -14,9 +14,9 @@ import { Packet } from "./packet"
 
 export interface GodKickUserData {
 	userInfo?: {
-		godId: string | Buffer
-		godSessionId: string | Buffer
-		agentId: string | Buffer
+		godId: string
+		godSessionId: string
+		agentId: string
 		kickFlags: number
 		reason: string | Buffer
 	}

@@ -20,7 +20,7 @@ export interface LandStatReplyData {
 	}
 	reportData?: {
 		taskLocalId: number
-		taskId: string | Buffer
+		taskId: string
 		locationX: number
 		locationY: number
 		locationZ: number

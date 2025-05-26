@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface ImageDataData {
 	imageId?: {
-		id: string | Buffer
+		id: string
 		codec: number
 		size: number
 		packets: number

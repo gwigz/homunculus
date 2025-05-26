@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface ParcelSalesData {
 	parcelData?: {
-		parcelId: string | Buffer
-		buyerId: string | Buffer
+		parcelId: string
+		buyerId: string
 	}[]
 }
 

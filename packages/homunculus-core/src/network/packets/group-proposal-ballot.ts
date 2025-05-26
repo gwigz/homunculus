@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface GroupProposalBallotData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	proposalData?: {
-		proposalId: string | Buffer
-		groupId: string | Buffer
+		proposalId: string
+		groupId: string
 		voteCast: string | Buffer
 	}
 }

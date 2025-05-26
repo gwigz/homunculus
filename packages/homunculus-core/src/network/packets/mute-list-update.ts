@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface MuteListUpdateData {
 	muteData?: {
-		agentId: string | Buffer
+		agentId: string
 		filename: string | Buffer
 	}
 }

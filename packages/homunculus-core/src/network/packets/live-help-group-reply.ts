@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface LiveHelpGroupReplyData {
 	replyData?: {
-		requestId: string | Buffer
-		groupId: string | Buffer
+		requestId: string
+		groupId: string
 		selection: string | Buffer
 	}
 }

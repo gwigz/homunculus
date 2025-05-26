@@ -3,7 +3,7 @@ import Delegate from "./delegate"
 
 class PacketAckDelegate extends Delegate {
 	public override handle(packet: PacketAck) {
-		for (const ack of packet.data.packets) {
+		for (const ack of packet.data.packets!) {
 			this.core.circuit?.acknowledger.seen(ack.id)
 		}
 	}

@@ -14,14 +14,14 @@ import { Packet } from "./packet"
 
 export interface PlacesReplyData {
 	agentData: {
-		agentId?: string | Buffer
-		queryId: string | Buffer
+		agentId?: string
+		queryId: string
 	}
 	transactionData?: {
-		transactionId: string | Buffer
+		transactionId: string
 	}
 	queryData?: {
-		ownerId: string | Buffer
+		ownerId: string
 		name: string | Buffer
 		desc: string | Buffer
 		actualArea: number
@@ -31,7 +31,7 @@ export interface PlacesReplyData {
 		globalY: number
 		globalZ: number
 		simName: string | Buffer
-		snapshotId: string | Buffer
+		snapshotId: string
 		dwell: number
 		price: number
 	}[]

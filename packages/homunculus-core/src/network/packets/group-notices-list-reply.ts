@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface GroupNoticesListReplyData {
 	agentData: {
-		agentId?: string | Buffer
-		groupId: string | Buffer
+		agentId?: string
+		groupId: string
 	}
 	data?: {
-		noticeId: string | Buffer
+		noticeId: string
 		timestamp: number
 		fromName: string | Buffer
 		subject: string | Buffer

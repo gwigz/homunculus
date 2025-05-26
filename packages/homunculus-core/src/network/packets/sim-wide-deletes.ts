@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface SimWideDeletesData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	dataBlock?: {
-		targetId: string | Buffer
+		targetId: string
 		flags: number
 	}
 }

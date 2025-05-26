@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface RemoveNameValuePairData {
 	taskData?: {
-		id: string | Buffer
+		id: string
 	}
 	nameValueData?: {
 		nVPair: string | Buffer

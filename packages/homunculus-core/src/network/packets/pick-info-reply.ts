@@ -14,16 +14,16 @@ import { Packet } from "./packet"
 
 export interface PickInfoReplyData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	data?: {
-		pickId: string | Buffer
-		creatorId: string | Buffer
+		pickId: string
+		creatorId: string
 		topPick: boolean
-		parcelId: string | Buffer
+		parcelId: string
 		name: string | Buffer
 		desc: string | Buffer
-		snapshotId: string | Buffer
+		snapshotId: string
 		user: string | Buffer
 		originalName: string | Buffer
 		simName: string | Buffer

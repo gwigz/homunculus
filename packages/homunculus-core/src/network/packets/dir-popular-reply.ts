@@ -14,13 +14,13 @@ import { Packet } from "./packet"
 
 export interface DirPopularReplyData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	queryData?: {
-		queryId: string | Buffer
+		queryId: string
 	}
 	queryReplies?: {
-		parcelId: string | Buffer
+		parcelId: string
 		name: string | Buffer
 		dwell: number
 	}[]

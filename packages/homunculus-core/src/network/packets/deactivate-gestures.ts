@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface DeactivateGesturesData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 		flags?: number
 	}
 	data?: {
-		itemId: string | Buffer
+		itemId: string
 		gestureFlags: number
 	}[]
 }

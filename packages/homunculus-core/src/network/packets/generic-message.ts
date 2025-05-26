@@ -14,13 +14,13 @@ import { Packet } from "./packet"
 
 export interface GenericMessageData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
-		transactionId: string | Buffer
+		agentId?: string
+		sessionId?: string
+		transactionId: string
 	}
 	methodData?: {
 		method: string | Buffer
-		invoice: string | Buffer
+		invoice: string
 	}
 	paramList?: {
 		parameter: string | Buffer

@@ -14,9 +14,9 @@ import { Packet } from "./packet"
 
 export interface TeleportLureRequestData {
 	info?: {
-		agentId: string | Buffer
-		sessionId: string | Buffer
-		lureId: string | Buffer
+		agentId: string
+		sessionId: string
+		lureId: string
 		teleportFlags: number
 	}
 }

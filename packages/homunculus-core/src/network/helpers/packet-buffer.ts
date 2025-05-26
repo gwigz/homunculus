@@ -17,8 +17,8 @@ class PacketBuffer {
 		if (delegating) {
 			this.position = 0
 
-			// Skip parsing packet header if we are just want to use this for a
-			// buffer, may move the stuff below into a similar method like prepare.
+			// skip parsing packet header if we are just want to use this for a
+			// buffer, may move the stuff below into a similar method like prepare
 			return
 		}
 
@@ -164,7 +164,7 @@ class PacketBuffer {
 
 			case Types.Quaternion:
 				if (args.length > 1) {
-					this.position += args[1].size * output.length
+					this.position += args[1].size * 4
 
 					// If normalized, take one step away from the position we just added.
 					if (args[0]) {
@@ -181,10 +181,14 @@ class PacketBuffer {
 
 			case Types.Vector3:
 				if (args.length) {
-					this.position += args[0].size * output.length
+					this.position += args[0].size * 3
 				} else {
 					this.position += Types.Vector3.size
 				}
+				break
+
+			case Types.Color4:
+				this.position += Types.Color4.size
 				break
 
 			default:

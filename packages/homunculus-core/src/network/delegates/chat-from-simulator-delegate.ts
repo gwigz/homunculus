@@ -1,28 +1,27 @@
 import type { NearbyChatMessage } from "../../structures/nearby"
-import type { ChatFromSimulator } from "../packets"
-import { UUID } from "../types"
+import type { ChatFromSimulatorData } from "../packets"
 import Delegate from "./delegate"
 
 class ChatFromSimulatorDelegate extends Delegate {
-	public override handle(packet: ChatFromSimulator) {
-		for (const data of packet.data.chatData) {
-			const chat = {
-				fromName: data.fromName.toString().slice(0, -1),
-				source: data.source ?? UUID.zero,
-				owner: data.source ?? UUID.zero,
-				sourceType: data.sourceType,
-				chatType: data.chatType,
-				audible: data.audible,
-				position: data.position,
-				message: data.message.toString().slice(0, -1),
-			} satisfies NearbyChatMessage
+	public override handle(packet: { data: ChatFromSimulatorData }) {
+		const data = packet.data.chatData!
 
-			// if (data.source === Constants.ChatSources.OBJECT) {
-			// 	chatter.owner = data.owner
-			// }
+		const chat = {
+			fromName: data.fromName.toString("utf8").slice(0, -1),
+			source: data.sourceId,
+			owner: data.ownerId,
+			sourceType: data.sourceType,
+			chatType: data.chatType,
+			audible: data.audible,
+			position: data.position,
+			message: data.message.toString("utf8").slice(0, -1),
+		} satisfies NearbyChatMessage
 
-			this.client.nearby.emit("chat", chat)
-		}
+		// if (data.source === Constants.ChatSources.OBJECT) {
+		// 	chatter.owner = data.owner
+		// }
+
+		this.client.nearby.emit("chat", chat)
 	}
 
 	override get waiting() {

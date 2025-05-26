@@ -16,8 +16,8 @@ export interface RpcChannelRequestData {
 	dataBlock?: {
 		gridX: number
 		gridY: number
-		taskId: string | Buffer
-		itemId: string | Buffer
+		taskId: string
+		itemId: string
 	}
 }
 

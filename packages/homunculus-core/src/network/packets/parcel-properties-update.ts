@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface ParcelPropertiesUpdateData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	parcelData?: {
 		localId: number
@@ -26,14 +26,14 @@ export interface ParcelPropertiesUpdateData {
 		desc: string | Buffer
 		musicUrl: string | Buffer
 		mediaUrl: string | Buffer
-		mediaId: string | Buffer
+		mediaId: string
 		mediaAutoScale: number
-		groupId: string | Buffer
+		groupId: string
 		passPrice: number
 		passHours: number
 		category: number
-		authBuyerId: string | Buffer
-		snapshotId: string | Buffer
+		authBuyerId: string
+		snapshotId: string
 		userLocation: Types.Vector3
 		userLookAt: Types.Vector3
 		landingType: number

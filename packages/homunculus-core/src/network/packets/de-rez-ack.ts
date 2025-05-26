@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface DeRezAckData {
 	transactionData?: {
-		transactionId: string | Buffer
+		transactionId: string
 		success: boolean
 	}
 }

@@ -14,31 +14,31 @@ import { Packet } from "./packet"
 
 export interface InventoryDescendentsData {
 	agentData: {
-		agentId?: string | Buffer
-		folderId: string | Buffer
-		ownerId: string | Buffer
+		agentId?: string
+		folderId: string
+		ownerId: string
 		version: number
 		descendents: number
 	}
 	folderData?: {
-		folderId: string | Buffer
-		parentId: string | Buffer
+		folderId: string
+		parentId: string
 		type: number
 		name: string | Buffer
 	}[]
 	itemData?: {
-		itemId: string | Buffer
-		folderId: string | Buffer
-		creatorId: string | Buffer
-		ownerId: string | Buffer
-		groupId: string | Buffer
+		itemId: string
+		folderId: string
+		creatorId: string
+		ownerId: string
+		groupId: string
 		baseMask: number
 		ownerMask: number
 		groupMask: number
 		everyoneMask: number
 		nextOwnerMask: number
 		groupOwned: boolean
-		assetId: string | Buffer
+		assetId: string
 		type: number
 		invType: number
 		flags: number

@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface RequestObjectPropertiesFamilyData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	objectData?: {
 		requestFlags: number
-		objectId: string | Buffer
+		objectId: string
 	}
 }
 

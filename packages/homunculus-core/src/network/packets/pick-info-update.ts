@@ -14,17 +14,17 @@ import { Packet } from "./packet"
 
 export interface PickInfoUpdateData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	data?: {
-		pickId: string | Buffer
-		creatorId: string | Buffer
+		pickId: string
+		creatorId: string
 		topPick: boolean
-		parcelId: string | Buffer
+		parcelId: string
 		name: string | Buffer
 		desc: string | Buffer
-		snapshotId: string | Buffer
+		snapshotId: string
 		posGlobal: Types.Vector3D
 		sortOrder: number
 		enabled: boolean

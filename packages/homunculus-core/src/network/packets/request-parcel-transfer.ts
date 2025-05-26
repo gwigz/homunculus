@@ -14,17 +14,22 @@ import { Packet } from "./packet"
 
 export interface RequestParcelTransferData {
 	data?: {
-		transactionId: string | Buffer
+		transactionId: string
 		transactionTime: number
-		sourceId: string | Buffer
-		destId: string | Buffer
-		ownerId: string | Buffer
+		sourceId: string
+		destId: string
+		ownerId: string
 		flags: number
 		transactionType: number
 		amount: number
 		billableArea: number
 		actualArea: number
 		final: boolean
+	}
+	regionData?: {
+		regionId: string
+		gridX: number
+		gridY: number
 	}
 }
 
@@ -51,6 +56,17 @@ export class RequestParcelTransfer extends Packet<RequestParcelTransferData> {
 					["billableArea", Types.S32],
 					["actualArea", Types.S32],
 					["final", Types.Bool],
+				]),
+			},
+		],
+		[
+			"regionData",
+			{
+				quantity: 1,
+				parameters: new Map<string, Types.Type>([
+					["regionId", Types.UUID],
+					["gridX", Types.U32],
+					["gridY", Types.U32],
 				]),
 			},
 		],

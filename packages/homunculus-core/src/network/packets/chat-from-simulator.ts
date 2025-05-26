@@ -15,8 +15,8 @@ import { Packet } from "./packet"
 export interface ChatFromSimulatorData {
 	chatData?: {
 		fromName: string | Buffer
-		sourceId: string | Buffer
-		ownerId: string | Buffer
+		sourceId: string
+		ownerId: string
 		sourceType: number
 		chatType: number
 		audible: number

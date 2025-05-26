@@ -14,13 +14,13 @@ import { Packet } from "./packet"
 
 export interface AvatarPropertiesReplyData {
 	agentData: {
-		agentId?: string | Buffer
-		avatarId: string | Buffer
+		agentId?: string
+		avatarId: string
 	}
 	propertiesData?: {
-		imageId: string | Buffer
-		fLImageId: string | Buffer
-		partnerId: string | Buffer
+		imageId: string
+		fLImageId: string
+		partnerId: string
 		aboutText: string | Buffer
 		fLAboutText: string | Buffer
 		bornOn: string | Buffer

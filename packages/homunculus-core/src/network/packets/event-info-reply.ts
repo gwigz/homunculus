@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface EventInfoReplyData {
 	agentData?: {
-		agentId?: string | Buffer
+		agentId?: string
 	}
 	eventData?: {
 		eventId: number

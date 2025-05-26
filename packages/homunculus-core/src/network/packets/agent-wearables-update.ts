@@ -14,13 +14,13 @@ import { Packet } from "./packet"
 
 export interface AgentWearablesUpdateData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 		serialNum: number
 	}
 	wearableData?: {
-		itemId: string | Buffer
-		assetId: string | Buffer
+		itemId: string
+		assetId: string
 		wearableType: number
 	}[]
 }

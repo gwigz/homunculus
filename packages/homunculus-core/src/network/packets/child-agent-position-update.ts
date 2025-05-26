@@ -16,8 +16,8 @@ export interface ChildAgentPositionUpdateData {
 	agentData: {
 		regionHandle: number | bigint
 		viewerCircuitCode: number
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 		agentPos: Types.Vector3
 		agentVel: Types.Vector3
 		center: Types.Vector3

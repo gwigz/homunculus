@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface TransferRequestData {
 	transferInfo?: {
-		transferId: string | Buffer
+		transferId: string
 		channelType: number
 		sourceType: number
 		priority: number

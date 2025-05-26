@@ -14,13 +14,13 @@ import { Packet } from "./packet"
 
 export interface MoveTaskInventoryData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
-		folderId: string | Buffer
+		agentId?: string
+		sessionId?: string
+		folderId: string
 	}
 	inventoryData?: {
 		localId: number
-		itemId: string | Buffer
+		itemId: string
 	}
 }
 

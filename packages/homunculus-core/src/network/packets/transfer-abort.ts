@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface TransferAbortData {
 	transferInfo?: {
-		transferId: string | Buffer
+		transferId: string
 		channelType: number
 	}
 }

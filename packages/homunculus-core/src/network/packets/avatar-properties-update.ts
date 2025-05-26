@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface AvatarPropertiesUpdateData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	propertiesData?: {
-		imageId: string | Buffer
-		fLImageId: string | Buffer
+		imageId: string
+		fLImageId: string
 		aboutText: string | Buffer
 		fLAboutText: string | Buffer
 		allowPublish: boolean

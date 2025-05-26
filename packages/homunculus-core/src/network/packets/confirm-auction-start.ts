@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface ConfirmAuctionStartData {
 	auctionData?: {
-		parcelId: string | Buffer
+		parcelId: string
 		auctionId: number
 	}
 }

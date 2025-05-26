@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface AgentHeightWidthData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 		circuitCode?: number
 	}
 	heightWidthBlock?: {

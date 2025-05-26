@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface EjectUserData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	data?: {
-		targetId: string | Buffer
+		targetId: string
 		flags: number
 	}
 }

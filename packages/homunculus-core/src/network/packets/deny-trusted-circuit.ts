@@ -14,7 +14,7 @@ import { Packet } from "./packet"
 
 export interface DenyTrustedCircuitData {
 	dataBlock?: {
-		endPointId: string | Buffer
+		endPointId: string
 	}
 }
 

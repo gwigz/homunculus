@@ -20,7 +20,7 @@ export interface ObjectUpdateData {
 	objectData?: {
 		id: number
 		state: number
-		fullId: string | Buffer
+		fullId: string
 		crc: number
 		pCode: number
 		material: number
@@ -52,11 +52,12 @@ export interface ObjectUpdateData {
 		nameValue: string | Buffer
 		data: string | Buffer
 		text: string | Buffer
+		textColor: Types.Color4
 		mediaUrl: string | Buffer
 		pSBlock: string | Buffer
 		extraParams: string | Buffer
-		sound: string | Buffer
-		ownerId: string | Buffer
+		sound: string
+		ownerId: string
 		gain: number
 		flags: number
 		radius: number
@@ -121,6 +122,7 @@ export class ObjectUpdate extends Packet<ObjectUpdateData> {
 					["nameValue", Types.Variable2],
 					["data", Types.Variable2],
 					["text", Types.Variable1],
+					["textColor", Types.Color4],
 					["mediaUrl", Types.Variable1],
 					["pSBlock", Types.Variable1],
 					["extraParams", Types.Variable1],

@@ -45,7 +45,7 @@ class Serializer {
 					if (block === "agentData") {
 						packet.data[block] = [{}]
 					} else {
-						throw new Error(Constants.Errors.MISSING_BLOCK)
+						throw new Error(Constants.Errors.MISSING_BLOCK.replace("%s", block))
 					}
 				}
 
@@ -119,17 +119,17 @@ class Serializer {
 		// attempt to fill optional parts of agent data blocks
 		if (block === "agentData") {
 			for (const [name] of format.parameters) {
-				if (name in data) {
+				if (data[name] !== undefined) {
 					continue
 				}
 
 				switch (name) {
 					case "agentId":
-						data.agent = this.circuit.self?.key
+						data.agentId = this.circuit.self?.key
 						break
 
 					case "sessionId":
-						data.session = this.circuit.session
+						data.sessionId = this.circuit.self?.sessionId
 						break
 
 					case "circuitCode":
@@ -147,14 +147,16 @@ class Serializer {
 						break
 
 					default:
-						throw new Error(Constants.Errors.MISSING_PARAMETER)
+						throw new Error(
+							Constants.Errors.MISSING_PARAMETER.replace("%s", name),
+						)
 				}
 			}
 		}
 
 		for (const [name, Type] of format.parameters) {
 			if (!(name in data)) {
-				throw new Error(Constants.Errors.MISSING_PARAMETER)
+				throw new Error(Constants.Errors.MISSING_PARAMETER.replace("%s", name))
 			}
 
 			array.push(Type.toBuffer(data[name]))

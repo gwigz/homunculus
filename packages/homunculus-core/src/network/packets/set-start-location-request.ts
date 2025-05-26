@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface SetStartLocationRequestData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	startLocationData?: {
 		simName: string | Buffer

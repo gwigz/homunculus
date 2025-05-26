@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface FindAgentData {
 	agentBlock?: {
-		hunter: string | Buffer
-		prey: string | Buffer
+		hunter: string
+		prey: string
 		spaceIp: Types.IP
 	}
 	locationBlock?: {

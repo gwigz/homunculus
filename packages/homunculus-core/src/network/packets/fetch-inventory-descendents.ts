@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface FetchInventoryDescendentsData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	inventoryData?: {
-		folderId: string | Buffer
-		ownerId: string | Buffer
+		folderId: string
+		ownerId: string
 		sortOrder: number
 		fetchFolders: boolean
 		fetchItems: boolean

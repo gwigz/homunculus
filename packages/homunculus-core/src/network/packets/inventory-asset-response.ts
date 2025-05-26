@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface InventoryAssetResponseData {
 	queryData?: {
-		queryId: string | Buffer
-		assetId: string | Buffer
+		queryId: string
+		assetId: string
 		isReadable: boolean
 	}
 }

@@ -14,15 +14,15 @@ import { Packet } from "./packet"
 
 export interface ParcelSelectObjectsData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	parcelData?: {
 		localId: number
 		returnType: number
 	}
 	returnIDs?: {
-		returnId: string | Buffer
+		returnId: string
 	}[]
 }
 

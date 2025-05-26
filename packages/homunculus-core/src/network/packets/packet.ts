@@ -42,9 +42,9 @@ export class Packet<T extends object> {
 
 	public index?: number
 	public reliable?: boolean
-	public data: any
+	public data: T
 
-	constructor(data: T | Buffer) {
+	constructor(data: T) {
 		if (this.constructor === Packet) {
 			throw new Error(
 				"Do not instantiate from the packet class, use extended classes!",

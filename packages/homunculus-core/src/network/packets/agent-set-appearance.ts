@@ -14,13 +14,13 @@ import { Packet } from "./packet"
 
 export interface AgentSetAppearanceData {
 	agentData: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 		serialNum: number
 		size: Types.Vector3
 	}
 	wearableData?: {
-		cacheId: string | Buffer
+		cacheId: string
 		textureIndex: number
 	}[]
 	objectData?: {

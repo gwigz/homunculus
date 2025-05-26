@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface ObjectExportSelectedData {
 	agentData: {
-		agentId?: string | Buffer
-		requestId: string | Buffer
+		agentId?: string
+		requestId: string
 		volumeDetail: number
 	}
 	objectData?: {
-		objectId: string | Buffer
+		objectId: string
 	}[]
 }
 

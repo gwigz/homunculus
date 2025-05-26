@@ -14,14 +14,14 @@ import { Packet } from "./packet"
 
 export interface ScriptQuestionData {
 	data?: {
-		taskId: string | Buffer
-		itemId: string | Buffer
+		taskId: string
+		itemId: string
 		objectName: string | Buffer
 		objectOwner: string | Buffer
 		questions: number
 	}
 	experience?: {
-		experienceId: string | Buffer
+		experienceId: string
 	}
 }
 

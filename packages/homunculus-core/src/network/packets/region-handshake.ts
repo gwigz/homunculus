@@ -17,19 +17,19 @@ export interface RegionHandshakeData {
 		regionFlags: number
 		simAccess: number
 		simName: string | Buffer
-		simOwner: string | Buffer
+		simOwner: string
 		isEstateManager: boolean
 		waterHeight: number
 		billableFactor: number
-		cacheId: string | Buffer
-		terrainBase0: string | Buffer
-		terrainBase1: string | Buffer
-		terrainBase2: string | Buffer
-		terrainBase3: string | Buffer
-		terrainDetail0: string | Buffer
-		terrainDetail1: string | Buffer
-		terrainDetail2: string | Buffer
-		terrainDetail3: string | Buffer
+		cacheId: string
+		terrainBase0: string
+		terrainBase1: string
+		terrainBase2: string
+		terrainBase3: string
+		terrainDetail0: string
+		terrainDetail1: string
+		terrainDetail2: string
+		terrainDetail3: string
 		terrainStartHeight00: number
 		terrainStartHeight01: number
 		terrainStartHeight10: number
@@ -40,7 +40,7 @@ export interface RegionHandshakeData {
 		terrainHeightRange11: number
 	}
 	regionInfo2?: {
-		regionId: string | Buffer
+		regionId: string
 	}
 	regionInfo3?: {
 		cPUClassId: number

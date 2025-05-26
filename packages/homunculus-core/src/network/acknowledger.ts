@@ -73,16 +73,16 @@ class Acknowledger {
 			this.packets.queued.delete(sequence)
 			this.packets.seen.set(sequence, uptime)
 
-			this.acknowledge.data.packets.push({ id: sequence })
+			this.acknowledge.data.packets!.push({ id: sequence })
 
 			// max 255 packets per message
-			if (this.acknowledge.data.packets.length >= 255) {
+			if (this.acknowledge.data.packets!.length >= 255) {
 				this.circuit.send([this.acknowledge])
 				this.acknowledge.data.packets = []
 			}
 		}
 
-		if (this.acknowledge.data.packets.length) {
+		if (this.acknowledge.data.packets!.length) {
 			this.circuit.send([this.acknowledge])
 			this.acknowledge.data.packets = []
 		}

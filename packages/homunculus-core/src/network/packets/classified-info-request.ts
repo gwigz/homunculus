@@ -14,11 +14,11 @@ import { Packet } from "./packet"
 
 export interface ClassifiedInfoRequestData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	data?: {
-		classifiedId: string | Buffer
+		classifiedId: string
 	}
 }
 

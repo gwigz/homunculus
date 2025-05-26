@@ -14,12 +14,12 @@ import { Packet } from "./packet"
 
 export interface GrantGodlikePowersData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	grantData?: {
 		godLevel: number
-		token: string | Buffer
+		token: string
 	}
 }
 

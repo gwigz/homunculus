@@ -1,4 +1,4 @@
-import type { Circuit, Packets } from ".."
+import type { Circuit } from ".."
 
 class Delegate {
 	constructor(public readonly circuit: Circuit) {}
@@ -25,9 +25,7 @@ class Delegate {
 	/**
 	 * Handler received and parsed Packet objects.
 	 */
-	public handle(_packet: Packets.Packet<any>) {
-		// ...
-	}
+	handle(_packet: any): Promise<void> | void {}
 }
 
 export default Delegate

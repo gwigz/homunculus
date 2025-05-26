@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface AgentDropGroupData {
 	agentData: {
-		agentId?: string | Buffer
-		groupId: string | Buffer
+		agentId?: string
+		groupId: string
 	}
 }
 

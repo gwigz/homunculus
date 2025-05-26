@@ -32,19 +32,16 @@ class Deserializer {
 
 		// parse everything...
 		for (const [block, format] of PacketConstructor.format) {
-			const quantity = format.quantity ? format.quantity : buffer.read(Types.U8)
+			if (format.quantity === 1) {
+				data[block] = this.readParameters(buffer, format)
+			} else {
+				const quantity = buffer.read(Types.U8)
 
-			data[block] = []
+				data[block] = []
 
-			// loop through block dependant on quantity value...
-			for (let i = 0; i < quantity; i++) {
-				const parameters: Record<string, Types.Type> = {}
-
-				for (const [name, Type] of format.parameters) {
-					parameters[name] = buffer.read(Type)
+				for (let i = 0; i < quantity; i++) {
+					data[block].push(this.readParameters(buffer, format))
 				}
-
-				data[block].push(parameters)
 			}
 		}
 
@@ -54,6 +51,19 @@ class Deserializer {
 		packet.reliable = buffer.reliable
 
 		return packet
+	}
+
+	private readParameters(
+		buffer: PacketBuffer,
+		format: { parameters: Map<string, Types.Type> },
+	) {
+		const parameters: Record<string, Types.Type> = {}
+
+		for (const [name, Type] of format.parameters) {
+			parameters[name] = buffer.read(Type)
+		}
+
+		return parameters
 	}
 }
 

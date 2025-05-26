@@ -42,10 +42,10 @@ const PACKET_HEADER_REGEX =
 	/(\w+)\s+(High|Medium|Low|Fixed)\s+(0x[0-9A-Fa-f]+|\d+)\s+(Trusted|NotTrusted)\s+(Zerocoded|Unencoded)/
 
 const BLOCK_HEADER_REGEX =
-	/^\s*(\w+)\s+(Single|Variable|Multiple)(?:\s+(\d+))?\s*$/
+	/^\s*(\w+)\s+(Single|Variable|Multiple)(?:\s+(\d+))?\s*(?:\/\/.*)?$/
 
 const FIELD_REGEX =
-	/^\s*\{\s*(\w+)\s+(?:(LLUUID|\w+)|Variable(?:\s+(\d+))?)\s*\}(?:\s*\/\/.*)?$/
+	/^\s*\{\s*(?<name>\w+)\s+(?<type>(?:LLUUID|\w+)|(?:Variable|Fixed))(?:\s+(?<size>\d+))?\s*\}(?:\s*\/\/.*)?$/
 
 function toDashCase(value: string): string {
 	return value
@@ -122,7 +122,7 @@ function getTypeScriptType(type: string): string {
 		return "boolean"
 	}
 
-	if (type === "UUID" || type.startsWith("Variable")) {
+	if (type.startsWith("Variable") || type.startsWith("Fixed")) {
 		return "string | Buffer"
 	}
 
@@ -132,6 +132,10 @@ function getTypeScriptType(type: string): string {
 
 	if (type === "Fixed") {
 		return "Buffer"
+	}
+
+	if (type === "UUID") {
+		return "string"
 	}
 
 	if (
@@ -171,15 +175,26 @@ function parseField(line: string, blockName: string): Field {
 		)
 	}
 
-	const [, name, type = "Variable", size] = fieldMatch
+	const { name, type, size } = fieldMatch.groups || {}
+
+	if (!type) {
+		throw new Error(
+			`Failed to parse field line: '${line}' in block ${blockName}`,
+		)
+	}
 
 	let fieldType = type
 	let isVariable = false
 	let isOptional = false
 
-	if (type === "Variable") {
+	if (name === "TextColor" || name === "Color") {
+		fieldType = "Color4"
+		isVariable = false
+	} else if (type === "Variable") {
 		isVariable = true
 		fieldType = size ? `Variable${size}` : "Variable"
+	} else if (type === "Fixed") {
+		fieldType = size ? `Fixed${size}` : "Fixed"
 	} else if (type === "LLUUID") {
 		fieldType = "UUID"
 	} else if (type === "BOOL") {

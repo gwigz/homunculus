@@ -14,8 +14,8 @@ import { Packet } from "./packet"
 
 export interface UpdateUserInfoData {
 	agentData?: {
-		agentId?: string | Buffer
-		sessionId?: string | Buffer
+		agentId?: string
+		sessionId?: string
 	}
 	userData?: {
 		iMViaEMail: boolean

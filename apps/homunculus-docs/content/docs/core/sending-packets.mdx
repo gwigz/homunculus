@@ -5,10 +5,6 @@ description: Creating and sending packets
 
 ## Sending Packets
 
-Currently there aren't much in terms of "sugar" for features. For now if something is missing, you can use the `await client.send([packet])` method to send various packets.
-
-Sending packets is very loosely validated, the serializer will only throw an error if it cannot serialize the packet. Packets that are assumed to be valid will be sent, but the server may just ignore it.
-
 <Callout type="warn">
 
 **It's recommended you use the beta grid for testing**
@@ -17,9 +13,51 @@ We're not responsible for any issues you may encounter, especially if you're tou
 
 </Callout>
 
-### Sending an estate message
+Currently there aren't much in terms of "sugar" for features. For now if something is missing, you can use the `await client.send([packet])` method to send various packets.
 
-Here's an example of how to send an estate message. Any optional fields can be omitted, the serializer will fill them in for you if they're actually required.
+You can find packets in the `Packets` object.
+
+```ts twoslash
+// @noErrors
+import { Packets } from "@gwigz/homunculus-core";
+
+new Packets.Ejec();
+//              ^|
+```
+
+Sending packets is very loosely validated, the serializer will only throw an error if it cannot serialize the packet. Packets that are assumed to be valid will be sent, but the server may just ignore it.
+
+```ts twoslash
+// @noErrorValidation
+import { Client } from "@gwigz/homunculus-core";
+
+const client = new Client();
+
+// ---cut---
+import { Packets } from "@gwigz/homunculus-core";
+
+client.send([
+  new Packets.EjectUser({
+    data: { targetId: "f09c1bae-df16-4413-93d7-251ed92c6d9a" },
+  }),
+]);
+```
+
+Once we get around to it, we'll add features to make this easier. Ejecting for example is already implemented in the `Nearby` class.
+
+```ts twoslash
+// @noErrors
+import { Client } from "@gwigz/homunculus-core";
+
+const client = new Client();
+
+// ---cut---
+import { Packets } from "@gwigz/homunculus-core";
+
+client.nearby.eject("f09c1bae-df16-4413-93d7-251ed92c6d9a");
+```
+
+### Sending a sound trigger
 
 ```ts twoslash
 import { Client } from "@gwigz/homunculus-core";
@@ -30,37 +68,22 @@ const client = new Client();
 import { Packets, UUID } from "@gwigz/homunculus-core";
 import assert from "node:assert";
 
-assert(client.self?.name, "Cannot send estate message without a name");
+assert(client.self?.position, "Cannot send sound trigger self");
+assert(client.region, "Cannot send sound trigger without region");
 
-assert(
-  client.self?.isEstateManager,
-  "Cannot send estate message without being an estate manager"
-);
-
-await client.send([
-  new Packets.EstateOwnerMessage({
-    agentData: { transactionId: UUID.zero },
-    methodData: {
-      method: "simulatormessage",
-      invoice: UUID.random(),
+client.send([
+  new Packets.SoundTrigger({
+    soundData: {
+      soundId: "884f50ac-9a0b-5667-334f-78ce08f9402e",
+      ownerId: UUID.zero,
+      objectId: UUID.zero,
+      parentId: UUID.zero,
+      handle: client.region.handle,
+      position: client.self.position,
+      gain: 1,
     },
-    paramList: [
-      { parameter: client.self.name },
-      { parameter: "Hello, world!" },
-    ],
   }),
 ]);
 ```
 
-Now, as for how you'd figure out what the fields actually are, you'll want to check the [official viewers source code.](https://github.com/secondlife/viewer)
-
-Once we get around to it, we'll add features to make this easier. Estate messages for example are already implemented in the `Region` class.
-
-```ts twoslash
-import { Client } from "@gwigz/homunculus-core";
-
-const client = new Client();
-
-// ---cut---
-await client.region?.sendEstateMessage("Hello, world!");
-```
+Now, as for how you'd figure out what the fields actually are, or their defaults, you'll want to check the [official viewers source code.](https://github.com/secondlife/viewer)

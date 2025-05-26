@@ -1,6 +1,12 @@
+import assert from "node:assert"
 import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
-import { type Agent, type Client, Vector3 } from ".."
-import { ChatFromViewer, EjectUser, FreezeUser } from "../network/packets"
+import { type Agent, type Client, UUID, Vector3 } from ".."
+import {
+	ChatFromViewer,
+	EjectUser,
+	FreezeUser,
+	SoundTrigger,
+} from "../network/packets"
 import { Constants } from "../utilities"
 
 export interface NearbyChatMessage {
@@ -146,6 +152,25 @@ class Nearby extends AsyncEventEmitter<NearbyEvents> {
 	public unfreeze(key: string) {
 		return this.client.send([
 			new FreezeUser({ data: { targetId: key, flags: 1 } }),
+		])
+	}
+
+	public async sendSoundTrigger(soundId: string, gain = 1) {
+		assert(this.client.self?.position, "Cannot send sound trigger self")
+		assert(this.client.region, "Cannot send sound trigger without region")
+
+		return this.client.send([
+			new SoundTrigger({
+				soundData: {
+					soundId,
+					ownerId: UUID.zero,
+					objectId: UUID.zero,
+					parentId: UUID.zero,
+					handle: this.client.region.handle,
+					position: this.client.self.position,
+					gain,
+				},
+			}),
 		])
 	}
 }

@@ -1,9 +1,12 @@
-import { RegionHandshakeReply } from "../packets"
+import { type RegionHandshake, RegionHandshakeReply } from "../packets"
 import Delegate from "./delegate"
 
 class RegionHandshakeDelegate extends Delegate {
-	public override handle() {
+	public override handle(packet: RegionHandshake) {
 		this.client.emit("debug", "Region handshake complete...")
+
+		this.client.self!.isEstateManager =
+			packet.data.regionInfo.isEstateManager === true
 
 		this.circuit.send([
 			new RegionHandshakeReply({ regionInfo: { flags: 1 | 4 } }),

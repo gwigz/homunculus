@@ -1,11 +1,12 @@
 import assert from "node:assert"
 import Region from "../../structures/region"
+import { Constants } from "../../utilities"
 import {
 	type AgentMovementComplete,
 	AgentThrottle,
-	AgentUpdate,
 	SetAlwaysRun,
 } from "../packets"
+import Vector3 from "../types/vector-3"
 import Delegate from "./delegate"
 
 class AgentMovementCompleteDelegate extends Delegate {
@@ -27,20 +28,20 @@ class AgentMovementCompleteDelegate extends Delegate {
 		// simulator.channel = sim.channelVersion
 
 		self.position = data.position
-		// self.rotation = data.lookAt // this is not quaternion
+		self.lookAt = data.lookAt
 
 		// TODO: setup an actual objects for region handle (so we can have sugar for
 		// global to local transformations).
-		self.offset = [
+		self.offset = new Vector3(
 			Number(data.regionHandle >> 32n),
 			Number(data.regionHandle & 0xffffffffn),
-			0.0,
-		]
-
-		client.regions.set(
-			data.regionHandle.toString(),
-			new Region(client, { handle: data.regionHandle }),
+			0,
 		)
+
+		const region = new Region(client, { handle: data.regionHandle })
+
+		client.region = region
+		client.regions.set(data.regionHandle.toString(), region)
 
 		// client.throttle/bandwidth?
 		const throttle = 500 * 1024
@@ -71,20 +72,12 @@ class AgentMovementCompleteDelegate extends Delegate {
 			// new AgentDataUpdateRequest(),
 		])
 
-		await this.circuit.send([
-			new AgentUpdate({
-				bodyRotation: self.rotation,
-				headRotation: self.rotation,
-				state: self.state,
-				cameraCenter: self.position,
-				cameraAtAxis: [0.979546, 0.105575, -0.171303],
-				cameraLeftAxis: [-1.0, 0.0, 0.0],
-				cameraUpAxis: [0.0, 0.0, 1.0],
-				far: 40,
-				controlFlags: self.controlFlags,
-				flags: 0,
-			}),
-		])
+		// send initial agent updates, finish animation avoids agent being stuck in
+		// a weird squatting animation on login
+		if (this.client.self) {
+			this.client.self.controlFlags = Constants.ControlFlags.FINISH_ANIM
+			this.client.self.sendAgentUpdate()
+		}
 
 		// notify the core that we're connected
 		setTimeout(() => this.circuit.core.ready(), 1000)

@@ -3,7 +3,8 @@ import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
 import { Authenticator, Core } from "./network"
 import type { LoginOptions } from "./network/authenticator"
 import type { Packet } from "./network/packets"
-import { Nearby } from "./structures"
+import { Vector3 } from "./network/types"
+import { Nearby, type Region } from "./structures"
 import Regions from "./structures/regions"
 import Self from "./structures/self"
 import { Constants } from "./utilities"
@@ -31,16 +32,26 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 	/**
 	 * Regions we are currently connected to, or recently have been.
 	 */
-	public regions = new Regions()
+	public readonly regions = new Regions()
+
+	/**
+	 * The Region representing the current region, as in the region that this
+	 * agent is standing within.
+	 *
+	 * @note Once teleporting is functional this value will be overwritten with a
+	 * new object. Watch the "teleport" event to avoid any potential issues, or
+	 * always use `client.region` rather than storing a reference to this value.
+	 */
+	public region?: Region
 
 	public readonly nearby: Nearby
 
-	private core: Core
+	private readonly core: Core
 
 	/**
 	 * The interface for first circuit creation, via. XMLRPC authentication.
 	 */
-	private authenticator: Authenticator = new Authenticator(
+	private readonly authenticator: Authenticator = new Authenticator(
 		"homunculus",
 		"0.0.0",
 	)
@@ -62,16 +73,6 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 	get status() {
 		return this.core.status
 	}
-
-	/**
-	 * The Region representing the current region, as in the region that this
-	 * agent is standing within. Note that once teleporting is functional this
-	 * value will be overwritten with a new object, watch the "teleport" event
-	 * to avoid any potential issues.
-	 */
-	// get region() {
-	// 	return this.agent.region
-	// }
 
 	/**
 	 * The Parcel representing the current parcel, as in the parcel that this
@@ -128,34 +129,21 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 		}
 
 		this.self = new Self(this, {
-			key: response.agent_id,
-			session: response.session_id,
-			firstName:
-				"first_name" in response
-					? response.first_name.replace('"', "")
-					: undefined,
-			lastName:
-				"last_name" in response
-					? response.last_name.replace('"', "")
-					: undefined,
+			key: response.agentId,
+			session: response.sessionId,
+			firstName: response.firstName,
+			lastName: response.lastName,
+			lookAt: response.lookAt,
+			offset: new Vector3(response.regionX ?? 0, response.regionY ?? 0, 0),
 		})
 
-		/**
-		 * inventory-root: [{ folder_id }],
-		 * inventory-skeleton: [{ name, folder_id, parent_id, type_default, version }],
-		 * buddy-list: [{ buddy_id, buddy_rights_has, buddy_rights_given }]
-		 * look_at: "[r-0.0121346,r0.998734,r0.0488137]",
-		 * region_x: 272128,
-		 * region_y: 334080,
-		 * home: "{'region_handle':[r123, r123], 'position':[r130.5, r170.75, r22.25], 'look_at':[r0.0, r1.0, r0.0]}",
-		 * seed_capability: "https://simhost..."
-		 */
-
-		return this.core.handshake({
-			id: response.circuit_code,
-			address: response.sim_ip,
-			port: response.sim_port,
+		await this.core.handshake({
+			id: response.circuitCode,
+			address: response.simIp,
+			port: response.simPort,
 		})
+
+		return response
 	}
 
 	/**

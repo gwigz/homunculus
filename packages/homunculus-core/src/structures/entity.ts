@@ -1,5 +1,5 @@
 import type { Client } from ".."
-import { U8, UUID, Vector3 } from "../network/types"
+import { Color4, type Quaternion, UUID, Vector3 } from "../network/types"
 
 export interface EntityOptions {
 	id: number
@@ -9,13 +9,11 @@ export interface EntityOptions {
 	owner?: string
 	type?: number
 	flags?: number
-	position?: [x: number, y: number, z: number]
-	velocity?: [x: number, y: number, z: number]
-	rotation?: [x: number, y: number, z: number, w: number]
-	scale?: [x: number, y: number, z: number]
-	text?:
-		| { value: string; color: [r: number, g: number, b: number, a: number] }
-		| { value: Buffer; color: Buffer }
+	position?: Vector3
+	velocity?: Vector3
+	rotation?: Quaternion
+	scale?: Vector3
+	text?: { value: string; color: Color4 } | { value: Buffer; color: Buffer }
 	material?: number // Constants.ObjectMaterials
 	tree?: number // Constants.ObjectTrees
 	action?: number // Constants.ObjectActions
@@ -67,40 +65,37 @@ class Entity {
 	/**
 	 * Current position of Entity.
 	 */
-	public position?: [x: number, y: number, z: number]
+	public position?: Vector3
 
 	/**
 	 * Current velocity of Entity.
 	 */
-	public velocity?: [x: number, y: number, z: number]
+	public velocity?: Vector3
 
 	/**
 	 * Current acceleration of Entity.
 	 */
-	public acceleration?: [x: number, y: number, z: number]
+	public acceleration?: Vector3
 
 	/**
 	 * Current angular velocity of Entity.
 	 */
-	public angularVelocity?: [x: number, y: number, z: number]
+	public angularVelocity?: Vector3
 
 	/**
 	 * Current rotation of Entity.
 	 */
-	public rotation?: [x: number, y: number, z: number, w: number]
+	public rotation?: Quaternion
 
 	/**
 	 * Scale of Entity.
 	 */
-	public scale?: [x: number, y: number, z: number]
+	public scale?: Vector3
 
 	/**
 	 * Floating text, object contains text and color values.
 	 */
-	public text?: {
-		value: string
-		color?: [r: number, g: number, b: number, a: number]
-	}
+	public text?: { value: string; color?: Color4 }
 
 	/**
 	 * Material type, see `Constants.ObjectMaterials` for context.
@@ -153,16 +148,12 @@ class Entity {
 							? data.text.value
 							: data.text.value.toString("utf8"),
 
-					color: Array.isArray(data.text.color)
-						? data.text.color
-						: data.text.color?.length === 4
-							? [
-									U8.fromBuffer(data.text.color, 0),
-									U8.fromBuffer(data.text.color, 1),
-									U8.fromBuffer(data.text.color, 2),
-									U8.fromBuffer(data.text.color, 3),
-								]
-							: undefined,
+					color:
+						data.text.color instanceof Color4
+							? data.text.color
+							: data.text.color?.length === 4
+								? Color4.fromBuffer(data.text.color)
+								: undefined,
 				}
 			: undefined
 

@@ -3,7 +3,24 @@ import type U16 from "./u16"
 
 class Vector3 {
 	public static readonly size: number = 12
-	public static readonly zero: Array<number> = [0.0, 0.0, 0.0]
+	public static readonly zero = new Vector3(0, 0, 0)
+	public static readonly one = new Vector3(1, 1, 1)
+
+	constructor(
+		readonly x: number,
+		readonly y: number,
+		readonly z: number,
+	) {}
+
+	/**
+	 * Returns a string representation of the vector.
+	 *
+	 * @param vector Vector3
+	 * @returns String in the format "<x, y, z>"
+	 */
+	public static toString(vector: Vector3) {
+		return `<${vector.x}, ${vector.y}, ${vector.z}>`
+	}
 
 	/**
 	 * Converts array input into a buffer representing a 3 point vector.
@@ -11,12 +28,18 @@ class Vector3 {
 	 * @param {number[]} vector Should contain 3 values
 	 * @returns {Buffer}
 	 */
-	public static toBuffer(vector: Array<number>) {
+	public static toBuffer(vector: [x: number, y: number, z: number] | Vector3) {
 		const buffer = Buffer.allocUnsafe(Vector3.size)
 
-		buffer.writeFloatLE(vector?.[0] ?? 0, 0)
-		buffer.writeFloatLE(vector?.[1] ?? 0, 4)
-		buffer.writeFloatLE(vector?.[2] ?? 0, 8)
+		if (Array.isArray(vector)) {
+			buffer.writeFloatLE(vector[0] ?? 0, 0)
+			buffer.writeFloatLE(vector[1] ?? 0, 4)
+			buffer.writeFloatLE(vector[2] ?? 0, 8)
+		} else {
+			buffer.writeFloatLE(vector.x, 0)
+			buffer.writeFloatLE(vector.y, 4)
+			buffer.writeFloatLE(vector.z, 8)
+		}
 
 		return buffer
 	}
@@ -44,13 +67,11 @@ class Vector3 {
 			type.fromBuffer(buffer, position + type.size * 2),
 		]
 
-		if ("toFloat" in type) {
-			return output.map((value) =>
-				type.toFloat(value, lower ?? 0, upper ?? 0),
-			) as [x: number, y: number, z: number]
-		}
-
-		return output as [x: number, y: number, z: number]
+		return new Vector3(
+			...(("toFloat" in type
+				? output.map((value) => type.toFloat(value, lower ?? 0, upper ?? 0))
+				: output) as [x: number, y: number, z: number]),
+		)
 	}
 
 	/**
@@ -59,10 +80,10 @@ class Vector3 {
 	 * @param from Position to calculate distance from
 	 * @param to Position to calculate distance to
 	 */
-	public static distance(from: Array<number>, to: Array<number>): number {
-		const dx = (from[0] ?? 0) - (to[0] ?? 0)
-		const dy = (from[1] ?? 0) - (to[1] ?? 0)
-		const dz = (from[2] ?? 0) - (to[2] ?? 0)
+	public static distance(from: Vector3, to: Vector3): number {
+		const dx = from.x - to.x
+		const dy = from.y - to.y
+		const dz = from.z - to.z
 
 		return Math.sqrt(dx * dx + dy * dy + dz * dz)
 	}

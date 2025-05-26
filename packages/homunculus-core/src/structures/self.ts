@@ -1,22 +1,26 @@
 import { type Client, Constants } from ".."
-import { AgentUpdate } from "../network/packets"
+import { AgentRequestSit, AgentUpdate } from "../network/packets"
+import { Quaternion, Vector3 } from "../network/types"
 
 class Self {
 	public key: string
 
 	/** Session ID */
-	public session?: number
+	public session?: string
 
 	public firstName?: string
 	public lastName?: string
 
 	public state: number = Constants.AgentStates.NONE
 
-	public rotation: [x: number, y: number, z: number, w: number] = [0, 0, 0, 1]
-	public position: [x: number, y: number, z: number] = [0, 0, 0]
+	public rotation = Quaternion.identity
+	public position = Vector3.zero
 
 	/** Global coordinate offset */
-	public offset?: [number, number, number]
+	public offset = Vector3.zero
+
+	/** If the user is an estate admin in the current region */
+	public isEstateManager = false
 
 	/** Linden Damage health */
 	public health = 100
@@ -26,29 +30,33 @@ class Self {
 	 */
 	public controlFlags = 0
 
+	private lastControlFlags = 0
+
 	private agentUpdateInterval?: NodeJS.Timeout
 
 	constructor(
 		public readonly client: Client,
 		data: {
 			key: string
-			session?: number
-			firstName?: string
-			lastName?: string
+			session: string
+			firstName: string
+			lastName: string
+			lookAt?: Vector3
+			offset?: Vector3
 		},
 	) {
 		this.key = data.key
 		this.session = data.session
 		this.firstName = data.firstName
 		this.lastName = data.lastName
+		this.lookAt = data.lookAt ?? Vector3.one
+		this.offset = data.offset ?? Vector3.zero
 
-		this.agentUpdateInterval = setInterval(() => this.sendAgentUpdate(), 1_000)
-	}
-
-	public destroy() {
-		clearInterval(this.agentUpdateInterval)
-
-		this.agentUpdateInterval = undefined
+		this.agentUpdateInterval = setInterval(() => {
+			if (this.client.status === Constants.Status.READY) {
+				this.sendAgentUpdate()
+			}
+		}, 1_000)
 	}
 
 	get name() {
@@ -57,12 +65,21 @@ class Self {
 			: undefined
 	}
 
-	public sendAgentUpdate() {
-		if (this.client.status !== Constants.Status.READY) {
-			return
-		}
+	set lookAt(value: Parameters<typeof Quaternion.fromEuler>[0]) {
+		this.rotation = Quaternion.fromEuler(value)
+	}
 
-		this.client.send([
+	public destroy() {
+		clearInterval(this.agentUpdateInterval)
+
+		this.agentUpdateInterval = undefined
+	}
+
+	public sendAgentUpdate() {
+		this.lastControlFlags = this.controlFlags
+		this.controlFlags = 0
+
+		return this.client.send([
 			new AgentUpdate({
 				bodyRotation: this.rotation,
 				headRotation: this.rotation,
@@ -72,10 +89,30 @@ class Self {
 				cameraLeftAxis: [0.0, 0.0, 0.0],
 				cameraUpAxis: [0.0, 0.0, 0.0],
 				far: 20,
-				controlFlags: this.controlFlags,
+				controlFlags: this.lastControlFlags,
 				flags: 0,
 			}),
 		])
+	}
+
+	public sitOnObject(target: string) {
+		return this.client.send([
+			new AgentRequestSit({
+				targetObject: { target, offset: [0, 0, 0.1] },
+			}),
+		])
+	}
+
+	public sitOnGround() {
+		this.controlFlags = Constants.ControlFlags.SIT_ON_GROUND
+
+		return this.sendAgentUpdate()
+	}
+
+	public standUp() {
+		this.controlFlags = Constants.ControlFlags.STAND_UP
+
+		return this.sendAgentUpdate()
 	}
 }
 

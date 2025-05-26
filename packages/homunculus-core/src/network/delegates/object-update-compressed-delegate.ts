@@ -3,6 +3,7 @@ import { Constants } from "../../utilities"
 import PacketBuffer from "../helpers/packet-buffer"
 import type { ObjectUpdateCompressed } from "../packets"
 import * as Types from "../types"
+import { Color4 } from "../types"
 import CompressedObjectValue, {
 	type CompressedObjectProperties,
 } from "./compressed-object-value"
@@ -176,7 +177,7 @@ class ObjectUpdateCompressedDelegate extends Delegate {
 						if (entity.text) {
 							entity.text.value = value.slice(0, -1)
 						} else {
-							entity.text = { value: value.slice(0, -1), color: [0, 0, 0, 0] }
+							entity.text = { value: value.slice(0, -1), color: Color4.zero }
 						}
 					} else {
 						entity.text = undefined

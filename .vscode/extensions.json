@@ -3,6 +3,7 @@
 		"biomejs.biome",
 		"oven.bun-vscode",
 		"unifiedjs.vscode-mdx",
-		"bradlc.vscode-tailwindcss"
+		"bradlc.vscode-tailwindcss",
+		"digitalbrainstem.javascript-ejs-support"
 	]
 }

@@ -119,49 +119,13 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 			options.login,
 		)
 
-		assert(typeof response === "object", Constants.Errors.LOGIN_FAILED)
+		if (!response.login) {
+			throw new Error(response.message)
+		}
 
 		if (response.message) {
 			this.emit(Constants.ClientEvents.DEBUG, response.message)
 		}
-
-		assert(
-			"circuit_code" in response,
-			'Missing "circuit_code" in login response',
-		)
-
-		assert(
-			typeof response.circuit_code === "number",
-			'Invalid "circuit_code" in response',
-		)
-
-		assert("agent_id" in response, 'Missing "agent_id" in login response')
-
-		assert(
-			typeof response.agent_id === "string",
-			'Invalid "agent_id" in response',
-		)
-
-		assert("session_id" in response, 'Missing "session_id" in login response')
-
-		assert(
-			typeof response.session_id === "string",
-			'Invalid "session_id" in login response',
-		)
-
-		assert("sim_ip" in response, 'Missing "sim_ip" in login response')
-
-		assert(
-			typeof response.sim_ip === "string",
-			'Invalid "sim_ip" in login response',
-		)
-
-		assert("sim_port" in response, 'Missing "sim_port" in login response')
-
-		assert(
-			typeof response.sim_port === "number",
-			'Invalid "sim_port" in login response',
-		)
 
 		this.self = new Self(this, {
 			key: response.agent_id,

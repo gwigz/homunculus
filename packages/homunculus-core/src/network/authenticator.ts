@@ -3,6 +3,10 @@ import os from "node:os"
 // @ts-expect-error no types
 import { machineIdSync } from "@usebruno/node-machine-id"
 import xmlrpc from "xmlrpc"
+import {
+	type LoginResponse,
+	loginResponseSchema,
+} from "../schema/login-response-schema"
 import { Constants } from "../utilities"
 
 export interface LoginOptions {
@@ -22,11 +26,7 @@ class Authenticator {
 		this.agent = `${channel} ${version}`
 	}
 
-	public login(
-		username: string,
-		password: string,
-		options: LoginOptions = {},
-	): Promise<any> {
+	public login(username: string, password: string, options: LoginOptions = {}) {
 		const platforms = { darwin: "mac", linux: "lnx", win32: "win" }
 		const platform = os.platform()
 
@@ -68,12 +68,16 @@ class Authenticator {
 			headers: { "User-Agent": this.agent },
 		})
 
-		return new Promise((resolve) => {
+		return new Promise<LoginResponse>((resolve, reject) => {
 			client.methodCall(
 				"login_to_simulator",
 				[parameters],
 				(error, response) => {
-					resolve(error || response)
+					if (error) {
+						reject(error)
+					}
+
+					resolve(loginResponseSchema.parse(response))
 				},
 			)
 		})

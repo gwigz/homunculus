@@ -4,6 +4,6 @@
 		"oven.bun-vscode",
 		"unifiedjs.vscode-mdx",
 		"bradlc.vscode-tailwindcss",
-		"digitalbrainstem.javascript-ejs-support"
+		"dannyhw.ejs-extended-language-support"
 	]
 }

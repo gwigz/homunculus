@@ -30,7 +30,9 @@
 		"lint": "biome lint .",
 		"prebuild": "rm -rf dist && tsc",
 		"build": "esbuild src/index.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/index.js",
-		"codegen": "bun run ./codegen/packets"
+		"precodegen": "find ./src/network/packets -type f ! -name 'packet.ts' -delete",
+		"codegen": "bun run ./codegen/packets",
+		"postcodegen": "biome check ./src/network --fix"
 	},
 	"dependencies": {
 		"@keyv/sqlite": "^4.0.4",

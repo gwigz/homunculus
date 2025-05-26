@@ -7,5 +7,8 @@
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"[javascript][typescript][typescriptreact][json]": {
 		"editor.defaultFormatter": "biomejs.biome"
+	},
+	"[html]": {
+		"editor.formatOnSave": false
 	}
 }

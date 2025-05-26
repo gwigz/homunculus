@@ -21,6 +21,7 @@ pids
 
 # Dependency directories
 node_modules
+message_template.msg
 
 # NPM stuff
 .npm

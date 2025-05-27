@@ -25,7 +25,7 @@ new Packets.Ejec();
 //              ^|
 ```
 
-Sending packets is very loosely validated, the serializer will only throw an error if it cannot serialize the packet. Packets that are assumed to be valid will be sent, but the server may just ignore it.
+Sending packets is very loosely validated, the serializer will only throw an error if it cannot serialize the packet. Packets that are assumed to be valid will be sent, if not the server will typically ignore it.
 
 ```ts twoslash
 // @noErrorValidation
@@ -67,9 +67,6 @@ const client = new Client();
 // ---cut---
 import { Packets, UUID } from "@gwigz/homunculus-core";
 import assert from "node:assert";
-
-assert(client.self?.position, "Cannot send sound trigger self");
-assert(client.region, "Cannot send sound trigger without region");
 
 client.send([
   new Packets.SoundTrigger({

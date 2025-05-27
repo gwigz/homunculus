@@ -22,8 +22,8 @@ client.on("ready", () => {
 			// rotate to face the closest avatar
 			// TODO: utilities for facing a point, avatar, or entity
 			const angle = Math.atan2(
-				closestAgent.entity.position!.y - self.position!.y,
-				closestAgent.entity.position!.x - self.position!.x,
+				closestAgent.entity.position!.y - self.position.y,
+				closestAgent.entity.position!.x - self.position.x,
 			)
 
 			const cos = Math.cos(angle)

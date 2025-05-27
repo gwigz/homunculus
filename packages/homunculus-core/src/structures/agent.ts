@@ -1,4 +1,3 @@
-import assert from "node:assert"
 import type { Client } from ".."
 import { type AvatarCache, cache } from "../cache"
 import { AcknowledgeTimeoutError } from "../network/acknowledger"
@@ -105,8 +104,6 @@ class Agent {
 	 * @param message The message to send.
 	 */
 	public message(message: string) {
-		assert(this.client.self, "Agent is not ready")
-
 		return this.client.send([
 			new ImprovedInstantMessage({
 				messageBlock: {

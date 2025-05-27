@@ -5,7 +5,7 @@ class RegionHandshakeDelegate extends Delegate {
 	public override handle(packet: RegionHandshake) {
 		this.client.emit("debug", "Region handshake complete...")
 
-		this.client.self!.isEstateManager =
+		this.client.self.isEstateManager =
 			packet.data.regionInfo!.isEstateManager === true
 
 		this.circuit.send([

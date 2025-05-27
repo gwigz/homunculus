@@ -35,11 +35,11 @@ class Nearby extends AsyncEventEmitter<NearbyEvents> {
 	 * Agents within 20 meters of the client's position.
 	 */
 	get agents() {
-		return Array.from(this.client.region?.agents.values() ?? []).filter(
+		return Array.from(this.client.region.agents.values() ?? []).filter(
 			(agent) =>
-				agent.entity.key !== this.client.self!.key &&
+				agent.entity.key !== this.client.self.key &&
 				agent.entity.position &&
-				Vector3.distance(this.client.self!.position, agent.entity.position) <=
+				Vector3.distance(this.client.self.position, agent.entity.position) <=
 					20,
 		)
 	}

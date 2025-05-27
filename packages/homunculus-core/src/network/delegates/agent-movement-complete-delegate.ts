@@ -1,4 +1,3 @@
-import assert from "node:assert"
 import Region from "../../structures/region"
 import { Constants } from "../../utilities"
 import {
@@ -16,9 +15,6 @@ class AgentMovementCompleteDelegate extends Delegate {
 
 		const client = this.client
 		const self = client.self
-
-		assert(self, "Self not found")
-
 		const data = packet.data.data!
 
 		// const sim = packet.data.simData[0]

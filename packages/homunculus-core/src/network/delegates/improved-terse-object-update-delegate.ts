@@ -70,7 +70,6 @@ class ImprovedTerseObjectUpdateDelegate extends Delegate {
 			}
 		}
 
-		// TODO: automatically chunk packets?
 		for (let i = 0; i < missing.length; i += 255) {
 			this.circuit.send([
 				new RequestMultipleObjects({

@@ -1,0 +1,49 @@
+{
+	"name": "@gwigz/homunculus-bot",
+	"description": "A bot framework for creating Second Life bots with chat commands and LSL communication",
+	"version": "0.0.0-alpha.1",
+	"author": "gwigz <gwigz@icloud.com>",
+	"license": "MIT",
+	"bugs": "https://github.com/gwigz/homunculus/issues",
+	"homepage": "https://homunculus.inworld.link/en/docs/bot",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/gwigz/homunculus.git"
+	},
+	"keywords": [
+		"bot",
+		"life",
+		"second",
+		"secondlife",
+		"lsl",
+		"slua"
+	],
+	"type": "module",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"exports": {
+		".": "./dist/index.js"
+	},
+	"scripts": {
+		"dev": "bun run ./src/index.ts",
+		"lint": "biome lint .",
+		"check": "biome check .",
+		"prebuild": "rm -rf dist && tsc",
+		"build": "esbuild src/index.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/index.js"
+	},
+	"dependencies": {
+		"@gwigz/homunculus-core": "workspace:*",
+		"zod": "^3.25.28"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.0.0-beta.5",
+		"@types/node": "^22.15.21",
+		"esbuild": "^0.25.4"
+	},
+	"peerDependencies": {
+		"typescript": "^5.8.3"
+	}
+}

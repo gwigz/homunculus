@@ -1,5 +1,5 @@
 import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
-import { type Agent, type Client, UUID, Vector3 } from ".."
+import { type Client, UUID, Vector3 } from ".."
 import {
 	ChatFromViewer,
 	EjectUser,
@@ -35,10 +35,6 @@ class Nearby extends AsyncEventEmitter<NearbyEvents> {
 	 * Agents within 20 meters of the client's position.
 	 */
 	get agents() {
-		if (!this.client.self?.position) {
-			return [] as Agent[]
-		}
-
 		return Array.from(this.client.region?.agents.values() ?? []).filter(
 			(agent) =>
 				agent.entity.key !== this.client.self!.key &&

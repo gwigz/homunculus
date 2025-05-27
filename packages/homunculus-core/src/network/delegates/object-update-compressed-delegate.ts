@@ -116,10 +116,10 @@ class ObjectUpdateCompressedDelegate extends Delegate {
 					}
 				}
 
-				if (entity.type === 47 && entity.key === this.client.self?.key) {
-					this.client.self!.state = entity.state
-					this.client.self!.position = entity.position!
-					this.client.self!.rotation = entity.rotation!
+				if (entity.type === 47 && entity.key === this.client.self.key) {
+					this.client.self.state = entity.state
+					this.client.self.position = entity.position!
+					this.client.self.rotation = entity.rotation!
 				}
 			} catch (error) {
 				this.client.emit("debug", `Error updating object "${key}".`)

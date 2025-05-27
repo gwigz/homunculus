@@ -37,7 +37,7 @@ class Agent {
 	}
 
 	get distance(): number {
-		return this.client.self?.position && this.entity.position
+		return this.entity.position
 			? Vector3.distance(this.client.self.position, this.entity.position)
 			: -1
 	}

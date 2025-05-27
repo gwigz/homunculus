@@ -8,16 +8,13 @@ class Self {
 	public sessionId: string
 	public circuitCode: number
 
-	public firstName?: string
-	public lastName?: string
+	public firstName = "Loading"
+	public lastName = "Loading"
 
 	public state: number = Constants.AgentStates.NONE
 
 	public rotation = Quaternion.identity
 	public position = Vector3.zero
-
-	/** Global coordinate offset */
-	public offset = Vector3.zero
 
 	/** If the user is an estate admin in the current region */
 	public isEstateManager = false
@@ -62,9 +59,7 @@ class Self {
 	}
 
 	get name() {
-		return this.firstName
-			? `${this.firstName} ${this.lastName ?? ""}`.trim()
-			: undefined
+		return `${this.firstName} ${this.lastName ?? ""}`.trim()
 	}
 
 	set lookAt(value: Parameters<typeof Quaternion.fromEuler>[0]) {

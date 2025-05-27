@@ -5,8 +5,8 @@ import { LogoutRequest } from "./packets"
 import Socket from "./socket"
 
 /**
- * The core handles connecting to a Simulator, processing and sending
- * messages. It's basically handles 100% of the the communication.
+ * The core handles connecting to a simulator, processing and sending
+ * messages.
  */
 class Core {
 	/**

@@ -63,7 +63,7 @@ class ImprovedTerseObjectUpdateDelegate extends Delegate {
 				64.0,
 			)
 
-			if (entity.type === 47 && entity.key === this.client.self?.key) {
+			if (entity.type === 47 && entity.key === this.client.self.key) {
 				this.client.self.state = entity.state
 				this.client.self.position = entity.position!
 				this.client.self.rotation = entity.rotation!

@@ -163,7 +163,7 @@ class Entity {
 	}
 
 	get distance(): number {
-		return this.client.self?.position && this.position
+		return this.position
 			? Vector3.distance(this.client.self.position, this.position)
 			: -1
 	}

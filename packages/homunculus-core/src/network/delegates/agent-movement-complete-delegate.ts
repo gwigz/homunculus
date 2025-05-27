@@ -6,7 +6,6 @@ import {
 	AgentThrottle,
 	SetAlwaysRun,
 } from "../packets"
-import Vector3 from "../types/vector-3"
 import Delegate from "./delegate"
 
 class AgentMovementCompleteDelegate extends Delegate {
@@ -30,18 +29,9 @@ class AgentMovementCompleteDelegate extends Delegate {
 		self.position = data.position
 		self.lookAt = data.lookAt
 
-		// TODO: setup an actual objects for region handle (so we can have sugar for
-		// global to local transformations).
-		self.offset = new Vector3(
-			Number((data.regionHandle as bigint) >> 32n),
-			Number((data.regionHandle as bigint) & 0xffffffffn),
-			0,
-		)
+		const handle = data.regionHandle as bigint
 
-		const region = new Region(client, { handle: data.regionHandle as bigint })
-
-		client.region = region
-		client.regions.set(data.regionHandle.toString(), region)
+		client.regions.set(handle, new Region(client, { handle }))
 
 		// client.throttle/bandwidth?
 		const throttle = 500 * 1024

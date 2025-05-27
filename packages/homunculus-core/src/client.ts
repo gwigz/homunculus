@@ -4,7 +4,7 @@ import { Authenticator, Core } from "./network"
 import type { LoginOptions } from "./network/authenticator"
 import type { Packet } from "./network/packets"
 import { Vector3 } from "./network/types"
-import { Nearby, type Region } from "./structures"
+import { Nearby } from "./structures"
 import Regions from "./structures/regions"
 import Self from "./structures/self"
 import { Constants } from "./utilities"
@@ -27,7 +27,15 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 	/**
 	 * Contains values relating to your own avatar.
 	 */
-	public self?: Self
+	public get self() {
+		assert(this._self, "Self is not initialized")
+
+		return this._self
+	}
+
+	public set self(value: Self) {
+		this._self = value
+	}
 
 	/**
 	 * Regions we are currently connected to, or recently have been.
@@ -35,18 +43,21 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 	public readonly regions = new Regions()
 
 	/**
+	 * Local communication interface.
+	 */
+	public readonly nearby: Nearby
+
+	/**
 	 * The Region representing the current region, as in the region that this
 	 * agent is standing within.
 	 *
 	 * @note Once teleporting is functional this value will be overwritten with a
-	 * new object. Watch the "teleport" event to avoid any potential issues, or
-	 * always use `client.region` rather than storing a reference to this value.
+	 * new object. Always use `client.region` rather than storing a reference to
+	 * this value.
 	 */
-	public region?: Region
-
-	public readonly nearby: Nearby
-
-	private readonly core: Core
+	public get region() {
+		return this.regions.current
+	}
 
 	/**
 	 * The interface for first circuit creation, via. XMLRPC authentication.
@@ -56,22 +67,26 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 		"0.0.0",
 	)
 
+	private readonly _core: Core
+	private _self?: Self
+
 	constructor() {
 		super()
 
-		this.core = new Core(this)
-		this.nearby = new Nearby(this)
+		this._core = new Core(this)
 
 		// parcel
 		// friends
 		// groups
 		// inventory
-		//
+
+		this.nearby = new Nearby(this)
+
 		// https://gist.github.com/gwigz/0c13179591a3d005eb4765a3bfe9fc3d
 	}
 
 	get status() {
-		return this.core.status
+		return this._core.status
 	}
 
 	/**
@@ -138,7 +153,7 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 			offset: new Vector3(response.regionX ?? 0, response.regionY ?? 0, 0),
 		})
 
-		await this.core.handshake({
+		await this._core.handshake({
 			id: response.circuitCode,
 			address: response.simIp,
 			port: response.simPort,
@@ -153,7 +168,7 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 	 * @param packets Packets to send
 	 */
 	public send(packets: Array<Packet<any>>) {
-		return this.core.circuit?.send(packets)
+		return this._core.circuit?.send(packets)
 	}
 
 	/**
@@ -163,11 +178,11 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 	 * @param timeout Timeout for reliable packets
 	 */
 	public sendReliable(packets: Array<Packet<any>>, timeout = 10_000) {
-		return this.core.circuit?.sendReliable(packets, timeout)
+		return this._core.circuit?.sendReliable(packets, timeout)
 	}
 
 	public async disconnect() {
-		await this.core.disconnect()
+		await this._core.disconnect()
 
 		this.emit(Constants.ClientEvents.DEBUG, "Disconnected!")
 	}

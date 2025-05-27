@@ -125,11 +125,11 @@ class Serializer {
 
 				switch (name) {
 					case "agentId":
-						data.agentId = this.circuit.self?.key
+						data.agentId = this.circuit.self.key
 						break
 
 					case "sessionId":
-						data.sessionId = this.circuit.self?.sessionId
+						data.sessionId = this.circuit.self.sessionId
 						break
 
 					case "circuitCode":

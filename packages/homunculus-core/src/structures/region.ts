@@ -77,10 +77,8 @@ class Region {
 	}
 
 	public async sendEstateMessage(message: string) {
-		assert(this.client.self?.name, "Cannot send estate message without self")
-
 		assert(
-			this.client.self?.isEstateManager,
+			this.client.self.isEstateManager,
 			"Cannot send estate message if not estate manager",
 		)
 

@@ -115,7 +115,7 @@ class Agent {
 					timestamp: 0,
 					fromGroup: false,
 					fromAgentName: this.client.self.name!,
-					message: `${message}\x00`,
+					message: Buffer.from(`${message}\0`, "utf8"),
 					toAgentId: this.key,
 					offline: 0,
 					parentEstateId: 0,

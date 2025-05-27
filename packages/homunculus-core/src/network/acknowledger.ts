@@ -45,24 +45,45 @@ class Acknowledger {
 		this.pruneInterval = undefined
 	}
 
-	public seen(number: number) {
-		if (this.awaiting.has(number)) {
-			const [resolve, timeout] = this.awaiting.get(number)!
+	public isSequenceNew(number: number) {
+		return !this.packets.seen.has(number) && !this.packets.queued.has(number)
+	}
+
+	public queueAckResponse(number: number) {
+		this.packets.queued.add(number)
+	}
+
+	public awaitServerAcknowledgement(
+		label: string,
+		sequence: number,
+		timeout = 10_000,
+	) {
+		if (this.awaiting.has(sequence)) {
+			return this.awaiting.get(sequence)
+		}
+
+		return new Promise<void>((resolve, reject) => {
+			this.awaiting.set(sequence, [
+				resolve,
+				setTimeout(() => reject(new AcknowledgeTimeoutError(label)), timeout),
+			])
+		})
+	}
+
+	public handleReceivedAck(number: number) {
+		const awaiting = this.awaiting.get(number)
+
+		if (awaiting) {
+			const [resolve, timeout] = awaiting
 
 			clearTimeout(timeout)
 			resolve()
 
 			this.awaiting.delete(number)
 		}
-
-		return this.packets.seen.has(number) || this.packets.queued.has(number)
 	}
 
-	public queue(number: number) {
-		this.packets.queued.add(number)
-	}
-
-	public tick() {
+	private tick() {
 		if (!this.packets.queued.size) {
 			return
 		}
@@ -88,7 +109,7 @@ class Acknowledger {
 		}
 	}
 
-	public prune() {
+	private prune() {
 		if (!this.packets.seen.size) {
 			return
 		}
@@ -96,25 +117,12 @@ class Acknowledger {
 		const uptime = process.uptime()
 
 		for (const [sequence, timestamp] of this.packets.seen) {
-			if (uptime - timestamp > 5.0) {
+			if (uptime - timestamp > 10) {
 				this.packets.seen.delete(sequence)
 			} else {
 				break
 			}
 		}
-	}
-
-	public await(label: string, sequence: number, timeout = 10_000) {
-		if (this.awaiting.has(sequence)) {
-			return this.awaiting.get(sequence)
-		}
-
-		return new Promise<void>((resolve, reject) => {
-			this.awaiting.set(sequence, [
-				resolve,
-				setTimeout(() => reject(new AcknowledgeTimeoutError(label)), timeout),
-			])
-		})
 	}
 }
 

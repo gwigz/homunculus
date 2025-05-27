@@ -68,7 +68,7 @@ class Circuit {
 		)
 
 		const promises = serialized.map(([_, number], index) =>
-			this.acknowledger.await(
+			this.acknowledger.awaitServerAcknowledgement(
 				packets[index]!.constructor.name,
 				number,
 				timeout,
@@ -85,16 +85,17 @@ class Circuit {
 
 	public receive(buffer: PacketBuffer) {
 		if (buffer.reliable) {
-			if (this.acknowledger.seen(buffer.sequence)) {
+			// ignore packets that we've already seen
+			if (!this.acknowledger.isSequenceNew(buffer.sequence)) {
 				return
 			}
 
-			this.acknowledger.queue(buffer.sequence)
+			this.acknowledger.queueAckResponse(buffer.sequence)
 		}
 
 		if (buffer.acks) {
 			for (const ack of buffer.acknowledgements()) {
-				this.acknowledger.seen(ack)
+				this.acknowledger.handleReceivedAck(ack)
 			}
 		}
 
@@ -105,8 +106,6 @@ class Circuit {
 		}
 
 		if (packet.name in this.delegates && this.delegates[packet.name]?.waiting) {
-			// TODO: this is just first come first served, packets are meant to be
-			// processed in order...
 			this.delegates[packet.name]?.handle(
 				this.deserializer.convert(packet, buffer),
 			)
@@ -120,8 +119,8 @@ class Circuit {
 
 		this.dead = false
 
-		assert(this.self?.key, "Avatar key is required")
-		assert(this.self?.sessionId, "Session is required")
+		assert(this.self.key, "Avatar key is required")
+		assert(this.self.sessionId, "Session is required")
 
 		await this.sendReliable(
 			[
@@ -129,14 +128,13 @@ class Circuit {
 					circuitCode: {
 						id: this.self.key,
 						code: this.id,
-						sessionId: this.self?.sessionId,
+						sessionId: this.self.sessionId,
 					},
 				}),
 			],
 			30_000,
 		)
 
-		// TODO: timeout on AgentMovementComplete, currently we'll just hang if we don't get it
 		await this.sendReliable([new CompleteAgentMovement({})], 30_000)
 	}
 

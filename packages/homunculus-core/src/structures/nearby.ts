@@ -1,10 +1,10 @@
-import assert from "node:assert"
 import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
 import { type Agent, type Client, UUID, Vector3 } from ".."
 import {
 	ChatFromViewer,
 	EjectUser,
 	FreezeUser,
+	ScriptDialogReply,
 	SoundTrigger,
 } from "../network/packets"
 import { Constants } from "../utilities"
@@ -54,13 +54,13 @@ class Nearby extends AsyncEventEmitter<NearbyEvents> {
 	 * @param timeout Optional, milliseconds to wait before stop typing is called.
 	 */
 	public async startTyping(timeout?: number) {
-		await this.message("", 0, Constants.ChatTypes.TYPING)
-
 		clearTimeout(this.typingTimeout)
 
 		if (timeout) {
 			this.typingTimeout = setTimeout(() => this.stopTyping(), timeout)
 		}
+
+		return this.message("", 0, Constants.ChatTypes.TYPING)
 	}
 
 	/**
@@ -115,9 +115,22 @@ class Nearby extends AsyncEventEmitter<NearbyEvents> {
 		type: number = Constants.ChatTypes.NORMAL,
 	) {
 		return this.client.send([
-			new ChatFromViewer({
-				chatData: { channel, type, message: `${message}\x00` },
-			}),
+			channel >= 0
+				? new ChatFromViewer({
+						chatData: {
+							channel,
+							type,
+							message: Buffer.from(`${message}\0`, "utf8"),
+						},
+					})
+				: new ScriptDialogReply({
+						data: {
+							objectId: this.client.self.key,
+							chatChannel: channel,
+							buttonIndex: 0,
+							buttonLabel: Buffer.from(`${message}\0`, "utf8"),
+						},
+					}),
 		])
 	}
 
@@ -156,9 +169,6 @@ class Nearby extends AsyncEventEmitter<NearbyEvents> {
 	}
 
 	public async triggerSound(soundId: string, gain = 1) {
-		assert(this.client.self?.position, "Cannot send sound trigger self")
-		assert(this.client.region, "Cannot send sound trigger without region")
-
 		return this.client.send([
 			new SoundTrigger({
 				soundData: {

@@ -49,7 +49,7 @@ export class ApiHandler {
 		this.client = client
 		this.prefix = options.apiPrefix ?? "#api"
 		this.separator = options.apiSeparator ?? ","
-		this.channel = options.apiChannel ?? 81513312
+		this.channel = options.apiChannel ?? -81513312
 		this.onError = options.onError
 	}
 
@@ -87,7 +87,6 @@ export class ApiHandler {
 				)
 
 				if (typeof response === "string" && response.length > 0) {
-					// TODO: dialog response, to allow negative channel responses
 					this.client.nearby.say(response, this.channel)
 				}
 			}

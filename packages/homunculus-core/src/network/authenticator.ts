@@ -9,7 +9,9 @@ import {
 } from "../schema/login-response-schema"
 import { Constants } from "../utilities"
 
-export interface LoginOptions {
+export interface AuthenticatorOptions {
+	username: string
+	password: string
 	start?: "home" | "last" | string
 	mfaToken?: string
 	mfaTokenHash?: string
@@ -26,20 +28,20 @@ class Authenticator {
 		this.agent = `${channel} ${version}`
 	}
 
-	public login(username: string, password: string, options: LoginOptions = {}) {
+	public login(options: AuthenticatorOptions) {
 		const platforms = { darwin: "mac", linux: "lnx", win32: "win" }
 		const platform = os.platform()
 
 		const passwd = crypto
 			.createHash("md5")
-			.update(password.substring(0, 16))
+			.update(options.password.substring(0, 16))
 			.digest("hex")
 
 		const id0 = crypto.createHash("md5").update(machineIdSync()).digest("hex")
 
 		const parameters = {
-			first: username.split(" ")[0],
-			last: username.split(" ")[1] || "Resident",
+			first: options.username.split(" ")[0],
+			last: options.username.split(" ")[1] || "Resident",
 			passwd: `$1$${passwd}`,
 			token: options.mfaToken || process.env.SL_MFA_TOKEN,
 			mfa_hash: options.mfaTokenHash || process.env.SL_MFA_HASH,

@@ -1,27 +1,50 @@
-import type { Client } from "@gwigz/homunculus-core"
+import { type Client, Constants } from "@gwigz/homunculus-core"
 import { Box, Text } from "ink"
 import Spinner from "ink-spinner"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
+import type { Message } from "./chat"
 
 interface LoadingProps {
 	client: Client
-	onReady: () => void
+	onReady: (initialMessages: Message[]) => void
 }
 
 export function Loading({ client, onReady }: LoadingProps) {
-	const [debug, setDebug] = useState<string[]>([])
+	const [initialMessages, setInitialMessages] = useState<Message[]>([])
+
+	const handleDebug = useCallback((message: string) => {
+		// TODO: use a store for messages, this wont do once we have multiple routes
+		setInitialMessages((messages) => [
+			...messages,
+			{
+				id: crypto.randomUUID(),
+				fromName: "[DEBUG]",
+				chatType: Constants.ChatTypes.DEBUG,
+				sourceType: Constants.ChatSources.SYSTEM,
+				message: `/me ${message}`,
+				timestamp: new Date().toLocaleTimeString(undefined, {
+					hour: "2-digit",
+					minute: "2-digit",
+					hourCycle: "h24",
+				}),
+			} satisfies Message,
+		])
+	}, [])
+
+	const ready = useCallback(
+		() => onReady(initialMessages),
+		[initialMessages, onReady],
+	)
 
 	useEffect(() => {
-		client.on("ready", onReady)
-
-		client.on("debug", (message) => {
-			setDebug((prev) => [...prev, message])
-		})
+		client.on("ready", ready)
+		client.on("debug", handleDebug)
 
 		return () => {
-			client.off("ready", onReady)
+			client.off("ready", ready)
+			client.off("debug", handleDebug)
 		}
-	}, [client, onReady])
+	}, [client, handleDebug, ready])
 
 	return (
 		<Box flexDirection="column">
@@ -31,9 +54,9 @@ export function Loading({ client, onReady }: LoadingProps) {
 			</Box>
 
 			<Box flexDirection="column" marginTop={1} marginBottom={1}>
-				{debug.map((message) => (
-					<Text key={message} color="gray">
-						{message}
+				{initialMessages.map(({ id, message }) => (
+					<Text key={id} color="gray">
+						{message?.replace(/^\/me /, "")}
 					</Text>
 				))}
 			</Box>

@@ -10,12 +10,7 @@ import stripAnsi from "strip-ansi"
 import { useScreenSize } from "./hooks"
 import { logError } from "./logger"
 
-interface ChatProps {
-	client: Client
-	onExit: () => Promise<void>
-}
-
-interface Message extends Partial<NearbyChatMessage> {
+export interface Message extends Partial<NearbyChatMessage> {
 	timestamp: string
 	id: string
 }
@@ -27,8 +22,15 @@ const inaudibleChatTypes = [
 
 const chatInputHeight = 3
 
-export function Chat({ client, onExit }: ChatProps) {
-	const [messages, setMessages] = useState<Message[]>([])
+interface ChatProps {
+	client: Client
+	initialMessages?: Message[]
+	onExit: () => Promise<void>
+}
+
+export function Chat({ client, initialMessages = [], onExit }: ChatProps) {
+	// TODO: use a store for messages, this wont do once we have multiple routes
+	const [messages, setMessages] = useState<Message[]>(initialMessages)
 	const [input, setInput] = useState("")
 	const [nearbyInfo, setNearbyInfo] = useState<string[]>([])
 	const [scrollTop, setScrollTop] = useState(0)

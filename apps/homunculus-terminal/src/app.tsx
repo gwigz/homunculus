@@ -1,6 +1,6 @@
 import type { Client } from "@gwigz/homunculus-core"
 import { useState } from "react"
-import { Chat } from "./chat"
+import { Chat, type Message } from "./chat"
 import { Loading } from "./loading"
 import { Login } from "./login"
 
@@ -8,6 +8,7 @@ type AppState = "login" | "loading" | "chat"
 
 export function App({ client, start }: { client: Client; start?: string }) {
 	const [state, setState] = useState<AppState>("login")
+	const [initialMessages, setInitialMessages] = useState<Message[]>([])
 
 	async function handleLogin(username: string, password: string) {
 		setState("loading")
@@ -17,7 +18,8 @@ export function App({ client, start }: { client: Client; start?: string }) {
 		})
 	}
 
-	function handleReady() {
+	function handleReady(initialMessages: Message[]) {
+		setInitialMessages(initialMessages)
 		setState("chat")
 	}
 
@@ -30,8 +32,16 @@ export function App({ client, start }: { client: Client; start?: string }) {
 	return (
 		<>
 			{state === "login" && <Login onSubmit={handleLogin} />}
+
 			{state === "loading" && <Loading client={client} onReady={handleReady} />}
-			{state === "chat" && <Chat client={client} onExit={handleExit} />}
+
+			{state === "chat" && (
+				<Chat
+					client={client}
+					initialMessages={initialMessages}
+					onExit={handleExit}
+				/>
+			)}
 		</>
 	)
 }

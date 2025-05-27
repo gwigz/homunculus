@@ -87,6 +87,11 @@ class Core {
 			return
 		}
 
+		// send initial agent updates, finish animation avoids agent being stuck in
+		// a weird squatting animation on login
+		this.self.controlFlags = Constants.ControlFlags.FINISH_ANIM
+		this.self.sendAgentUpdate()
+
 		this.status = Constants.Status.READY
 
 		this.client.emit(Constants.ClientEvents.DEBUG, "Connected!")

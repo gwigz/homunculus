@@ -58,13 +58,6 @@ class AgentMovementCompleteDelegate extends Delegate {
 			// new AgentDataUpdateRequest(),
 		])
 
-		// send initial agent updates, finish animation avoids agent being stuck in
-		// a weird squatting animation on login
-		if (this.client.self) {
-			this.client.self.controlFlags = Constants.ControlFlags.FINISH_ANIM
-			this.client.self.sendAgentUpdate()
-		}
-
 		// notify the core that we're connected
 		setTimeout(() => this.circuit.core.ready(), 1000)
 	}

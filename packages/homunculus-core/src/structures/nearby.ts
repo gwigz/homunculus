@@ -155,7 +155,7 @@ class Nearby extends AsyncEventEmitter<NearbyEvents> {
 		])
 	}
 
-	public async sendSoundTrigger(soundId: string, gain = 1) {
+	public async triggerSound(soundId: string, gain = 1) {
 		assert(this.client.self?.position, "Cannot send sound trigger self")
 		assert(this.client.region, "Cannot send sound trigger without region")
 

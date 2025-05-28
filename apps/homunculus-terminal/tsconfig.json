@@ -19,7 +19,7 @@
 		"noEmit": true,
 		/* doesn't run in the DOM */
 		"lib": ["ESNext"],
-		// path aliases
+		/* path aliases */
 		"baseUrl": ".",
 		"paths": {
 			"~/*": ["src/*"]

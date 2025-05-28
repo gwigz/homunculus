@@ -20,7 +20,12 @@
 		/** generate declaration files */
 		"declaration": true,
 		"emitDeclarationOnly": true,
-		"outDir": "dist"
+		"outDir": "dist",
+		// path aliases
+		"baseUrl": ".",
+		"paths": {
+			"~/*": ["src/*"]
+		}
 	},
-	"include": ["src/**/*.ts", "types.d.ts"]
+	"include": ["src/**/*.ts"]
 }

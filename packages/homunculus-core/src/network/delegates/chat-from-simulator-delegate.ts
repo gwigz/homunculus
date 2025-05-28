@@ -1,5 +1,5 @@
-import type { NearbyChatMessage } from "../../structures/nearby"
-import type { ChatFromSimulatorData } from "../packets"
+import type { ChatFromSimulatorData } from "~/network/packets"
+import type { NearbyChatMessage } from "~/structures/nearby"
 import Delegate from "./delegate"
 
 class ChatFromSimulatorDelegate extends Delegate {

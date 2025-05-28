@@ -170,17 +170,13 @@ function parseField(line: string, blockName: string): Field {
 	const fieldMatch = line.match(FIELD_REGEX)
 
 	if (!fieldMatch) {
-		throw new Error(
-			`Failed to parse field line: '${line}' in block ${blockName}`,
-		)
+		throw new Error(`Failed to parse field line ${line} in block ${blockName}`)
 	}
 
 	const { name, type, size } = fieldMatch.groups || {}
 
 	if (!type) {
-		throw new Error(
-			`Failed to parse field line: '${line}' in block ${blockName}`,
-		)
+		throw new Error(`Failed to parse field line ${line} in block ${blockName}`)
 	}
 
 	let fieldType = type
@@ -243,7 +239,7 @@ function parseBlock(
 	if (!blockHeaderMatch) {
 		console.log(`Failed to match block header regex: ${BLOCK_HEADER_REGEX}`)
 
-		throw new Error(`Invalid block header at line ${i + 1}: '${line}'`)
+		throw new Error(`Invalid block header at line ${i + 1}: "${line}"`)
 	}
 
 	const [, name, type, count] = blockHeaderMatch

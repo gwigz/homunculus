@@ -1,4 +1,4 @@
-import type Circuit from "./circuit"
+import type { Circuit } from "./circuit"
 import { PacketAck } from "./packets"
 
 export class AcknowledgeTimeoutError extends Error {
@@ -10,7 +10,7 @@ export class AcknowledgeTimeoutError extends Error {
 	}
 }
 
-class Acknowledger {
+export class Acknowledger {
 	private acknowledge = new PacketAck({ packets: [] })
 
 	private packets = {
@@ -125,5 +125,3 @@ class Acknowledger {
 		}
 	}
 }
-
-export default Acknowledger

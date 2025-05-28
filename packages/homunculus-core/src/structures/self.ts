@@ -1,8 +1,8 @@
+import { AgentRequestSit, AgentUpdate } from "~/network/packets"
+import { Quaternion, Vector3 } from "~/network/types"
 import { type Client, Constants } from ".."
-import { AgentRequestSit, AgentUpdate } from "../network/packets"
-import { Quaternion, Vector3 } from "../network/types"
 
-class Self {
+export class Self {
 	public key: string
 
 	public sessionId: string
@@ -32,7 +32,7 @@ class Self {
 	private agentUpdateInterval?: NodeJS.Timeout
 
 	constructor(
-		public readonly client: Client,
+		private readonly client: Client,
 		data: {
 			key: string
 			sessionId: string
@@ -49,7 +49,6 @@ class Self {
 		this.firstName = data.firstName
 		this.lastName = data.lastName
 		this.lookAt = data.lookAt ?? Vector3.one
-		this.offset = data.offset ?? Vector3.zero
 
 		this.agentUpdateInterval = setInterval(() => {
 			if (this.client.status === Constants.Status.READY) {
@@ -114,5 +113,3 @@ class Self {
 		return this.sendAgentUpdate()
 	}
 }
-
-export default Self

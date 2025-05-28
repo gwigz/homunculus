@@ -18,7 +18,12 @@
 		"module": "preserve",
 		"noEmit": true,
 		/* doesn't run in the DOM */
-		"lib": ["ESNext"]
+		"lib": ["ESNext"],
+		// path aliases
+		"baseUrl": ".",
+		"paths": {
+			"~/*": ["src/*"]
+		}
 	},
 	"include": ["src/**/*.ts", "src/**/*.tsx"]
 }

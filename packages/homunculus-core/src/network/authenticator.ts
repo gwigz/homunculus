@@ -6,8 +6,8 @@ import xmlrpc from "xmlrpc"
 import {
 	type LoginResponse,
 	loginResponseSchema,
-} from "../schema/login-response-schema"
-import { Constants } from "../utilities"
+} from "~/schema/login-response-schema"
+import { Constants } from "~/utilities"
 
 export interface AuthenticatorOptions {
 	username: string
@@ -17,7 +17,7 @@ export interface AuthenticatorOptions {
 	mfaTokenHash?: string
 }
 
-class Authenticator {
+export class Authenticator {
 	private readonly channel: string
 	private readonly version: string
 	private readonly agent: string
@@ -99,5 +99,3 @@ class Authenticator {
 		return null
 	}
 }
-
-export default Authenticator

@@ -1,6 +1,5 @@
 import assert from "node:assert"
-import PacketBuffer from "./helpers/packet-buffer"
-import PacketLookup from "./helpers/packet-lookup"
+import { PacketBuffer, PacketLookup } from "~/network/helpers"
 import type { Packet } from "./packets"
 import * as Types from "./types"
 
@@ -9,7 +8,7 @@ import * as Types from "./types"
  * @link http://wiki.secondlife.com/wiki/Message_Layout
  * @link http://wiki.secondlife.com/wiki/Pyogp/Client_Lib/Packet
  */
-class Deserializer {
+export class Deserializer {
 	public read(buffer: Buffer) {
 		return new PacketBuffer(buffer)
 	}
@@ -66,5 +65,3 @@ class Deserializer {
 		return parameters
 	}
 }
-
-export default Deserializer

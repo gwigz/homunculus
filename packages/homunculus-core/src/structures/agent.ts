@@ -1,19 +1,19 @@
+import { type AvatarCache, cache } from "~/cache"
+import { AcknowledgeTimeoutError } from "~/network/acknowledger"
+import { ImprovedInstantMessage, UUIDNameRequest } from "~/network/packets"
+import { UUID, Vector3 } from "~/network/types"
 import type { Client } from ".."
-import { type AvatarCache, cache } from "../cache"
-import { AcknowledgeTimeoutError } from "../network/acknowledger"
-import { ImprovedInstantMessage, UUIDNameRequest } from "../network/packets"
-import { UUID, Vector3 } from "../network/types"
-import type Entity from "./entity"
+import type { Entity } from "./entity"
 
 const ONE_HOUR = 1000 * 60 * 60
 
-class Agent {
+export class Agent {
 	public firstName?: string
 	public lastName?: string
 	public entity: Entity
 
 	constructor(
-		public readonly client: Client,
+		private readonly client: Client,
 		entity: Entity,
 	) {
 		this.entity = entity
@@ -124,5 +124,3 @@ class Agent {
 		])
 	}
 }
-
-export default Agent

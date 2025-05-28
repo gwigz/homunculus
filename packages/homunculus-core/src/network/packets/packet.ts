@@ -1,3 +1,5 @@
+import assert from "node:assert"
+
 export class Packet<T extends object> {
 	/**
 	 * Packet ID, this value is only unique per-frequency range, see key get
@@ -45,11 +47,11 @@ export class Packet<T extends object> {
 	public data: T
 
 	constructor(data: T) {
-		if (this.constructor === Packet) {
-			throw new Error(
-				"Do not instantiate from the packet class, use extended classes!",
-			)
-		}
+		assert.notEqual(
+			this.constructor,
+			Packet,
+			"Do not instantiate from the packet class, use extended classes!",
+		)
 
 		this.data = data
 	}

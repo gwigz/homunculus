@@ -1,5 +1,5 @@
-import { Client, Constants, Quaternion } from "../src"
-import type { Agent } from "../src/structures"
+// NOTE: you would normally import from "@gwigz/homunculus-core"
+import { type Agent, Client, Constants, Quaternion } from "../src"
 
 const client = new Client()
 

@@ -1,4 +1,4 @@
-import type { KillObject } from "../packets"
+import type { KillObject } from "~/network/packets"
 import Delegate from "./delegate"
 
 class KillObjectDelegate extends Delegate {

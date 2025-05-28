@@ -1,4 +1,4 @@
-import type { MapBlockReply } from "../packets"
+import type { MapBlockReply } from "~/network/packets"
 import Delegate from "./delegate"
 
 class MapBlockReplyDelegate extends Delegate {

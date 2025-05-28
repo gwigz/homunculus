@@ -1,12 +1,12 @@
 import assert from "node:assert"
-import { Constants } from "../utilities"
-import Acknowledger from "./acknowledger"
-import type Core from "./core"
+import { Constants } from "~/utilities"
+import { Acknowledger } from "./acknowledger"
+import type { Core } from "./core"
 import * as Delegates from "./delegates"
-import Deserializer from "./deserializer"
+import { Deserializer } from "./deserializer"
 import type { PacketBuffer } from "./helpers"
 import { CompleteAgentMovement, type Packet, UseCircuitCode } from "./packets"
-import Serializer from "./serializer"
+import { Serializer } from "./serializer"
 
 export interface CircuitOptions {
 	id: number
@@ -14,7 +14,7 @@ export interface CircuitOptions {
 	port: number
 }
 
-class Circuit {
+export class Circuit {
 	public readonly id: number
 	public readonly address: string
 	public readonly port: number
@@ -39,13 +39,11 @@ class Circuit {
 	}
 
 	get self() {
-		return this.core.self
+		return this.core.client.self
 	}
 
 	public send(packets: Array<Packet<any>>) {
-		if (this.dead) {
-			throw new Error(Constants.Errors.INACTIVE_CIRCUIT)
-		}
+		assert.notEqual(this.dead, true, Constants.Errors.INACTIVE_CIRCUIT)
 
 		const serialized = packets.map((packet) => this.serializer.convert(packet))
 
@@ -59,10 +57,6 @@ class Circuit {
 	 * @todo Add a retry mechanism, not just a timeout.
 	 */
 	public sendReliable(packets: Array<Packet<any>>, timeout = 10_000) {
-		for (const packet of packets) {
-			packet.reliable = true
-		}
-
 		const serialized = packets.map((packet) =>
 			this.serializer.convert(packet, true),
 		)
@@ -113,29 +107,24 @@ class Circuit {
 	}
 
 	public async handshake() {
-		if (!this.dead) {
-			throw new Error(Constants.Errors.HANDSHAKE_ACTIVE_CIRCUIT)
-		}
+		assert.equal(this.dead, true, Constants.Errors.HANDSHAKE_ACTIVE_CIRCUIT)
 
 		this.dead = false
 
 		assert(this.self.key, "Avatar key is required")
 		assert(this.self.sessionId, "Session is required")
 
-		await this.sendReliable(
-			[
-				new UseCircuitCode({
-					circuitCode: {
-						id: this.self.key,
-						code: this.id,
-						sessionId: this.self.sessionId,
-					},
-				}),
-			],
-			30_000,
-		)
+		await this.sendReliable([
+			new UseCircuitCode({
+				circuitCode: {
+					id: this.self.key,
+					code: this.id,
+					sessionId: this.self.sessionId,
+				},
+			}),
+		])
 
-		await this.sendReliable([new CompleteAgentMovement({})], 30_000)
+		await this.sendReliable([new CompleteAgentMovement({})])
 	}
 
 	/**
@@ -152,5 +141,3 @@ class Circuit {
 		}
 	}
 }
-
-export default Circuit

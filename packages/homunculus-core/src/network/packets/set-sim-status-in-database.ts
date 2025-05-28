@@ -9,7 +9,7 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "../types"
+import * as Types from "~/network/types"
 import { Packet } from "./packet"
 
 export interface SetSimStatusInDatabaseData {

@@ -1,6 +1,6 @@
+import { Constants } from "~/utilities"
 import type { Client } from ".."
-import { Constants } from "../utilities"
-import Circuit, { type CircuitOptions } from "./circuit"
+import { Circuit, type CircuitOptions } from "./circuit"
 import { LogoutRequest } from "./packets"
 import Socket from "./socket"
 
@@ -8,7 +8,7 @@ import Socket from "./socket"
  * The core handles connecting to a simulator, processing and sending
  * messages.
  */
-class Core {
+export class Core {
 	/**
 	 * The UDP connection/socket.
 	 */
@@ -38,18 +38,6 @@ class Core {
 	) {
 		this.socket = new Socket(this)
 	}
-
-	get self() {
-		return this.client.self
-	}
-
-	// get region() {
-	// 	return this.client.region
-	// }
-
-	// get objects(): Entities {
-	// 	return this.client.region.objects
-	// }
 
 	/**
 	 * Sends message to Circuit over UDP socket.
@@ -87,12 +75,12 @@ class Core {
 			return
 		}
 
+		this.status = Constants.Status.READY
+
 		// send initial agent updates, finish animation avoids agent being stuck in
 		// a weird squatting animation on login
-		this.self.controlFlags = Constants.ControlFlags.FINISH_ANIM
-		this.self.sendAgentUpdate()
-
-		this.status = Constants.Status.READY
+		this.client.self.controlFlags = Constants.ControlFlags.FINISH_ANIM
+		this.client.self.sendAgentUpdate()
 
 		this.client.emit(Constants.ClientEvents.DEBUG, "Connected!")
 		this.client.emit(Constants.ClientEvents.READY)
@@ -105,5 +93,3 @@ class Core {
 		await this.circuit?.send([new LogoutRequest({})])
 	}
 }
-
-export default Core

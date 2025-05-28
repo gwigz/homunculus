@@ -1,10 +1,10 @@
-import { Constants } from "../../utilities"
-import { PacketBuffer } from "../helpers"
+import { PacketBuffer } from "~/network/helpers"
 import {
 	type ImprovedTerseObjectUpdate,
 	RequestMultipleObjects,
-} from "../packets"
-import * as Types from "../types"
+} from "~/network/packets"
+import * as Types from "~/network/types"
+import { Constants } from "~/utilities"
 import Delegate from "./delegate"
 
 class ImprovedTerseObjectUpdateDelegate extends Delegate {

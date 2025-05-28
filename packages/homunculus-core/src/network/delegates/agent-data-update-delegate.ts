@@ -1,4 +1,4 @@
-import type { AgentDataUpdate } from "../packets"
+import type { AgentDataUpdate } from "~/network/packets"
 import Delegate from "./delegate"
 
 class AgentDataUpdateDelegate extends Delegate {

@@ -1,4 +1,4 @@
-import { type RegionHandshake, RegionHandshakeReply } from "../packets"
+import { type RegionHandshake, RegionHandshakeReply } from "~/network/packets"
 import Delegate from "./delegate"
 
 class RegionHandshakeDelegate extends Delegate {

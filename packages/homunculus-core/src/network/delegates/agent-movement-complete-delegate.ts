@@ -1,10 +1,9 @@
-import Region from "../../structures/region"
-import { Constants } from "../../utilities"
 import {
 	type AgentMovementComplete,
 	AgentThrottle,
 	SetAlwaysRun,
-} from "../packets"
+} from "~/network/packets"
+import { Region } from "~/structures/region"
 import Delegate from "./delegate"
 
 class AgentMovementCompleteDelegate extends Delegate {
@@ -13,8 +12,6 @@ class AgentMovementCompleteDelegate extends Delegate {
 	public override async handle(packet: AgentMovementComplete) {
 		this.client.emit("debug", "Agent movement complete...")
 
-		const client = this.client
-		const self = client.self
 		const data = packet.data.data!
 
 		// const sim = packet.data.simData[0]
@@ -22,12 +19,12 @@ class AgentMovementCompleteDelegate extends Delegate {
 
 		// simulator.channel = sim.channelVersion
 
-		self.position = data.position
-		self.lookAt = data.lookAt
+		this.client.self.position = data.position
+		this.client.self.lookAt = data.lookAt
 
 		const handle = data.regionHandle as bigint
 
-		client.regions.set(handle, new Region(client, { handle }))
+		this.client.regions.set(handle, new Region(this.client, { handle }))
 
 		// client.throttle/bandwidth?
 		const throttle = 500 * 1024
@@ -58,8 +55,8 @@ class AgentMovementCompleteDelegate extends Delegate {
 			// new AgentDataUpdateRequest(),
 		])
 
-		// notify the core that we're connected
-		setTimeout(() => this.circuit.core.ready(), 1000)
+		// notify the core that we're connected, after a short delay
+		setTimeout(() => this.circuit.core.ready(), 1_000)
 	}
 }
 

@@ -3,9 +3,9 @@ import {
 	type RemoteInfo,
 	type Socket as UDPSocket,
 } from "node:dgram"
-import { Constants } from "../utilities"
-import type Circuit from "./circuit"
-import type Core from "./core"
+import { Constants } from "~/utilities"
+import type { Circuit } from "./circuit"
+import type { Core } from "./core"
 
 class Socket {
 	private socket: UDPSocket

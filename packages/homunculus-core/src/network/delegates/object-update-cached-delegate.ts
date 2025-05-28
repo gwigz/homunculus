@@ -1,4 +1,7 @@
-import { type ObjectUpdateCached, RequestMultipleObjects } from "../packets"
+import {
+	type ObjectUpdateCached,
+	RequestMultipleObjects,
+} from "~/network/packets"
 import Delegate from "./delegate"
 
 class ObjectUpdateCachedDelegate extends Delegate {

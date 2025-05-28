@@ -1,10 +1,10 @@
 import assert from "node:assert"
-import * as Types from "../types"
+import * as Types from "~/network/types"
 
 /**
  * @link http://wiki.secondlife.com/wiki/Packet_Layout
  */
-class PacketBuffer {
+export class PacketBuffer {
 	public readonly id?: number
 	public readonly frequency?: number
 
@@ -122,7 +122,7 @@ class PacketBuffer {
 
 		let end = this.length
 
-		// acks are not zerocoded, so we can skip them
+		// acks are not zero-coded, so we can skip them
 		if (this.acks) {
 			const acks = this.buffer.readUInt8(this.buffer.length - 1)
 
@@ -130,9 +130,7 @@ class PacketBuffer {
 				end = this.buffer.length - (acks * 4 + 1)
 			}
 
-			if (end < 7) {
-				throw new Error("Invalid packet")
-			}
+			assert.ok(end >= 7, "Invalid packet")
 		}
 
 		for (let i = 6; i < end; i++) {
@@ -192,7 +190,7 @@ class PacketBuffer {
 				break
 
 			default:
-				assert(
+				assert.ok(
 					type && "size" in type && typeof type.size === "number",
 					"Invalid type",
 				)
@@ -209,7 +207,7 @@ class PacketBuffer {
 	}
 
 	public fetch(type: Types.Type, ...args: any[]) {
-		assert(
+		assert.ok(
 			type && "fromBuffer" in type && typeof type.fromBuffer === "function",
 			"Invalid type",
 		)
@@ -233,5 +231,3 @@ class PacketBuffer {
 		return acks
 	}
 }
-
-export default PacketBuffer

@@ -1,8 +1,6 @@
-import Agent from "./agent"
-import Entities from "./entities"
-import Entity from "./entity"
-import Nearby from "./nearby"
-import Parcel from "./parcel"
-import Region from "./region"
-
-export { Agent, Entities, Entity, Nearby, Parcel, Region }
+export * from "./agent"
+export * from "./entities"
+export * from "./entity"
+export * from "./nearby"
+export * from "./parcel"
+export * from "./region"

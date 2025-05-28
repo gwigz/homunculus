@@ -1,4 +1,4 @@
-import type { HealthMessage } from "../packets"
+import type { HealthMessage } from "~/network/packets"
 import Delegate from "./delegate"
 
 class HealthMessageDelegate extends Delegate {

@@ -1,4 +1,4 @@
-import type { UUIDNameReply } from "../packets"
+import type { UUIDNameReply } from "~/network/packets"
 import Delegate from "./delegate"
 
 class UUIDNameReplyDelegate extends Delegate {

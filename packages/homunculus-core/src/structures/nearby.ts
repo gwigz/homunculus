@@ -1,13 +1,13 @@
 import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
-import { type Client, UUID, Vector3 } from ".."
 import {
 	ChatFromViewer,
 	EjectUser,
 	FreezeUser,
 	ScriptDialogReply,
 	SoundTrigger,
-} from "../network/packets"
-import { Constants } from "../utilities"
+} from "~/network/packets"
+import { Constants } from "~/utilities"
+import { type Client, UUID, Vector3 } from ".."
 
 export interface NearbyChatMessage {
 	fromName: string
@@ -24,10 +24,10 @@ export interface NearbyEvents {
 	chat: [chat: NearbyChatMessage]
 }
 
-class Nearby extends AsyncEventEmitter<NearbyEvents> {
+export class Nearby extends AsyncEventEmitter<NearbyEvents> {
 	private typingTimeout?: NodeJS.Timeout
 
-	constructor(public readonly client: Client) {
+	constructor(private readonly client: Client) {
 		super()
 	}
 
@@ -180,5 +180,3 @@ class Nearby extends AsyncEventEmitter<NearbyEvents> {
 		])
 	}
 }
-
-export default Nearby

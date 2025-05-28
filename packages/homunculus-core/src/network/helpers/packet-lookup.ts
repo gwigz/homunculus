@@ -7,9 +7,9 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Packets from "../packets"
+import * as Packets from "~/network/packets"
 
-class PacketLookup {
+export class PacketLookup {
 	public static readonly list = {
 		10: Packets.TestMessage,
 		12: Packets.StartPingCheck,
@@ -497,5 +497,3 @@ class PacketLookup {
 			: undefined
 	}
 }
-
-export default PacketLookup

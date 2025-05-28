@@ -1,12 +1,12 @@
 import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
-import type Agent from "./agent"
+import type { Agent } from "./agent"
 
 export interface AgentsEvents {
 	set: [agent: Agent]
 	delete: [key: string]
 }
 
-class Agents extends AsyncEventEmitter<AgentsEvents> {
+export class Agents extends AsyncEventEmitter<AgentsEvents> {
 	private agents = new Map<string, Agent>()
 
 	public has(key: string) {
@@ -46,5 +46,3 @@ class Agents extends AsyncEventEmitter<AgentsEvents> {
 		return this.agents.size
 	}
 }
-
-export default Agents

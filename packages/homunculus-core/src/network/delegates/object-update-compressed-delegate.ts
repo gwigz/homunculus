@@ -1,11 +1,12 @@
-import { Agent, Entity } from "../../structures"
-import { Constants } from "../../utilities"
-import PacketBuffer from "../helpers/packet-buffer"
-import type { ObjectUpdateCompressed } from "../packets"
-import * as Types from "../types"
-import { Color4 } from "../types"
-import CompressedObjectValue, {
+import { PacketBuffer } from "~/network/helpers/packet-buffer"
+import type { ObjectUpdateCompressed } from "~/network/packets"
+import * as Types from "~/network/types"
+import { Color4 } from "~/network/types"
+import { Agent, Entity } from "~/structures"
+import { Constants } from "~/utilities"
+import {
 	type CompressedObjectProperties,
+	CompressedObjectValue,
 } from "./compressed-object-value"
 import Delegate from "./delegate"
 

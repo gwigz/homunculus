@@ -1,7 +1,11 @@
-import type PacketBuffer from "../helpers/packet-buffer"
-import type { Type } from "../types"
+import type { PacketBuffer } from "~/network/helpers"
+import type { Type } from "~/network/types"
 
-class CompressedObjectValue {
+export type CompressedObjectProperties = Array<
+	[key: string, type: Type | CompressedObjectValue]
+>
+
+export class CompressedObjectValue {
 	private type: any
 	private flag: number
 	private placeholder?: any
@@ -20,9 +24,3 @@ class CompressedObjectValue {
 		return this.placeholder
 	}
 }
-
-export default CompressedObjectValue
-
-export type CompressedObjectProperties = Array<
-	[key: string, type: Type | CompressedObjectValue]
->

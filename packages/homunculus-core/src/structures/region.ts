@@ -1,15 +1,15 @@
 import assert from "node:assert"
 import { randomUUID } from "node:crypto"
+import { cache, type RegionCache } from "~/cache"
+import { AcknowledgeTimeoutError } from "~/network/acknowledger"
+import { EstateOwnerMessage, MapBlockRequest } from "~/network/packets"
 import { type Client, UUID } from ".."
-import { cache, type RegionCache } from "../cache"
-import { AcknowledgeTimeoutError } from "../network/acknowledger"
-import { EstateOwnerMessage, MapBlockRequest } from "../network/packets"
-import Agents from "./agents"
-import Entities from "./entities"
+import { Agents } from "./agents"
+import { Entities } from "./entities"
 
 const ONE_DAY = 1000 * 60 * 60 * 24
 
-class Region {
+export class Region {
 	public handle: bigint
 	public name?: string
 	public agents = new Agents()
@@ -17,7 +17,7 @@ class Region {
 
 	constructor(
 		/** The Client that instantiated this Region. */
-		public readonly client: Client,
+		private readonly client: Client,
 		data: { handle: bigint },
 	) {
 		this.handle = data.handle
@@ -40,11 +40,11 @@ class Region {
 				const x = Math.floor(Number(this.handle >> 32n) / 256)
 				const y = Math.floor(Number(this.handle & 0xffffffffn) / 256)
 
-				const request = new MapBlockRequest({
-					positionData: { minX: x, minY: y, maxX: x, maxY: y },
-				})
-
-				this.client.sendReliable([request])
+				this.client.sendReliable([
+					new MapBlockRequest({
+						positionData: { minX: x, minY: y, maxX: x, maxY: y },
+					}),
+				])
 			}
 		} catch (error) {
 			if (error instanceof AcknowledgeTimeoutError) {
@@ -77,7 +77,7 @@ class Region {
 	}
 
 	public async sendEstateMessage(message: string) {
-		assert(
+		assert.ok(
 			this.client.self.isEstateManager,
 			"Cannot send estate message if not estate manager",
 		)
@@ -97,5 +97,3 @@ class Region {
 		])
 	}
 }
-
-export default Region

@@ -1,12 +1,11 @@
 import assert from "node:assert"
 import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
-import { Authenticator, Core } from "./network"
-import type { LoginOptions } from "./network/authenticator"
-import type { Packet } from "./network/packets"
+import { Authenticator, type AuthenticatorOptions, Core } from "./network"
 import { Vector3 } from "./network/types"
+import { loginOptionsSchema } from "./schema/environment-schema"
 import { Nearby } from "./structures"
-import Regions from "./structures/regions"
-import Self from "./structures/self"
+import { Regions } from "./structures/regions"
+import { Self } from "./structures/self"
 import { Constants } from "./utilities"
 
 export interface ClientEvents {
@@ -14,10 +13,6 @@ export interface ClientEvents {
 	[Constants.ClientEvents.DEBUG]: [message: string]
 	[Constants.ClientEvents.ERROR]: [error: Error]
 	[Constants.ClientEvents.WARNING]: [warning: string]
-}
-
-export interface ClientOptions {
-	login?: LoginOptions
 }
 
 /**
@@ -98,42 +93,22 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 	// }
 
 	/**
-	 * @param options.login.start `home`, `last`, or alternatively use `uri:Region Name&x&y&z`.
+	 * @param [options.login.start] `home`, `last`, or alternatively use `uri:Region Name&x&y&z`.
 	 */
-	public async connect(
-		username = process.env.SL_USERNAME,
-		password = process.env.SL_PASSWORD,
-		options: ClientOptions = {},
-	) {
-		options.login = { ...options.login, start: process.env.SL_START }
-
-		assert(
-			this.status >= Constants.Status.IDLE,
-			Constants.Errors.ALREADY_CONNECTED,
-		)
-
-		assert(typeof username === "string", Constants.Errors.INVALID_LOGIN)
-		assert(typeof password === "string", Constants.Errors.INVALID_LOGIN)
-
-		assert(
-			options.login?.start
-				? /^(?:uri:[A-Za-z0-9 ]+&\d{1,3}&\d{1,3}&\d{1,4}|home|last)$/.test(
-						options.login.start,
-					)
-				: true,
-			Constants.Errors.INVALID_START,
-		)
+	public async connect(options?: AuthenticatorOptions) {
+		const credentials = loginOptionsSchema.parse({
+			...options,
+			username: options?.username || process.env.SL_USERNAME,
+			password: options?.password || process.env.SL_PASSWORD,
+			start: options?.start || process.env.SL_START,
+		})
 
 		this.emit(
 			Constants.ClientEvents.DEBUG,
-			`Attempting login using username "${username}"...`,
+			`Attempting login using username "${credentials.username}"...`,
 		)
 
-		const response = await this.authenticator.login(
-			username,
-			password,
-			options.login,
-		)
+		const response = await this.authenticator.login(credentials)
 
 		if (!response.login) {
 			throw new Error(response.message)
@@ -167,8 +142,12 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 	 *
 	 * @param packets Packets to send
 	 */
-	public send(packets: Array<Packet<any>>) {
-		return this._core.circuit?.send(packets)
+	public send(
+		...args: Parameters<NonNullable<typeof this._core.circuit>["send"]>
+	) {
+		assert(this._core.circuit, "Circuit is not initialized")
+
+		this._core.circuit.send(...args)
 	}
 
 	/**
@@ -177,8 +156,12 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 	 * @param packets Packets to send
 	 * @param timeout Timeout for reliable packets
 	 */
-	public sendReliable(packets: Array<Packet<any>>, timeout = 10_000) {
-		return this._core.circuit?.sendReliable(packets, timeout)
+	public sendReliable(
+		...args: Parameters<NonNullable<typeof this._core.circuit>["sendReliable"]>
+	) {
+		assert(this._core.circuit, "Circuit is not initialized")
+
+		return this._core.circuit.sendReliable(...args)
 	}
 
 	public async disconnect() {

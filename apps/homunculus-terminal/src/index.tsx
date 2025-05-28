@@ -3,7 +3,6 @@
 process.title = "homunculus"
 
 import "dotenv/config"
-import assert from "node:assert"
 import { Client } from "@gwigz/homunculus-core"
 import { render } from "ink"
 import meow from "meow"
@@ -30,14 +29,6 @@ const cli = meow(
 )
 
 const start = cli.flags.start || process.env.SL_START
-
-assert(
-	start
-		? /^(?:uri:[A-Za-z0-9 ]+&\d{1,3}&\d{1,3}&\d{1,4}|first|last)$/.test(start)
-		: true,
-	"SL_START env value is invalid",
-)
-
 const client = new Client()
 
 process.on("uncaughtException", async (error) => {

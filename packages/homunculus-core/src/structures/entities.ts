@@ -1,12 +1,12 @@
 import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
-import type Entity from "./entity"
+import type { Entity } from "./entity"
 
 export interface EntitiesEvents {
 	set: [entity: Entity]
 	delete: [id: number]
 }
 
-class Entities extends AsyncEventEmitter<EntitiesEvents> {
+export class Entities extends AsyncEventEmitter<EntitiesEvents> {
 	private entities = new Map<number, Entity>()
 	private register = new Map<string, number>()
 
@@ -57,5 +57,3 @@ class Entities extends AsyncEventEmitter<EntitiesEvents> {
 		return this.entities.size
 	}
 }
-
-export default Entities

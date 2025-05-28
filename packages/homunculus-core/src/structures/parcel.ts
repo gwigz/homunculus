@@ -1,5 +1,3 @@
-class Parcel {
+export class Parcel {
 	// ...
 }
-
-export default Parcel

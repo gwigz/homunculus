@@ -1,11 +1,12 @@
-import { Constants } from "../utilities"
-import type Circuit from "./circuit"
+import assert from "node:assert"
+import { Constants } from "~/utilities"
+import type { Circuit } from "./circuit"
 import { Packet } from "./packets"
 import { U8 } from "./types"
 
 const MAX_INDEX = 0x01000000
 
-class Serializer {
+export class Serializer {
 	public index = 0
 
 	constructor(
@@ -17,9 +18,10 @@ class Serializer {
 		packet: Packet<any>,
 		reliable?: boolean,
 	): [buffer: Buffer, index: number] {
-		if (!(packet instanceof Packet)) {
-			throw new Error("Serializer is only able to convert instances of Packet.")
-		}
+		assert.ok(
+			packet instanceof Packet,
+			'Serializer can only process instances of "Packet"',
+		)
 
 		const PacketConstructor = packet.constructor as typeof Packet
 
@@ -55,9 +57,10 @@ class Serializer {
 
 				const length = packet.data[block].length
 
-				if (length > 255 || (format.quantity && length !== format.quantity)) {
-					throw new Error(Constants.Errors.INVALID_BLOCK_QUANTITY)
-				}
+				assert.ok(
+					length <= 255 && (!format.quantity || length === format.quantity),
+					Constants.Errors.INVALID_BLOCK_QUANTITY,
+				)
 
 				if (!format.quantity) {
 					// prefix with variable block quantity
@@ -155,9 +158,10 @@ class Serializer {
 		}
 
 		for (const [name, Type] of format.parameters) {
-			if (!(name in data)) {
-				throw new Error(Constants.Errors.MISSING_PARAMETER.replace("%s", name))
-			}
+			assert.ok(
+				name in data,
+				Constants.Errors.MISSING_PARAMETER.replace("%s", name),
+			)
 
 			array.push(Type.toBuffer(data[name]))
 		}
@@ -165,5 +169,3 @@ class Serializer {
 		return Buffer.concat(array)
 	}
 }
-
-export default Serializer

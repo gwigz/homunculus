@@ -1,4 +1,2 @@
-import PacketBuffer from "./packet-buffer"
-import PacketLookup from "./packet-lookup"
-
-export { PacketBuffer, PacketLookup }
+export * from "./packet-buffer"
+export * from "./packet-lookup"

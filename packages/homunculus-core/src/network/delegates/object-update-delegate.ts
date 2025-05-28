@@ -1,7 +1,7 @@
-import { Agent, Entity, type Region } from "../../structures"
-import type { EntityOptions } from "../../structures/entity"
-import { Constants } from "../../utilities"
-import type { ObjectUpdate, ObjectUpdateData } from "../packets"
+import type { ObjectUpdate, ObjectUpdateData } from "~/network/packets"
+import { Agent, Entity, type Region } from "~/structures"
+import type { EntityOptions } from "~/structures/entity"
+import { Constants } from "~/utilities"
 import Delegate from "./delegate"
 
 type ObjectData = Required<NonNullable<ObjectUpdateData["objectData"]>[number]>

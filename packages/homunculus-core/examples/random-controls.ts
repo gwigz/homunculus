@@ -1,3 +1,4 @@
+// NOTE: you would normally import from "@gwigz/homunculus-core"
 import { Client, Constants, Quaternion } from "../src"
 
 const client = new Client()

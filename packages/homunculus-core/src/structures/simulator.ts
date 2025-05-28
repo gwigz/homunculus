@@ -1,6 +1,6 @@
 import type { Client } from ".."
 
-interface ISimulatorOptions {
+export interface SimulatorOptions {
 	ip: string
 	port: number
 	circuit: number
@@ -8,7 +8,7 @@ interface ISimulatorOptions {
 	channel?: string
 }
 
-class Simulator {
+export class Simulator {
 	/**
 	 * IP address of this Simulator.
 	 */
@@ -39,8 +39,8 @@ class Simulator {
 	 * @param client The Client that instantiated this Simulator object.
 	 */
 	constructor(
-		public readonly client: Client,
-		data: ISimulatorOptions,
+		private readonly client: Client,
+		data: SimulatorOptions,
 	) {
 		this.ip = data.ip
 		this.port = data.port
@@ -143,5 +143,3 @@ class Simulator {
     ViewerStats
   */
 }
-
-export default Simulator

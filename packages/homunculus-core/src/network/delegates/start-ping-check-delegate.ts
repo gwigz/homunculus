@@ -1,5 +1,5 @@
-import type { StartPingCheck } from "../packets"
-import { CompletePingCheck } from "../packets"
+import type { StartPingCheck } from "~/network/packets"
+import { CompletePingCheck } from "~/network/packets"
 import Delegate from "./delegate"
 
 class StartPingCheckDelegate extends Delegate {

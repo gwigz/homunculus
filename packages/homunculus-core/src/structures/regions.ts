@@ -1,13 +1,13 @@
 import assert from "node:assert"
 import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
-import type Region from "./region"
+import type { Region } from "./region"
 
 export interface RegionsEvents {
 	set: [region: Region]
 	delete: [handle: string]
 }
 
-class Regions extends AsyncEventEmitter<RegionsEvents> {
+export class Regions extends AsyncEventEmitter<RegionsEvents> {
 	private regions = new Map<string, Region>()
 	private currentRegion?: Region
 
@@ -58,5 +58,3 @@ class Regions extends AsyncEventEmitter<RegionsEvents> {
 		return this.regions.size
 	}
 }
-
-export default Regions

@@ -1,4 +1,4 @@
-import type { PacketAck } from "../packets"
+import type { PacketAck } from "~/network/packets"
 import Delegate from "./delegate"
 
 class PacketAckDelegate extends Delegate {

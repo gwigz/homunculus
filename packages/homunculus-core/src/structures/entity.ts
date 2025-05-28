@@ -1,5 +1,5 @@
+import { Color4, type Quaternion, UUID, Vector3 } from "~/network/types"
 import type { Client } from ".."
-import { Color4, type Quaternion, UUID, Vector3 } from "../network/types"
 
 export interface EntityOptions {
 	id: number
@@ -20,7 +20,7 @@ export interface EntityOptions {
 	children?: Array<number>
 }
 
-class Entity {
+export class Entity {
 	/**
 	 * Local ID for this Entity.
 	 */
@@ -126,7 +126,7 @@ class Entity {
 	 * @param client The Client that instantiated this Entity.
 	 */
 	constructor(
-		public readonly client: Client,
+		private readonly client: Client,
 		data: EntityOptions | Entity,
 	) {
 		this.id = data.id
@@ -168,5 +168,3 @@ class Entity {
 			: -1
 	}
 }
-
-export default Entity

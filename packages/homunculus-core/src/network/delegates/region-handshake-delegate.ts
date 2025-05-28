@@ -1,5 +1,5 @@
 import { type RegionHandshake, RegionHandshakeReply } from "~/network/packets"
-import Delegate from "./delegate"
+import { Delegate } from "./delegate"
 
 class RegionHandshakeDelegate extends Delegate {
 	public override handle(packet: RegionHandshake) {

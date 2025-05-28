@@ -1,6 +1,6 @@
 import type { StartPingCheck } from "~/network/packets"
 import { CompletePingCheck } from "~/network/packets"
-import Delegate from "./delegate"
+import { Delegate } from "./delegate"
 
 class StartPingCheckDelegate extends Delegate {
 	public override handle(packet: StartPingCheck) {

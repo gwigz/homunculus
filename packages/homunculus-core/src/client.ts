@@ -1,12 +1,13 @@
 import assert from "node:assert"
 import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
-import { Authenticator, type AuthenticatorOptions, Core } from "./network"
-import { Vector3 } from "./network/types"
-import { loginOptionsSchema } from "./schema/environment-schema"
-import { Nearby } from "./structures"
-import { Regions } from "./structures/regions"
-import { Self } from "./structures/self"
-import { Constants } from "./utilities"
+import { type AuthenticatorOptions, Core } from "~/network"
+import { Vector3 } from "~/network/types"
+import { loginOptionsSchema } from "~/schema/environment-schema"
+import { sharedServices } from "~/services"
+import { Nearby } from "~/structures"
+import { Regions } from "~/structures/regions"
+import { Self } from "~/structures/self"
+import { Constants } from "~/utilities"
 
 export interface ClientEvents {
 	[Constants.ClientEvents.READY]: []
@@ -54,14 +55,6 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 		return this.regions.current
 	}
 
-	/**
-	 * The interface for first circuit creation, via. XMLRPC authentication.
-	 */
-	private readonly authenticator: Authenticator = new Authenticator(
-		"homunculus",
-		"0.0.0",
-	)
-
 	private readonly _core: Core
 	private _self?: Self
 
@@ -108,7 +101,7 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 			`Attempting login using username "${credentials.username}"...`,
 		)
 
-		const response = await this.authenticator.login(credentials)
+		const response = await sharedServices.authenticator.login(credentials)
 
 		if (!response.login) {
 			throw new Error(response.message)

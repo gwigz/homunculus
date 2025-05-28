@@ -1,5 +1,5 @@
 import type { UUIDNameReply } from "~/network/packets"
-import Delegate from "./delegate"
+import { Delegate } from "./delegate"
 
 class UUIDNameReplyDelegate extends Delegate {
 	public override handle(packet: UUIDNameReply) {

@@ -5,7 +5,7 @@ import {
 } from "~/network/packets"
 import * as Types from "~/network/types"
 import { Constants } from "~/utilities"
-import Delegate from "./delegate"
+import { Delegate } from "./delegate"
 
 class ImprovedTerseObjectUpdateDelegate extends Delegate {
 	public override handle(packet: ImprovedTerseObjectUpdate) {

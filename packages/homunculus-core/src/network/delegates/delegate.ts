@@ -1,14 +1,25 @@
-import type { Circuit } from ".."
+import type { Client } from "~/client"
+import type { Circuit, Core } from "~/network"
 
-class Delegate {
-	constructor(public readonly circuit: Circuit) {}
+export interface DelegateContext {
+	client: Client
+	core: Core
+	circuit: Circuit
+}
+
+export class Delegate {
+	constructor(private readonly context: DelegateContext) {}
+
+	get circuit() {
+		return this.context.circuit
+	}
 
 	get core() {
-		return this.circuit.core
+		return this.context.core
 	}
 
 	get client() {
-		return this.circuit.core.client
+		return this.context.client
 	}
 
 	/**
@@ -27,5 +38,3 @@ class Delegate {
 	 */
 	handle(_packet: any): Promise<void> | void {}
 }
-
-export default Delegate

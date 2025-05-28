@@ -1,5 +1,5 @@
 import type { PacketAck } from "~/network/packets"
-import Delegate from "./delegate"
+import { Delegate } from "./delegate"
 
 class PacketAckDelegate extends Delegate {
 	public override handle(packet: PacketAck) {

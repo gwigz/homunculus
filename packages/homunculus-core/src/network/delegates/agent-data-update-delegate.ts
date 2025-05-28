@@ -1,5 +1,5 @@
 import type { AgentDataUpdate } from "~/network/packets"
-import Delegate from "./delegate"
+import { Delegate } from "./delegate"
 
 class AgentDataUpdateDelegate extends Delegate {
 	public override handle(packet: AgentDataUpdate) {

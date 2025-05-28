@@ -58,7 +58,7 @@ export class Core {
 			"Handshake received, creating circuit...",
 		)
 
-		const circuit = new Circuit(this, data)
+		const circuit = new Circuit(this.client, this, data)
 
 		this.circuits.set(`${circuit.address}:${circuit.port}`, circuit)
 

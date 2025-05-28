@@ -1,12 +1,18 @@
 import assert from "node:assert"
+import type { Client } from "~/client"
+import {
+	Acknowledger,
+	CompleteAgentMovement,
+	type Core,
+	type Packet,
+	type PacketBuffer,
+	Serializer,
+	UseCircuitCode,
+} from "~/network"
+import type { Delegate, DelegateContext } from "~/network/delegates"
+import * as Delegates from "~/network/delegates"
+import { sharedServices } from "~/services"
 import { Constants } from "~/utilities"
-import { Acknowledger } from "./acknowledger"
-import type { Core } from "./core"
-import * as Delegates from "./delegates"
-import { Deserializer } from "./deserializer"
-import type { PacketBuffer } from "./helpers"
-import { CompleteAgentMovement, type Packet, UseCircuitCode } from "./packets"
-import { Serializer } from "./serializer"
 
 export interface CircuitOptions {
 	id: number
@@ -20,14 +26,13 @@ export class Circuit {
 	public readonly port: number
 
 	public readonly acknowledger = new Acknowledger(this)
-	public readonly deserializer = new Deserializer()
 	public readonly serializer = new Serializer(this)
 
-	protected delegates: Record<string, Delegates.Delegate> = {}
-	protected dead = true
+	private delegates: Record<string, Delegate> = {}
+	private dead = true
 
 	constructor(
-		/** Core instance that instantiated this Circuit. */
+		private readonly client: Client,
 		public readonly core: Core,
 		data: CircuitOptions,
 	) {
@@ -39,7 +44,7 @@ export class Circuit {
 	}
 
 	get self() {
-		return this.core.client.self
+		return this.client.self
 	}
 
 	public send(packets: Array<Packet<any>>) {
@@ -93,7 +98,7 @@ export class Circuit {
 			}
 		}
 
-		const packet = this.deserializer.lookup(buffer)
+		const packet = sharedServices.deserializer.lookup(buffer)
 
 		if (!packet) {
 			return
@@ -101,7 +106,7 @@ export class Circuit {
 
 		if (packet.name in this.delegates && this.delegates[packet.name]?.waiting) {
 			this.delegates[packet.name]?.handle(
-				this.deserializer.convert(packet, buffer),
+				sharedServices.deserializer.convert(packet, buffer),
 			)
 		}
 	}
@@ -131,11 +136,17 @@ export class Circuit {
 	 * @todo Cannot currently register multiple delegates with the same name!
 	 */
 	public register(delegates: Record<string, typeof Delegates.Delegate>) {
+		const context: DelegateContext = {
+			client: this.client,
+			core: this.core,
+			circuit: this,
+		}
+
 		for (const Delegate of Object.values(delegates)) {
 			if (Delegate !== Delegates.Delegate) {
 				// TODO: don't use constructor names for values
 				this.delegates[Delegate.name.replace(/Delegate$/, "")] = new Delegate(
-					this,
+					context,
 				)
 			}
 		}

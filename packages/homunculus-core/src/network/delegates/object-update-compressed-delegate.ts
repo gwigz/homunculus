@@ -8,7 +8,7 @@ import {
 	type CompressedObjectProperties,
 	CompressedObjectValue,
 } from "./compressed-object-value"
-import Delegate from "./delegate"
+import { Delegate } from "./delegate"
 
 const Flags = {
 	NONE: 0x0,

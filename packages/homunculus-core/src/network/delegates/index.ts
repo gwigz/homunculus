@@ -1,7 +1,6 @@
 import AgentDataUpdateDelegate from "./agent-data-update-delegate"
 import AgentMovementCompleteDelegate from "./agent-movement-complete-delegate"
 import ChatFromSimulatorDelegate from "./chat-from-simulator-delegate"
-import Delegate from "./delegate"
 import HealthMessageDelegate from "./health-message-delegate"
 import ImprovedTerseObjectUpdateDelegate from "./improved-terse-object-update-delegate"
 import KillObjectDelegate from "./kill-object-delegate"
@@ -14,11 +13,12 @@ import RegionHandshakeDelegate from "./region-handshake-delegate"
 import StartPingCheckDelegate from "./start-ping-check-delegate"
 import UUIDNameReplyDelegate from "./uuid-name-reply-delegate"
 
+export * from "./delegate"
+
 export {
 	AgentDataUpdateDelegate,
 	AgentMovementCompleteDelegate,
 	ChatFromSimulatorDelegate,
-	Delegate,
 	HealthMessageDelegate,
 	ImprovedTerseObjectUpdateDelegate,
 	KillObjectDelegate,

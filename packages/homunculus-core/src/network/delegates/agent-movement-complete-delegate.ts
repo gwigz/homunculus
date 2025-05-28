@@ -4,7 +4,7 @@ import {
 	SetAlwaysRun,
 } from "~/network/packets"
 import { Region } from "~/structures/region"
-import Delegate from "./delegate"
+import { Delegate } from "./delegate"
 
 class AgentMovementCompleteDelegate extends Delegate {
 	private counter = 0

@@ -1,6 +1,6 @@
 import type { ChatFromSimulatorData } from "~/network/packets"
 import type { NearbyChatMessage } from "~/structures/nearby"
-import Delegate from "./delegate"
+import { Delegate } from "./delegate"
 
 class ChatFromSimulatorDelegate extends Delegate {
 	public override handle(packet: { data: ChatFromSimulatorData }) {

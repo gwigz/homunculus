@@ -2,7 +2,7 @@ import {
 	type ObjectUpdateCached,
 	RequestMultipleObjects,
 } from "~/network/packets"
-import Delegate from "./delegate"
+import { Delegate } from "./delegate"
 
 class ObjectUpdateCachedDelegate extends Delegate {
 	public override handle(packet: ObjectUpdateCached) {

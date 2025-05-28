@@ -1,5 +1,5 @@
 import type { KillObject } from "~/network/packets"
-import Delegate from "./delegate"
+import { Delegate } from "./delegate"
 
 class KillObjectDelegate extends Delegate {
 	public override handle(packet: KillObject) {

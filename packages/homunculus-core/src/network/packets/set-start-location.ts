@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, U64, UUID, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface SetStartLocationData {
 	startLocationData?: {
@@ -18,31 +22,35 @@ export interface SetStartLocationData {
 		regionId: string
 		locationId: number
 		regionHandle: number | bigint
-		locationPos: Types.Vector3
-		locationLookAt: Types.Vector3
+		locationPos: Vector3
+		locationLookAt: Vector3
 	}
 }
 
-export class SetStartLocation extends Packet<SetStartLocationData> {
-	public static override id = 325
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const setStartLocationMetadata = {
+	id: 325,
+	name: "SetStartLocation",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "startLocationData",
+			parameters: [
+				["agentId", UUID],
+				["regionId", UUID],
+				["locationId", U32],
+				["regionHandle", U64],
+				["locationPos", Vector3],
+				["locationLookAt", Vector3],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"startLocationData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["regionId", Types.UUID],
-					["locationId", Types.U32],
-					["regionHandle", Types.U64],
-					["locationPos", Types.Vector3],
-					["locationLookAt", Types.Vector3],
-				]),
-			},
-		],
-	])
-}
+export const setStartLocation = createPacketSender<SetStartLocationData>(
+	setStartLocationMetadata,
+)
+
+export const createSetStartLocationDelegate =
+	createPacketDelegate<SetStartLocationData>(setStartLocationMetadata)

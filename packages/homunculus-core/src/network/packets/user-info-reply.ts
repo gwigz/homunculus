@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, UUID, Variable1, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface UserInfoReplyData {
 	agentData?: {
@@ -23,30 +27,29 @@ export interface UserInfoReplyData {
 	}
 }
 
-export class UserInfoReply extends Packet<UserInfoReplyData> {
-	public static override id = 400
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const userInfoReplyMetadata = {
+	id: 400,
+	name: "UserInfoReply",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "userData",
+			parameters: [
+				["iMViaEMail", Bool],
+				["directoryVisibility", Variable1],
+				["eMail", Variable2],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"userData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["iMViaEMail", Types.Bool],
-					["directoryVisibility", Types.Variable1],
-					["eMail", Types.Variable2],
-				]),
-			},
-		],
-	])
-}
+export const userInfoReply = createPacketSender<UserInfoReplyData>(
+	userInfoReplyMetadata,
+)
+
+export const createUserInfoReplyDelegate =
+	createPacketDelegate<UserInfoReplyData>(userInfoReplyMetadata)

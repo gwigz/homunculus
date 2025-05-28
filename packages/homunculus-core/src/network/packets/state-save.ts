@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface StateSaveData {
 	agentData?: {
@@ -22,31 +26,26 @@ export interface StateSaveData {
 	}
 }
 
-export class StateSave extends Packet<StateSaveData> {
-	public static override id = 127
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const stateSaveMetadata = {
+	id: 127,
+	name: "StateSave",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "dataBlock",
+			parameters: [["filename", Variable1]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"dataBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["filename", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const stateSave = createPacketSender<StateSaveData>(stateSaveMetadata)
+
+export const createStateSaveDelegate =
+	createPacketDelegate<StateSaveData>(stateSaveMetadata)

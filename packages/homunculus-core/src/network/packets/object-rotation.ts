@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Quaternion, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectRotationData {
 	agentData?: {
@@ -19,35 +23,37 @@ export interface ObjectRotationData {
 	}
 	objectData?: {
 		objectLocalId: number
-		rotation: Types.Quaternion
+		rotation: Quaternion
 	}[]
 }
 
-export class ObjectRotation extends Packet<ObjectRotationData> {
-	public static override id = 93
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const objectRotationMetadata = {
+	id: 93,
+	name: "ObjectRotation",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [
+				["objectLocalId", U32],
+				["rotation", Quaternion],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["objectLocalId", Types.U32],
-					["rotation", Types.Quaternion],
-				]),
-			},
-		],
-	])
-}
+export const objectRotation = createPacketSender<ObjectRotationData>(
+	objectRotationMetadata,
+)
+
+export const createObjectRotationDelegate =
+	createPacketDelegate<ObjectRotationData>(objectRotationMetadata)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface TransferInventoryAckData {
 	infoBlock?: {
@@ -19,22 +23,25 @@ export interface TransferInventoryAckData {
 	}
 }
 
-export class TransferInventoryAck extends Packet<TransferInventoryAckData> {
-	public static override id = 296
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const transferInventoryAckMetadata = {
+	id: 296,
+	name: "TransferInventoryAck",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "infoBlock",
+			parameters: [
+				["transactionId", UUID],
+				["inventoryId", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"infoBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["transactionId", Types.UUID],
-					["inventoryId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const transferInventoryAck =
+	createPacketSender<TransferInventoryAckData>(transferInventoryAckMetadata)
+
+export const createTransferInventoryAckDelegate =
+	createPacketDelegate<TransferInventoryAckData>(transferInventoryAckMetadata)

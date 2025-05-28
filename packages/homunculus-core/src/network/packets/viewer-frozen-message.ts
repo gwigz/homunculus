@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ViewerFrozenMessageData {
 	frozenData?: {
@@ -18,19 +22,22 @@ export interface ViewerFrozenMessageData {
 	}
 }
 
-export class ViewerFrozenMessage extends Packet<ViewerFrozenMessageData> {
-	public static override id = 137
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const viewerFrozenMessageMetadata = {
+	id: 137,
+	name: "ViewerFrozenMessage",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "frozenData",
+			parameters: [["data", Bool]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"frozenData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["data", Types.Bool]]),
-			},
-		],
-	])
-}
+export const viewerFrozenMessage = createPacketSender<ViewerFrozenMessageData>(
+	viewerFrozenMessageMetadata,
+)
+
+export const createViewerFrozenMessageDelegate =
+	createPacketDelegate<ViewerFrozenMessageData>(viewerFrozenMessageMetadata)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ChildAgentUnknownData {
 	agentData?: {
@@ -19,22 +23,25 @@ export interface ChildAgentUnknownData {
 	}
 }
 
-export class ChildAgentUnknown extends Packet<ChildAgentUnknownData> {
-	public static override id = 241
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const childAgentUnknownMetadata = {
+	id: 241,
+	name: "ChildAgentUnknown",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const childAgentUnknown = createPacketSender<ChildAgentUnknownData>(
+	childAgentUnknownMetadata,
+)
+
+export const createChildAgentUnknownDelegate =
+	createPacketDelegate<ChildAgentUnknownData>(childAgentUnknownMetadata)

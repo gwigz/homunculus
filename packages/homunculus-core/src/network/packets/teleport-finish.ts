@@ -9,15 +9,19 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { IP, Port, U8, U32, U64, UUID, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface TeleportFinishData {
 	info?: {
 		agentId: string
 		locationId: number
-		simIp: Types.IP
-		simPort: Types.Port
+		simIp: IP
+		simPort: Port
 		regionHandle: number | bigint
 		seedCapability: string | Buffer
 		simAccess: number
@@ -25,28 +29,31 @@ export interface TeleportFinishData {
 	}
 }
 
-export class TeleportFinish extends Packet<TeleportFinishData> {
-	public static override id = 69
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const teleportFinishMetadata = {
+	id: 69,
+	name: "TeleportFinish",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "info",
+			parameters: [
+				["agentId", UUID],
+				["locationId", U32],
+				["simIp", IP],
+				["simPort", Port],
+				["regionHandle", U64],
+				["seedCapability", Variable2],
+				["simAccess", U8],
+				["teleportFlags", U32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"info",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["locationId", Types.U32],
-					["simIp", Types.IP],
-					["simPort", Types.Port],
-					["regionHandle", Types.U64],
-					["seedCapability", Types.Variable2],
-					["simAccess", Types.U8],
-					["teleportFlags", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const teleportFinish = createPacketSender<TeleportFinishData>(
+	teleportFinishMetadata,
+)
+
+export const createTeleportFinishDelegate =
+	createPacketDelegate<TeleportFinishData>(teleportFinishMetadata)

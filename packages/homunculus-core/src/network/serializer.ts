@@ -1,13 +1,14 @@
 import assert from "node:assert"
 import { Constants } from "~/utilities"
 import type { Circuit } from "./circuit"
-import { Packet } from "./packets"
+import type { Packet, PacketBlock, PacketMetadata } from "./packets"
 import { U8 } from "./types"
 
-const MAX_INDEX = 0x01000000
+const MAX_SEQUENCE = 0x01000000
+const ACK_FLAG = 0x40
 
 export class Serializer {
-	public index = 0
+	public sequence = 1
 
 	constructor(
 		/** Circuit instance that instantiated this Serializer. */
@@ -17,111 +18,93 @@ export class Serializer {
 	public convert(
 		packet: Packet<any>,
 		reliable?: boolean,
-	): [buffer: Buffer, index: number] {
-		assert.ok(
-			packet instanceof Packet,
-			'Serializer can only process instances of "Packet"',
-		)
+	): [data: Buffer, sequence: number] {
+		const sequence = this.sequence
+		const array = [this.header(packet.metadata, packet.reliable || reliable)]
 
-		const PacketConstructor = packet.constructor as typeof Packet
-
-		const index = this.index
-		const array = [this.header(PacketConstructor, packet.reliable || reliable)]
-
-		if (PacketConstructor.format) {
-			// support skipping the block name in parameters
-			if (PacketConstructor.format.size === 1) {
-				const [block, format] = PacketConstructor.format.entries().next().value!
-
-				// try and assume this correctly...
-				if (!(block in packet.data) || Object.keys(packet.data).length > 1) {
-					return [
-						Buffer.concat(array.concat(this.parse(block, format, packet.data))),
-						index,
-					]
-				}
-			}
-
-			for (const [block, format] of PacketConstructor.format) {
-				if (!(block in packet.data)) {
-					if (block === "agentData") {
-						packet.data[block] = [{}]
+		if (packet.metadata.blocks) {
+			for (const block of packet.metadata.blocks) {
+				if (!(block.name in packet.data)) {
+					if (block.name === "agentData") {
+						packet.data[block.name] = [{}]
 					} else {
-						throw new Error(Constants.Errors.MISSING_BLOCK.replace("%s", block))
+						throw new Error(
+							Constants.Errors.MISSING_BLOCK.replace("%s", block.name),
+						)
 					}
 				}
 
-				if (!Array.isArray(packet.data[block])) {
-					packet.data[block] = [packet.data[block]]
+				if (!Array.isArray(packet.data[block.name])) {
+					packet.data[block.name] = [packet.data[block.name]]
 				}
 
-				const length = packet.data[block].length
+				const length = packet.data[block.name].length
 
 				assert.ok(
-					length <= 255 && (!format.quantity || length === format.quantity),
+					length <= 255 && (block.multiple || length === 1),
 					Constants.Errors.INVALID_BLOCK_QUANTITY,
 				)
 
-				if (!format.quantity) {
+				if (block.multiple) {
 					// prefix with variable block quantity
 					array.push(U8.toBuffer(length || 1))
 				}
 
-				for (const data of packet.data[block]) {
-					array.push(this.parse(block, format, data))
+				for (const data of packet.data[block.name]) {
+					array.push(this.parse(block, data))
 				}
 			}
 		}
 
-		return [Buffer.concat(array), index]
+		return [Buffer.concat(array), sequence]
 	}
 
-	public header(PacketConstructor: typeof Packet, reliable?: boolean): Buffer {
-		const index = this.index++
+	/**
+	 * @see {@link http://wiki.secondlife.com/wiki/Packet_Layout}
+	 */
+	public header(metadata: PacketMetadata, reliable?: boolean) {
+		const index = this.sequence++
 
-		if (index > MAX_INDEX) {
-			this.index = 0
+		if (index > MAX_SEQUENCE) {
+			this.sequence = 1
 		}
 
 		// first, append flags and packet sequence number/index
-		// http://wiki.secondlife.com/wiki/Packet_Layout
 		const array = [
-			reliable ? 0x40 : 0x00, // flags
+			reliable ? ACK_FLAG : 0, // flags
 			index >> 24, // sequence number (1-4)
 			index >> 16,
 			index >> 8,
 			index,
-			0x00, // extra header padding
+			0, // extra header padding (always 0 for now)
 		]
 
-		// logic for additional header bytes dependant on packet type/frequency
-		if (PacketConstructor.frequency !== 2) {
-			array.push(0xff)
-
-			if (PacketConstructor.frequency !== 1) {
-				array.push(0xff)
-			}
-
-			if (PacketConstructor.frequency === 0) {
-				array.push((PacketConstructor.id >> 8) & 0xff)
-			} else if (PacketConstructor.frequency === 3) {
-				array.push(0xff)
-			}
+		/**
+		 *         [   header   ] [ msg num ] [ data ]
+		 * High:   .. .. .. .. .. XX .. .. .. .. .. ..
+		 * Medium: .. .. .. .. .. FF XX .. .. .. .. ..
+		 * Low:    .. .. .. .. .. FF FF XX XX .. .. ..
+		 * Fixed:  .. .. .. .. .. FF FF FF XX .. .. ..
+		 */
+		if (!metadata.frequency) {
+			array.push(metadata.id & 0xff)
+		} else if (metadata.frequency === 1) {
+			array.push(0xff, metadata.id & 0xff)
+		} else if (metadata.frequency === 2) {
+			array.push(0xff, 0xff, (metadata.id >> 8) & 0xff, metadata.id & 0xff)
+		} else {
+			array.push(0xff, 0xff, 0xff, metadata.id & 0xff)
 		}
 
-		// append remaining section of the packet identifier
-		array.push(PacketConstructor.id & 0xff)
-
-		// pass buffer object
-		return Buffer.from(array)
+		return Buffer.from(array) as Buffer
 	}
 
-	public parse(block: string, format: any, data: any = {}): Buffer {
+	public parse(block: PacketBlock, data: any = {}): Buffer {
 		const array = []
 
 		// attempt to fill optional parts of agent data blocks
-		if (block === "agentData") {
-			for (const [name] of format.parameters) {
+		if (block.name === "agentData") {
+			for (const [name] of block.parameters) {
 				if (data[name] !== undefined) {
 					continue
 				}
@@ -157,7 +140,7 @@ export class Serializer {
 			}
 		}
 
-		for (const [name, Type] of format.parameters) {
+		for (const [name, Type] of block.parameters) {
 			assert.ok(
 				name in data,
 				Constants.Errors.MISSING_PARAMETER.replace("%s", name),

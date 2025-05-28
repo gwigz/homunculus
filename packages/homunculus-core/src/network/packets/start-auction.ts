@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface StartAuctionData {
 	agentData?: {
@@ -23,30 +27,29 @@ export interface StartAuctionData {
 	}
 }
 
-export class StartAuction extends Packet<StartAuctionData> {
-	public static override id = 229
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const startAuctionMetadata = {
+	id: 229,
+	name: "StartAuction",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "parcelData",
+			parameters: [
+				["parcelId", UUID],
+				["snapshotId", UUID],
+				["name", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"parcelData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["parcelId", Types.UUID],
-					["snapshotId", Types.UUID],
-					["name", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const startAuction =
+	createPacketSender<StartAuctionData>(startAuctionMetadata)
+
+export const createStartAuctionDelegate =
+	createPacketDelegate<StartAuctionData>(startAuctionMetadata)

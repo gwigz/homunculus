@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, U8, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AgentCachedTextureResponseData {
 	agentData: {
@@ -25,33 +29,38 @@ export interface AgentCachedTextureResponseData {
 	}[]
 }
 
-export class AgentCachedTextureResponse extends Packet<AgentCachedTextureResponseData> {
-	public static override id = 385
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const agentCachedTextureResponseMetadata = {
+	id: 385,
+	name: "AgentCachedTextureResponse",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["serialNum", S32],
+			],
+		},
+		{
+			name: "wearableData",
+			parameters: [
+				["textureId", UUID],
+				["textureIndex", U8],
+				["hostName", Variable1],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["serialNum", Types.S32],
-				]),
-			},
-		],
-		[
-			"wearableData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["textureId", Types.UUID],
-					["textureIndex", Types.U8],
-					["hostName", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const agentCachedTextureResponse =
+	createPacketSender<AgentCachedTextureResponseData>(
+		agentCachedTextureResponseMetadata,
+	)
+
+export const createAgentCachedTextureResponseDelegate =
+	createPacketDelegate<AgentCachedTextureResponseData>(
+		agentCachedTextureResponseMetadata,
+	)

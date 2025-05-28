@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, S8, UUID, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AssetUploadRequestData {
 	assetBlock?: {
@@ -22,25 +26,27 @@ export interface AssetUploadRequestData {
 	}
 }
 
-export class AssetUploadRequest extends Packet<AssetUploadRequestData> {
-	public static override id = 333
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const assetUploadRequestMetadata = {
+	id: 333,
+	name: "AssetUploadRequest",
+	frequency: 2,
+	blocks: [
+		{
+			name: "assetBlock",
+			parameters: [
+				["transactionId", UUID],
+				["type", S8],
+				["tempfile", Bool],
+				["storeLocal", Bool],
+				["assetData", Variable2],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"assetBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["transactionId", Types.UUID],
-					["type", Types.S8],
-					["tempfile", Types.Bool],
-					["storeLocal", Types.Bool],
-					["assetData", Types.Variable2],
-				]),
-			},
-		],
-	])
-}
+export const assetUploadRequest = createPacketSender<AssetUploadRequestData>(
+	assetUploadRequestMetadata,
+)
+
+export const createAssetUploadRequestDelegate =
+	createPacketDelegate<AssetUploadRequestData>(assetUploadRequestMetadata)

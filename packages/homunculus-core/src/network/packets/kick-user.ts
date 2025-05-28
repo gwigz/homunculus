@@ -9,13 +9,17 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { IP, Port, UUID, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface KickUserData {
 	targetBlock?: {
-		targetIp: Types.IP
-		targetPort: Types.Port
+		targetIp: IP
+		targetPort: Port
 	}
 	userInfo?: {
 		agentId: string
@@ -24,33 +28,31 @@ export interface KickUserData {
 	}
 }
 
-export class KickUser extends Packet<KickUserData> {
-	public static override id = 163
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const kickUserMetadata = {
+	id: 163,
+	name: "KickUser",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "targetBlock",
+			parameters: [
+				["targetIp", IP],
+				["targetPort", Port],
+			],
+		},
+		{
+			name: "userInfo",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["reason", Variable2],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"targetBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["targetIp", Types.IP],
-					["targetPort", Types.Port],
-				]),
-			},
-		],
-		[
-			"userInfo",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["reason", Types.Variable2],
-				]),
-			},
-		],
-	])
-}
+export const kickUser = createPacketSender<KickUserData>(kickUserMetadata)
+
+export const createKickUserDelegate =
+	createPacketDelegate<KickUserData>(kickUserMetadata)

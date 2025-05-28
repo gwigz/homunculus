@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, S32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface DirPeopleReplyData {
 	agentData?: {
@@ -29,39 +33,39 @@ export interface DirPeopleReplyData {
 	}[]
 }
 
-export class DirPeopleReply extends Packet<DirPeopleReplyData> {
-	public static override id = 36
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const dirPeopleReplyMetadata = {
+	id: 36,
+	name: "DirPeopleReply",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "queryData",
+			parameters: [["queryId", UUID]],
+		},
+		{
+			name: "queryReplies",
+			parameters: [
+				["agentId", UUID],
+				["firstName", Variable1],
+				["lastName", Variable1],
+				["group", Variable1],
+				["online", Bool],
+				["reputation", S32],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"queryData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["queryId", Types.UUID]]),
-			},
-		],
-		[
-			"queryReplies",
-			{
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["firstName", Types.Variable1],
-					["lastName", Types.Variable1],
-					["group", Types.Variable1],
-					["online", Types.Bool],
-					["reputation", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const dirPeopleReply = createPacketSender<DirPeopleReplyData>(
+	dirPeopleReplyMetadata,
+)
+
+export const createDirPeopleReplyDelegate =
+	createPacketDelegate<DirPeopleReplyData>(dirPeopleReplyMetadata)

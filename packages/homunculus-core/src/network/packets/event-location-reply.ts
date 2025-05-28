@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, UUID, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface EventLocationReplyData {
 	queryData?: {
@@ -19,34 +23,35 @@ export interface EventLocationReplyData {
 	eventData?: {
 		success: boolean
 		regionId: string
-		regionPos: Types.Vector3
+		regionPos: Vector3
 	}
 }
 
-export class EventLocationReply extends Packet<EventLocationReplyData> {
-	public static override id = 308
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const eventLocationReplyMetadata = {
+	id: 308,
+	name: "EventLocationReply",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "queryData",
+			parameters: [["queryId", UUID]],
+		},
+		{
+			name: "eventData",
+			parameters: [
+				["success", Bool],
+				["regionId", UUID],
+				["regionPos", Vector3],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"queryData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["queryId", Types.UUID]]),
-			},
-		],
-		[
-			"eventData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["success", Types.Bool],
-					["regionId", Types.UUID],
-					["regionPos", Types.Vector3],
-				]),
-			},
-		],
-	])
-}
+export const eventLocationReply = createPacketSender<EventLocationReplyData>(
+	eventLocationReplyMetadata,
+)
+
+export const createEventLocationReplyDelegate =
+	createPacketDelegate<EventLocationReplyData>(eventLocationReplyMetadata)

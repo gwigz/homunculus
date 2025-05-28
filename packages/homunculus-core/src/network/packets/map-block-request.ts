@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, U16, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface MapBlockRequestData {
 	agentData?: {
@@ -28,37 +32,36 @@ export interface MapBlockRequestData {
 	}
 }
 
-export class MapBlockRequest extends Packet<MapBlockRequestData> {
-	public static override id = 407
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const mapBlockRequestMetadata = {
+	id: 407,
+	name: "MapBlockRequest",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["flags", U32],
+				["estateId", U32],
+				["godlike", Bool],
+			],
+		},
+		{
+			name: "positionData",
+			parameters: [
+				["minX", U16],
+				["maxX", U16],
+				["minY", U16],
+				["maxY", U16],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["flags", Types.U32],
-					["estateId", Types.U32],
-					["godlike", Types.Bool],
-				]),
-			},
-		],
-		[
-			"positionData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["minX", Types.U16],
-					["maxX", Types.U16],
-					["minY", Types.U16],
-					["maxY", Types.U16],
-				]),
-			},
-		],
-	])
-}
+export const mapBlockRequest = createPacketSender<MapBlockRequestData>(
+	mapBlockRequestMetadata,
+)
+
+export const createMapBlockRequestDelegate =
+	createPacketDelegate<MapBlockRequestData>(mapBlockRequestMetadata)

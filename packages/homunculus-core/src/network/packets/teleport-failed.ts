@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface TeleportFailedData {
 	info?: {
@@ -23,31 +27,33 @@ export interface TeleportFailedData {
 	}[]
 }
 
-export class TeleportFailed extends Packet<TeleportFailedData> {
-	public static override id = 74
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const teleportFailedMetadata = {
+	id: 74,
+	name: "TeleportFailed",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "info",
+			parameters: [
+				["agentId", UUID],
+				["reason", Variable1],
+			],
+		},
+		{
+			name: "alertInfo",
+			parameters: [
+				["message", Variable1],
+				["extraParams", Variable1],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"info",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["reason", Types.Variable1],
-				]),
-			},
-		],
-		[
-			"alertInfo",
-			{
-				parameters: new Map<string, Types.Type>([
-					["message", Types.Variable1],
-					["extraParams", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const teleportFailed = createPacketSender<TeleportFailedData>(
+	teleportFailedMetadata,
+)
+
+export const createTeleportFailedDelegate =
+	createPacketDelegate<TeleportFailedData>(teleportFailedMetadata)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, S32, UUID, Variable1, Variable2, Vector3D } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface PickInfoUpdateData {
 	agentData?: {
@@ -25,46 +29,45 @@ export interface PickInfoUpdateData {
 		name: string | Buffer
 		desc: string | Buffer
 		snapshotId: string
-		posGlobal: Types.Vector3D
+		posGlobal: Vector3D
 		sortOrder: number
 		enabled: boolean
 	}
 }
 
-export class PickInfoUpdate extends Packet<PickInfoUpdateData> {
-	public static override id = 185
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const pickInfoUpdateMetadata = {
+	id: 185,
+	name: "PickInfoUpdate",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "data",
+			parameters: [
+				["pickId", UUID],
+				["creatorId", UUID],
+				["topPick", Bool],
+				["parcelId", UUID],
+				["name", Variable1],
+				["desc", Variable2],
+				["snapshotId", UUID],
+				["posGlobal", Vector3D],
+				["sortOrder", S32],
+				["enabled", Bool],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["pickId", Types.UUID],
-					["creatorId", Types.UUID],
-					["topPick", Types.Bool],
-					["parcelId", Types.UUID],
-					["name", Types.Variable1],
-					["desc", Types.Variable2],
-					["snapshotId", Types.UUID],
-					["posGlobal", Types.Vector3D],
-					["sortOrder", Types.S32],
-					["enabled", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const pickInfoUpdate = createPacketSender<PickInfoUpdateData>(
+	pickInfoUpdateMetadata,
+)
+
+export const createPickInfoUpdateDelegate =
+	createPacketDelegate<PickInfoUpdateData>(pickInfoUpdateMetadata)

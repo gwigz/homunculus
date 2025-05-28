@@ -9,16 +9,20 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U8, UUID, Variable1, Variable2, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface UserReportInternalData {
 	reportData?: {
 		reportType: number
 		category: number
 		reporterId: string
-		viewerPosition: Types.Vector3
-		agentPosition: Types.Vector3
+		viewerPosition: Vector3
+		agentPosition: Vector3
 		screenshotId: string
 		objectId: string
 		ownerId: string
@@ -34,37 +38,41 @@ export interface UserReportInternalData {
 	}
 }
 
-export class UserReportInternal extends Packet<UserReportInternalData> {
-	public static override id = 21
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const userReportInternalMetadata = {
+	id: 21,
+	name: "UserReportInternal",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "reportData",
+			parameters: [
+				["reportType", U8],
+				["category", U8],
+				["reporterId", UUID],
+				["viewerPosition", Vector3],
+				["agentPosition", Vector3],
+				["screenshotId", UUID],
+				["objectId", UUID],
+				["ownerId", UUID],
+				["lastOwnerId", UUID],
+				["creatorId", UUID],
+				["regionId", UUID],
+				["abuserId", UUID],
+				["abuseRegionName", Variable1],
+				["abuseRegionId", UUID],
+				["summary", Variable1],
+				["details", Variable2],
+				["versionString", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"reportData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["reportType", Types.U8],
-					["category", Types.U8],
-					["reporterId", Types.UUID],
-					["viewerPosition", Types.Vector3],
-					["agentPosition", Types.Vector3],
-					["screenshotId", Types.UUID],
-					["objectId", Types.UUID],
-					["ownerId", Types.UUID],
-					["lastOwnerId", Types.UUID],
-					["creatorId", Types.UUID],
-					["regionId", Types.UUID],
-					["abuserId", Types.UUID],
-					["abuseRegionName", Types.Variable1],
-					["abuseRegionId", Types.UUID],
-					["summary", Types.Variable1],
-					["details", Types.Variable2],
-					["versionString", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const userReportInternal = createPacketSender<UserReportInternalData>(
+	userReportInternalMetadata,
+)
+
+export const createUserReportInternalDelegate =
+	createPacketDelegate<UserReportInternalData>(userReportInternalMetadata)

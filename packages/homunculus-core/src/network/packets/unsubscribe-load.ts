@@ -9,13 +9,24 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { Packet } from "./packet"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export type UnsubscribeLoadData = Record<string, never>
 
-export class UnsubscribeLoad extends Packet<UnsubscribeLoadData> {
-	public static override id = 8
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
-}
+export const unsubscribeLoadMetadata = {
+	id: 8,
+	name: "UnsubscribeLoad",
+	frequency: 2,
+	trusted: true,
+} satisfies PacketMetadata
+
+export const unsubscribeLoad = createPacketSender<UnsubscribeLoadData>(
+	unsubscribeLoadMetadata,
+)
+
+export const createUnsubscribeLoadDelegate =
+	createPacketDelegate<UnsubscribeLoadData>(unsubscribeLoadMetadata)

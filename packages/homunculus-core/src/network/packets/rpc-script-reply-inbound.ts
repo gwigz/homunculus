@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RpcScriptReplyInboundData {
 	dataBlock?: {
@@ -22,25 +26,26 @@ export interface RpcScriptReplyInboundData {
 	}
 }
 
-export class RpcScriptReplyInbound extends Packet<RpcScriptReplyInboundData> {
-	public static override id = 417
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const rpcScriptReplyInboundMetadata = {
+	id: 417,
+	name: "RpcScriptReplyInbound",
+	frequency: 2,
+	blocks: [
+		{
+			name: "dataBlock",
+			parameters: [
+				["taskId", UUID],
+				["itemId", UUID],
+				["channelId", UUID],
+				["intValue", U32],
+				["stringValue", Variable2],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"dataBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["taskId", Types.UUID],
-					["itemId", Types.UUID],
-					["channelId", Types.UUID],
-					["intValue", Types.U32],
-					["stringValue", Types.Variable2],
-				]),
-			},
-		],
-	])
-}
+export const rpcScriptReplyInbound =
+	createPacketSender<RpcScriptReplyInboundData>(rpcScriptReplyInboundMetadata)
+
+export const createRpcScriptReplyInboundDelegate =
+	createPacketDelegate<RpcScriptReplyInboundData>(rpcScriptReplyInboundMetadata)

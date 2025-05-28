@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface EventLocationRequestData {
 	queryData?: {
@@ -21,26 +25,26 @@ export interface EventLocationRequestData {
 	}
 }
 
-export class EventLocationRequest extends Packet<EventLocationRequestData> {
-	public static override id = 307
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const eventLocationRequestMetadata = {
+	id: 307,
+	name: "EventLocationRequest",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "queryData",
+			parameters: [["queryId", UUID]],
+		},
+		{
+			name: "eventData",
+			parameters: [["eventId", U32]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"queryData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["queryId", Types.UUID]]),
-			},
-		],
-		[
-			"eventData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["eventId", Types.U32]]),
-			},
-		],
-	])
-}
+export const eventLocationRequest =
+	createPacketSender<EventLocationRequestData>(eventLocationRequestMetadata)
+
+export const createEventLocationRequestDelegate =
+	createPacketDelegate<EventLocationRequestData>(eventLocationRequestMetadata)

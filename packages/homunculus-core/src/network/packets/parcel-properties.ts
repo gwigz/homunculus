@@ -9,8 +9,22 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import {
+	Bool,
+	F32,
+	S32,
+	U8,
+	U32,
+	UUID,
+	Variable1,
+	Variable2,
+	Vector3,
+} from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ParcelPropertiesData {
 	parcelData?: {
@@ -27,8 +41,8 @@ export interface ParcelPropertiesData {
 		claimDate: number
 		claimPrice: number
 		rentPrice: number
-		aABBMin: Types.Vector3
-		aABBMax: Types.Vector3
+		aABBMin: Vector3
+		aABBMax: Vector3
 		bitmap: string | Buffer
 		area: number
 		status: number
@@ -56,8 +70,8 @@ export interface ParcelPropertiesData {
 		category: number
 		authBuyerId: string
 		snapshotId: string
-		userLocation: Types.Vector3
-		userLookAt: Types.Vector3
+		userLocation: Vector3
+		userLookAt: Vector3
 		landingType: number
 		regionPushOverride: boolean
 		regionDenyAnonymous: boolean
@@ -76,97 +90,87 @@ export interface ParcelPropertiesData {
 	}
 }
 
-export class ParcelProperties extends Packet<ParcelPropertiesData> {
-	public static override id = 23
-	public static override frequency = 2
-	public static override trusted = true
-	public static override compression = true
+export const parcelPropertiesMetadata = {
+	id: 23,
+	name: "ParcelProperties",
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "parcelData",
+			parameters: [
+				["requestResult", S32],
+				["sequenceId", S32],
+				["snapSelection", Bool],
+				["selfCount", S32],
+				["otherCount", S32],
+				["publicCount", S32],
+				["localId", S32],
+				["ownerId", UUID],
+				["isGroupOwned", Bool],
+				["auctionId", U32],
+				["claimDate", S32],
+				["claimPrice", S32],
+				["rentPrice", S32],
+				["aABBMin", Vector3],
+				["aABBMax", Vector3],
+				["bitmap", Variable2],
+				["area", S32],
+				["status", U8],
+				["simWideMaxPrims", S32],
+				["simWideTotalPrims", S32],
+				["maxPrims", S32],
+				["totalPrims", S32],
+				["ownerPrims", S32],
+				["groupPrims", S32],
+				["otherPrims", S32],
+				["selectedPrims", S32],
+				["parcelPrimBonus", F32],
+				["otherCleanTime", S32],
+				["parcelFlags", U32],
+				["salePrice", S32],
+				["name", Variable1],
+				["desc", Variable1],
+				["musicUrl", Variable1],
+				["mediaUrl", Variable1],
+				["mediaId", UUID],
+				["mediaAutoScale", U8],
+				["groupId", UUID],
+				["passPrice", S32],
+				["passHours", F32],
+				["category", U8],
+				["authBuyerId", UUID],
+				["snapshotId", UUID],
+				["userLocation", Vector3],
+				["userLookAt", Vector3],
+				["landingType", U8],
+				["regionPushOverride", Bool],
+				["regionDenyAnonymous", Bool],
+				["regionDenyIdentified", Bool],
+				["regionDenyTransacted", Bool],
+			],
+		},
+		{
+			name: "ageVerificationBlock",
+			parameters: [["regionDenyAgeUnverified", Bool]],
+		},
+		{
+			name: "regionAllowAccessBlock",
+			parameters: [["regionAllowAccessOverride", Bool]],
+		},
+		{
+			name: "parcelEnvironmentBlock",
+			parameters: [
+				["parcelEnvironmentVersion", S32],
+				["regionAllowEnvironmentOverride", Bool],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"parcelData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["requestResult", Types.S32],
-					["sequenceId", Types.S32],
-					["snapSelection", Types.Bool],
-					["selfCount", Types.S32],
-					["otherCount", Types.S32],
-					["publicCount", Types.S32],
-					["localId", Types.S32],
-					["ownerId", Types.UUID],
-					["isGroupOwned", Types.Bool],
-					["auctionId", Types.U32],
-					["claimDate", Types.S32],
-					["claimPrice", Types.S32],
-					["rentPrice", Types.S32],
-					["aABBMin", Types.Vector3],
-					["aABBMax", Types.Vector3],
-					["bitmap", Types.Variable2],
-					["area", Types.S32],
-					["status", Types.U8],
-					["simWideMaxPrims", Types.S32],
-					["simWideTotalPrims", Types.S32],
-					["maxPrims", Types.S32],
-					["totalPrims", Types.S32],
-					["ownerPrims", Types.S32],
-					["groupPrims", Types.S32],
-					["otherPrims", Types.S32],
-					["selectedPrims", Types.S32],
-					["parcelPrimBonus", Types.F32],
-					["otherCleanTime", Types.S32],
-					["parcelFlags", Types.U32],
-					["salePrice", Types.S32],
-					["name", Types.Variable1],
-					["desc", Types.Variable1],
-					["musicUrl", Types.Variable1],
-					["mediaUrl", Types.Variable1],
-					["mediaId", Types.UUID],
-					["mediaAutoScale", Types.U8],
-					["groupId", Types.UUID],
-					["passPrice", Types.S32],
-					["passHours", Types.F32],
-					["category", Types.U8],
-					["authBuyerId", Types.UUID],
-					["snapshotId", Types.UUID],
-					["userLocation", Types.Vector3],
-					["userLookAt", Types.Vector3],
-					["landingType", Types.U8],
-					["regionPushOverride", Types.Bool],
-					["regionDenyAnonymous", Types.Bool],
-					["regionDenyIdentified", Types.Bool],
-					["regionDenyTransacted", Types.Bool],
-				]),
-			},
-		],
-		[
-			"ageVerificationBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["regionDenyAgeUnverified", Types.Bool],
-				]),
-			},
-		],
-		[
-			"regionAllowAccessBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["regionAllowAccessOverride", Types.Bool],
-				]),
-			},
-		],
-		[
-			"parcelEnvironmentBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["parcelEnvironmentVersion", Types.S32],
-					["regionAllowEnvironmentOverride", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const parcelProperties = createPacketSender<ParcelPropertiesData>(
+	parcelPropertiesMetadata,
+)
+
+export const createParcelPropertiesDelegate =
+	createPacketDelegate<ParcelPropertiesData>(parcelPropertiesMetadata)

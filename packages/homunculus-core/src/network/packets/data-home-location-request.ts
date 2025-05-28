@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface DataHomeLocationRequestData {
 	info?: {
@@ -22,31 +26,33 @@ export interface DataHomeLocationRequestData {
 	}
 }
 
-export class DataHomeLocationRequest extends Packet<DataHomeLocationRequestData> {
-	public static override id = 67
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const dataHomeLocationRequestMetadata = {
+	id: 67,
+	name: "DataHomeLocationRequest",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "info",
+			parameters: [
+				["agentId", UUID],
+				["kickedFromEstateId", U32],
+			],
+		},
+		{
+			name: "agentInfo",
+			parameters: [["agentEffectiveMaturity", U32]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"info",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["kickedFromEstateId", Types.U32],
-				]),
-			},
-		],
-		[
-			"agentInfo",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentEffectiveMaturity", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const dataHomeLocationRequest =
+	createPacketSender<DataHomeLocationRequestData>(
+		dataHomeLocationRequestMetadata,
+	)
+
+export const createDataHomeLocationRequestDelegate =
+	createPacketDelegate<DataHomeLocationRequestData>(
+		dataHomeLocationRequestMetadata,
+	)

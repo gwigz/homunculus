@@ -9,13 +9,22 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { Packet } from "./packet"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export type TallyVotesData = Record<string, never>
 
-export class TallyVotes extends Packet<TallyVotesData> {
-	public static override id = 365
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
-}
+export const tallyVotesMetadata = {
+	id: 365,
+	name: "TallyVotes",
+	frequency: 2,
+	trusted: true,
+} satisfies PacketMetadata
+
+export const tallyVotes = createPacketSender<TallyVotesData>(tallyVotesMetadata)
+
+export const createTallyVotesDelegate =
+	createPacketDelegate<TallyVotesData>(tallyVotesMetadata)

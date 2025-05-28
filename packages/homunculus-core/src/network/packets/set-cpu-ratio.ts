@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U8 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface SetCPURatioData {
 	data?: {
@@ -18,19 +22,20 @@ export interface SetCPURatioData {
 	}
 }
 
-export class SetCPURatio extends Packet<SetCPURatioData> {
-	public static override id = 327
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const setCpuRatioMetadata = {
+	id: 327,
+	name: "SetCPURatio",
+	frequency: 2,
+	blocks: [
+		{
+			name: "data",
+			parameters: [["ratio", U8]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["ratio", Types.U8]]),
-			},
-		],
-	])
-}
+export const setCpuRatio =
+	createPacketSender<SetCPURatioData>(setCpuRatioMetadata)
+
+export const createSetCPURatioDelegate =
+	createPacketDelegate<SetCPURatioData>(setCpuRatioMetadata)

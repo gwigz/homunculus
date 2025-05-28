@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, U8, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectPermissionsData {
 	agentData?: {
@@ -28,40 +32,39 @@ export interface ObjectPermissionsData {
 	}[]
 }
 
-export class ObjectPermissions extends Packet<ObjectPermissionsData> {
-	public static override id = 105
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const objectPermissionsMetadata = {
+	id: 105,
+	name: "ObjectPermissions",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "headerData",
+			parameters: [["override", Bool]],
+		},
+		{
+			name: "objectData",
+			parameters: [
+				["objectLocalId", U32],
+				["field", U8],
+				["set", U8],
+				["mask", U32],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"headerData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["override", Types.Bool]]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["objectLocalId", Types.U32],
-					["field", Types.U8],
-					["set", Types.U8],
-					["mask", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const objectPermissions = createPacketSender<ObjectPermissionsData>(
+	objectPermissionsMetadata,
+)
+
+export const createObjectPermissionsDelegate =
+	createPacketDelegate<ObjectPermissionsData>(objectPermissionsMetadata)

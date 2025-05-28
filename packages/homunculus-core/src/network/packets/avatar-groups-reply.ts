@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, U64, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AvatarGroupsReplyData {
 	agentData: {
@@ -30,44 +34,42 @@ export interface AvatarGroupsReplyData {
 	}
 }
 
-export class AvatarGroupsReply extends Packet<AvatarGroupsReplyData> {
-	public static override id = 173
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const avatarGroupsReplyMetadata = {
+	id: 173,
+	name: "AvatarGroupsReply",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["avatarId", UUID],
+			],
+		},
+		{
+			name: "groupData",
+			parameters: [
+				["groupPowers", U64],
+				["acceptNotices", Bool],
+				["groupTitle", Variable1],
+				["groupId", UUID],
+				["groupName", Variable1],
+				["groupInsigniaId", UUID],
+			],
+			multiple: true,
+		},
+		{
+			name: "newGroupData",
+			parameters: [["listInProfile", Bool]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["avatarId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"groupData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["groupPowers", Types.U64],
-					["acceptNotices", Types.Bool],
-					["groupTitle", Types.Variable1],
-					["groupId", Types.UUID],
-					["groupName", Types.Variable1],
-					["groupInsigniaId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"newGroupData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["listInProfile", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const avatarGroupsReply = createPacketSender<AvatarGroupsReplyData>(
+	avatarGroupsReplyMetadata,
+)
+
+export const createAvatarGroupsReplyDelegate =
+	createPacketDelegate<AvatarGroupsReplyData>(avatarGroupsReplyMetadata)

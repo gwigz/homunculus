@@ -1,9 +1,8 @@
-import type { KillObject } from "~/network/packets"
-import { Delegate } from "./delegate"
+import { packets } from "~/network"
 
-class KillObjectDelegate extends Delegate {
-	public override handle(packet: KillObject) {
-		for (const region of this.client.regions.values()) {
+packets.createKillObjectDelegate({
+	handle: (packet, context) => {
+		for (const region of context.client.regions.values()) {
 			for (const { id } of packet.data.objectData!) {
 				if (!region.objects.has(id)) {
 					continue
@@ -27,7 +26,5 @@ class KillObjectDelegate extends Delegate {
 				region.objects.delete(id)
 			}
 		}
-	}
-}
-
-export default KillObjectDelegate
+	},
+})

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S8, U8, U16, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectShapeData {
 	agentData?: {
@@ -40,48 +44,49 @@ export interface ObjectShapeData {
 	}[]
 }
 
-export class ObjectShape extends Packet<ObjectShapeData> {
-	public static override id = 98
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const objectShapeMetadata = {
+	id: 98,
+	name: "ObjectShape",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [
+				["objectLocalId", U32],
+				["pathCurve", U8],
+				["profileCurve", U8],
+				["pathBegin", U16],
+				["pathEnd", U16],
+				["pathScaleX", U8],
+				["pathScaleY", U8],
+				["pathShearX", U8],
+				["pathShearY", U8],
+				["pathTwist", S8],
+				["pathTwistBegin", S8],
+				["pathRadiusOffset", S8],
+				["pathTaperX", S8],
+				["pathTaperY", S8],
+				["pathRevolutions", U8],
+				["pathSkew", S8],
+				["profileBegin", U16],
+				["profileEnd", U16],
+				["profileHollow", U16],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["objectLocalId", Types.U32],
-					["pathCurve", Types.U8],
-					["profileCurve", Types.U8],
-					["pathBegin", Types.U16],
-					["pathEnd", Types.U16],
-					["pathScaleX", Types.U8],
-					["pathScaleY", Types.U8],
-					["pathShearX", Types.U8],
-					["pathShearY", Types.U8],
-					["pathTwist", Types.S8],
-					["pathTwistBegin", Types.S8],
-					["pathRadiusOffset", Types.S8],
-					["pathTaperX", Types.S8],
-					["pathTaperY", Types.S8],
-					["pathRevolutions", Types.U8],
-					["pathSkew", Types.S8],
-					["profileBegin", Types.U16],
-					["profileEnd", Types.U16],
-					["profileHollow", Types.U16],
-				]),
-			},
-		],
-	])
-}
+export const objectShape =
+	createPacketSender<ObjectShapeData>(objectShapeMetadata)
+
+export const createObjectShapeDelegate =
+	createPacketDelegate<ObjectShapeData>(objectShapeMetadata)

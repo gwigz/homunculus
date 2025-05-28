@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface UUIDGroupNameRequestData {
 	uuidNameBlock?: {
@@ -18,18 +22,21 @@ export interface UUIDGroupNameRequestData {
 	}[]
 }
 
-export class UUIDGroupNameRequest extends Packet<UUIDGroupNameRequestData> {
-	public static override id = 237
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const uuidGroupNameRequestMetadata = {
+	id: 237,
+	name: "UUIDGroupNameRequest",
+	frequency: 2,
+	blocks: [
+		{
+			name: "uuidNameBlock",
+			parameters: [["id", UUID]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"uuidNameBlock",
-			{
-				parameters: new Map<string, Types.Type>([["id", Types.UUID]]),
-			},
-		],
-	])
-}
+export const uuidGroupNameRequest =
+	createPacketSender<UUIDGroupNameRequestData>(uuidGroupNameRequestMetadata)
+
+export const createUUIDGroupNameRequestDelegate =
+	createPacketDelegate<UUIDGroupNameRequestData>(uuidGroupNameRequestMetadata)

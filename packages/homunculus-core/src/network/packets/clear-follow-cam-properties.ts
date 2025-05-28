@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ClearFollowCamPropertiesData {
 	objectData?: {
@@ -18,19 +22,25 @@ export interface ClearFollowCamPropertiesData {
 	}
 }
 
-export class ClearFollowCamProperties extends Packet<ClearFollowCamPropertiesData> {
-	public static override id = 160
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const clearFollowCamPropertiesMetadata = {
+	id: 160,
+	name: "ClearFollowCamProperties",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "objectData",
+			parameters: [["objectId", UUID]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"objectData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["objectId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const clearFollowCamProperties =
+	createPacketSender<ClearFollowCamPropertiesData>(
+		clearFollowCamPropertiesMetadata,
+	)
+
+export const createClearFollowCamPropertiesDelegate =
+	createPacketDelegate<ClearFollowCamPropertiesData>(
+		clearFollowCamPropertiesMetadata,
+	)

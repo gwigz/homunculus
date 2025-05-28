@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface OnlineNotificationData {
 	agentBlock?: {
@@ -18,18 +22,23 @@ export interface OnlineNotificationData {
 	}[]
 }
 
-export class OnlineNotification extends Packet<OnlineNotificationData> {
-	public static override id = 322
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const onlineNotificationMetadata = {
+	id: 322,
+	name: "OnlineNotification",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentBlock",
+			parameters: [["agentId", UUID]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentBlock",
-			{
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const onlineNotification = createPacketSender<OnlineNotificationData>(
+	onlineNotificationMetadata,
+)
+
+export const createOnlineNotificationDelegate =
+	createPacketDelegate<OnlineNotificationData>(onlineNotificationMetadata)

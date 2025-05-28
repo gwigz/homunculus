@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface GroupRoleMembersReplyData {
 	agentData: {
@@ -25,33 +29,34 @@ export interface GroupRoleMembersReplyData {
 	}[]
 }
 
-export class GroupRoleMembersReply extends Packet<GroupRoleMembersReplyData> {
-	public static override id = 374
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const groupRoleMembersReplyMetadata = {
+	id: 374,
+	name: "GroupRoleMembersReply",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["groupId", UUID],
+				["requestId", UUID],
+				["totalPairs", U32],
+			],
+		},
+		{
+			name: "memberData",
+			parameters: [
+				["roleId", UUID],
+				["memberId", UUID],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["groupId", Types.UUID],
-					["requestId", Types.UUID],
-					["totalPairs", Types.U32],
-				]),
-			},
-		],
-		[
-			"memberData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["roleId", Types.UUID],
-					["memberId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const groupRoleMembersReply =
+	createPacketSender<GroupRoleMembersReplyData>(groupRoleMembersReplyMetadata)
+
+export const createGroupRoleMembersReplyDelegate =
+	createPacketDelegate<GroupRoleMembersReplyData>(groupRoleMembersReplyMetadata)

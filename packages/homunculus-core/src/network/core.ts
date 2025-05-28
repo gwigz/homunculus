@@ -1,8 +1,6 @@
+import type { Client } from "~/client"
+import { Circuit, type CircuitOptions, packets, Socket } from "~/network"
 import { Constants } from "~/utilities"
-import type { Client } from ".."
-import { Circuit, type CircuitOptions } from "./circuit"
-import { LogoutRequest } from "./packets"
-import Socket from "./socket"
 
 /**
  * The core handles connecting to a simulator, processing and sending
@@ -42,8 +40,11 @@ export class Core {
 	 * @param circuit Circuit to send packets too.
 	 * @param packets Packet to send.
 	 */
-	public send(circuit: Circuit, packets: Array<Buffer>) {
-		return packets.map((packet) => this.socket.send(circuit, packet))
+	public send(
+		circuit: Circuit,
+		packets: Array<[data: Buffer, sequence: number]>,
+	) {
+		return packets.map((packet) => this.socket.send(circuit, packet[0]))
 	}
 
 	/**
@@ -87,6 +88,8 @@ export class Core {
 	 * Disconnects the client from the current circuit.
 	 */
 	public async disconnect() {
-		await this.circuit?.send([new LogoutRequest({})])
+		await this.circuit?.send([packets.logoutRequest({})])
+
+		this.socket.close()
 	}
 }

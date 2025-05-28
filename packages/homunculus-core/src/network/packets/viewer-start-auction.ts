@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ViewerStartAuctionData {
 	agentData?: {
@@ -23,32 +27,31 @@ export interface ViewerStartAuctionData {
 	}
 }
 
-export class ViewerStartAuction extends Packet<ViewerStartAuctionData> {
-	public static override id = 228
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const viewerStartAuctionMetadata = {
+	id: 228,
+	name: "ViewerStartAuction",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "parcelData",
+			parameters: [
+				["localId", S32],
+				["snapshotId", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"parcelData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["localId", Types.S32],
-					["snapshotId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const viewerStartAuction = createPacketSender<ViewerStartAuctionData>(
+	viewerStartAuctionMetadata,
+)
+
+export const createViewerStartAuctionDelegate =
+	createPacketDelegate<ViewerStartAuctionData>(viewerStartAuctionMetadata)

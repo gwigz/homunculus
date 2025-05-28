@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, U8, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface MeanCollisionAlertData {
 	meanCollision?: {
@@ -22,24 +26,30 @@ export interface MeanCollisionAlertData {
 	}[]
 }
 
-export class MeanCollisionAlert extends Packet<MeanCollisionAlertData> {
-	public static override id = 136
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const meanCollisionAlertMetadata = {
+	id: 136,
+	name: "MeanCollisionAlert",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "meanCollision",
+			parameters: [
+				["victim", UUID],
+				["perp", UUID],
+				["time", U32],
+				["mag", F32],
+				["type", U8],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"meanCollision",
-			{
-				parameters: new Map<string, Types.Type>([
-					["victim", Types.UUID],
-					["perp", Types.UUID],
-					["time", Types.U32],
-					["mag", Types.F32],
-					["type", Types.U8],
-				]),
-			},
-		],
-	])
-}
+export const meanCollisionAlert = createPacketSender<MeanCollisionAlertData>(
+	meanCollisionAlertMetadata,
+)
+
+export const createMeanCollisionAlertDelegate =
+	createPacketDelegate<MeanCollisionAlertData>(meanCollisionAlertMetadata)

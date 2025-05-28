@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, U64 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AbortXferData {
 	xferId?: {
@@ -19,22 +23,22 @@ export interface AbortXferData {
 	}
 }
 
-export class AbortXfer extends Packet<AbortXferData> {
-	public static override id = 157
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const abortXferMetadata = {
+	id: 157,
+	name: "AbortXfer",
+	frequency: 2,
+	blocks: [
+		{
+			name: "xferId",
+			parameters: [
+				["id", U64],
+				["result", S32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"xferId",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["id", Types.U64],
-					["result", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const abortXfer = createPacketSender<AbortXferData>(abortXferMetadata)
+
+export const createAbortXferDelegate =
+	createPacketDelegate<AbortXferData>(abortXferMetadata)

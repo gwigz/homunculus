@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface CreateLandmarkForEventData {
 	agentData?: {
@@ -26,39 +30,37 @@ export interface CreateLandmarkForEventData {
 	}
 }
 
-export class CreateLandmarkForEvent extends Packet<CreateLandmarkForEventData> {
-	public static override id = 306
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const createLandmarkForEventMetadata = {
+	id: 306,
+	name: "CreateLandmarkForEvent",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "eventData",
+			parameters: [["eventId", U32]],
+		},
+		{
+			name: "inventoryBlock",
+			parameters: [
+				["folderId", UUID],
+				["name", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"eventData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["eventId", Types.U32]]),
-			},
-		],
-		[
-			"inventoryBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["folderId", Types.UUID],
-					["name", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const createLandmarkForEvent =
+	createPacketSender<CreateLandmarkForEventData>(createLandmarkForEventMetadata)
+
+export const createCreateLandmarkForEventDelegate =
+	createPacketDelegate<CreateLandmarkForEventData>(
+		createLandmarkForEventMetadata,
+	)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface TeleportStartData {
 	info?: {
@@ -18,19 +22,22 @@ export interface TeleportStartData {
 	}
 }
 
-export class TeleportStart extends Packet<TeleportStartData> {
-	public static override id = 73
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const teleportStartMetadata = {
+	id: 73,
+	name: "TeleportStart",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "info",
+			parameters: [["teleportFlags", U32]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"info",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["teleportFlags", Types.U32]]),
-			},
-		],
-	])
-}
+export const teleportStart = createPacketSender<TeleportStartData>(
+	teleportStartMetadata,
+)
+
+export const createTeleportStartDelegate =
+	createPacketDelegate<TeleportStartData>(teleportStartMetadata)

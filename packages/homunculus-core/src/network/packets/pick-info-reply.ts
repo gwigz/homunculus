@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, S32, UUID, Variable1, Variable2, Vector3D } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface PickInfoReplyData {
 	agentData?: {
@@ -27,46 +31,46 @@ export interface PickInfoReplyData {
 		user: string | Buffer
 		originalName: string | Buffer
 		simName: string | Buffer
-		posGlobal: Types.Vector3D
+		posGlobal: Vector3D
 		sortOrder: number
 		enabled: boolean
 	}
 }
 
-export class PickInfoReply extends Packet<PickInfoReplyData> {
-	public static override id = 184
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const pickInfoReplyMetadata = {
+	id: 184,
+	name: "PickInfoReply",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "data",
+			parameters: [
+				["pickId", UUID],
+				["creatorId", UUID],
+				["topPick", Bool],
+				["parcelId", UUID],
+				["name", Variable1],
+				["desc", Variable2],
+				["snapshotId", UUID],
+				["user", Variable1],
+				["originalName", Variable1],
+				["simName", Variable1],
+				["posGlobal", Vector3D],
+				["sortOrder", S32],
+				["enabled", Bool],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["pickId", Types.UUID],
-					["creatorId", Types.UUID],
-					["topPick", Types.Bool],
-					["parcelId", Types.UUID],
-					["name", Types.Variable1],
-					["desc", Types.Variable2],
-					["snapshotId", Types.UUID],
-					["user", Types.Variable1],
-					["originalName", Types.Variable1],
-					["simName", Types.Variable1],
-					["posGlobal", Types.Vector3D],
-					["sortOrder", Types.S32],
-					["enabled", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const pickInfoReply = createPacketSender<PickInfoReplyData>(
+	pickInfoReplyMetadata,
+)
+
+export const createPickInfoReplyDelegate =
+	createPacketDelegate<PickInfoReplyData>(pickInfoReplyMetadata)

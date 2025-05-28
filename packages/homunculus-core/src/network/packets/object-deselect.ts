@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectDeselectData {
 	agentData?: {
@@ -22,28 +26,30 @@ export interface ObjectDeselectData {
 	}[]
 }
 
-export class ObjectDeselect extends Packet<ObjectDeselectData> {
-	public static override id = 111
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const objectDeselectMetadata = {
+	id: 111,
+	name: "ObjectDeselect",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [["objectLocalId", U32]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([["objectLocalId", Types.U32]]),
-			},
-		],
-	])
-}
+export const objectDeselect = createPacketSender<ObjectDeselectData>(
+	objectDeselectMetadata,
+)
+
+export const createObjectDeselectDelegate =
+	createPacketDelegate<ObjectDeselectData>(objectDeselectMetadata)

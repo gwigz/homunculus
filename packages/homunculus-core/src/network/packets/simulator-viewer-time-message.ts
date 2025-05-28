@@ -9,40 +9,50 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, U32, U64, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface SimulatorViewerTimeMessageData {
 	timeInfo?: {
 		usecSinceStart: number | bigint
 		secPerDay: number
 		secPerYear: number
-		sunDirection: Types.Vector3
+		sunDirection: Vector3
 		sunPhase: number
-		sunAngVelocity: Types.Vector3
+		sunAngVelocity: Vector3
 	}
 }
 
-export class SimulatorViewerTimeMessage extends Packet<SimulatorViewerTimeMessageData> {
-	public static override id = 150
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const simulatorViewerTimeMessageMetadata = {
+	id: 150,
+	name: "SimulatorViewerTimeMessage",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "timeInfo",
+			parameters: [
+				["usecSinceStart", U64],
+				["secPerDay", U32],
+				["secPerYear", U32],
+				["sunDirection", Vector3],
+				["sunPhase", F32],
+				["sunAngVelocity", Vector3],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"timeInfo",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["usecSinceStart", Types.U64],
-					["secPerDay", Types.U32],
-					["secPerYear", Types.U32],
-					["sunDirection", Types.Vector3],
-					["sunPhase", Types.F32],
-					["sunAngVelocity", Types.Vector3],
-				]),
-			},
-		],
-	])
-}
+export const simulatorViewerTimeMessage =
+	createPacketSender<SimulatorViewerTimeMessageData>(
+		simulatorViewerTimeMessageMetadata,
+	)
+
+export const createSimulatorViewerTimeMessageDelegate =
+	createPacketDelegate<SimulatorViewerTimeMessageData>(
+		simulatorViewerTimeMessageMetadata,
+	)

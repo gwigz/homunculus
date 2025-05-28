@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, F32, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface DirPlacesReplyData {
 	agentData?: {
@@ -31,43 +35,44 @@ export interface DirPlacesReplyData {
 	}[]
 }
 
-export class DirPlacesReply extends Packet<DirPlacesReplyData> {
-	public static override id = 35
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const dirPlacesReplyMetadata = {
+	id: 35,
+	name: "DirPlacesReply",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "queryData",
+			parameters: [["queryId", UUID]],
+			multiple: true,
+		},
+		{
+			name: "queryReplies",
+			parameters: [
+				["parcelId", UUID],
+				["name", Variable1],
+				["forSale", Bool],
+				["auction", Bool],
+				["dwell", F32],
+			],
+			multiple: true,
+		},
+		{
+			name: "statusData",
+			parameters: [["status", U32]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"queryData",
-			{
-				parameters: new Map<string, Types.Type>([["queryId", Types.UUID]]),
-			},
-		],
-		[
-			"queryReplies",
-			{
-				parameters: new Map<string, Types.Type>([
-					["parcelId", Types.UUID],
-					["name", Types.Variable1],
-					["forSale", Types.Bool],
-					["auction", Types.Bool],
-					["dwell", Types.F32],
-				]),
-			},
-		],
-		[
-			"statusData",
-			{
-				parameters: new Map<string, Types.Type>([["status", Types.U32]]),
-			},
-		],
-	])
-}
+export const dirPlacesReply = createPacketSender<DirPlacesReplyData>(
+	dirPlacesReplyMetadata,
+)
+
+export const createDirPlacesReplyDelegate =
+	createPacketDelegate<DirPlacesReplyData>(dirPlacesReplyMetadata)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RpcChannelReplyData {
 	dataBlock?: {
@@ -20,23 +24,26 @@ export interface RpcChannelReplyData {
 	}
 }
 
-export class RpcChannelReply extends Packet<RpcChannelReplyData> {
-	public static override id = 414
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const rpcChannelReplyMetadata = {
+	id: 414,
+	name: "RpcChannelReply",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "dataBlock",
+			parameters: [
+				["taskId", UUID],
+				["itemId", UUID],
+				["channelId", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"dataBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["taskId", Types.UUID],
-					["itemId", Types.UUID],
-					["channelId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const rpcChannelReply = createPacketSender<RpcChannelReplyData>(
+	rpcChannelReplyMetadata,
+)
+
+export const createRpcChannelReplyDelegate =
+	createPacketDelegate<RpcChannelReplyData>(rpcChannelReplyMetadata)

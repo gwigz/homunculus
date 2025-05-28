@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AttachedSoundGainChangeData {
 	dataBlock?: {
@@ -19,22 +23,28 @@ export interface AttachedSoundGainChangeData {
 	}
 }
 
-export class AttachedSoundGainChange extends Packet<AttachedSoundGainChangeData> {
-	public static override id = 14
-	public static override frequency = 1
-	public static override trusted = true
-	public static override compression = false
+export const attachedSoundGainChangeMetadata = {
+	id: 14,
+	name: "AttachedSoundGainChange",
+	frequency: 1,
+	trusted: true,
+	blocks: [
+		{
+			name: "dataBlock",
+			parameters: [
+				["objectId", UUID],
+				["gain", F32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"dataBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["objectId", Types.UUID],
-					["gain", Types.F32],
-				]),
-			},
-		],
-	])
-}
+export const attachedSoundGainChange =
+	createPacketSender<AttachedSoundGainChangeData>(
+		attachedSoundGainChangeMetadata,
+	)
+
+export const createAttachedSoundGainChangeDelegate =
+	createPacketDelegate<AttachedSoundGainChangeData>(
+		attachedSoundGainChangeMetadata,
+	)

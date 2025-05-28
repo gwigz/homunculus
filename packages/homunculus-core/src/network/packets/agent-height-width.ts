@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U16, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AgentHeightWidthData {
 	agentData?: {
@@ -25,34 +29,33 @@ export interface AgentHeightWidthData {
 	}
 }
 
-export class AgentHeightWidth extends Packet<AgentHeightWidthData> {
-	public static override id = 83
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const agentHeightWidthMetadata = {
+	id: 83,
+	name: "AgentHeightWidth",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["circuitCode", U32],
+			],
+		},
+		{
+			name: "heightWidthBlock",
+			parameters: [
+				["genCounter", U32],
+				["height", U16],
+				["width", U16],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["circuitCode", Types.U32],
-				]),
-			},
-		],
-		[
-			"heightWidthBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["genCounter", Types.U32],
-					["height", Types.U16],
-					["width", Types.U16],
-				]),
-			},
-		],
-	])
-}
+export const agentHeightWidth = createPacketSender<AgentHeightWidthData>(
+	agentHeightWidthMetadata,
+)
+
+export const createAgentHeightWidthDelegate =
+	createPacketDelegate<AgentHeightWidthData>(agentHeightWidthMetadata)

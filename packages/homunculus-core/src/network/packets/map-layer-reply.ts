@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface MapLayerReplyData {
 	agentData?: {
@@ -26,34 +30,36 @@ export interface MapLayerReplyData {
 	}[]
 }
 
-export class MapLayerReply extends Packet<MapLayerReplyData> {
-	public static override id = 406
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const mapLayerReplyMetadata = {
+	id: 406,
+	name: "MapLayerReply",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["flags", U32],
+			],
+		},
+		{
+			name: "layerData",
+			parameters: [
+				["left", U32],
+				["right", U32],
+				["top", U32],
+				["bottom", U32],
+				["imageId", UUID],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["flags", Types.U32],
-				]),
-			},
-		],
-		[
-			"layerData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["left", Types.U32],
-					["right", Types.U32],
-					["top", Types.U32],
-					["bottom", Types.U32],
-					["imageId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const mapLayerReply = createPacketSender<MapLayerReplyData>(
+	mapLayerReplyMetadata,
+)
+
+export const createMapLayerReplyDelegate =
+	createPacketDelegate<MapLayerReplyData>(mapLayerReplyMetadata)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface GroupActiveProposalsRequestData {
 	agentData?: {
@@ -25,38 +29,35 @@ export interface GroupActiveProposalsRequestData {
 	}
 }
 
-export class GroupActiveProposalsRequest extends Packet<GroupActiveProposalsRequestData> {
-	public static override id = 359
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const groupActiveProposalsRequestMetadata = {
+	id: 359,
+	name: "GroupActiveProposalsRequest",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "groupData",
+			parameters: [["groupId", UUID]],
+		},
+		{
+			name: "transactionData",
+			parameters: [["transactionId", UUID]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"groupData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["groupId", Types.UUID]]),
-			},
-		],
-		[
-			"transactionData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["transactionId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const groupActiveProposalsRequest =
+	createPacketSender<GroupActiveProposalsRequestData>(
+		groupActiveProposalsRequestMetadata,
+	)
+
+export const createGroupActiveProposalsRequestDelegate =
+	createPacketDelegate<GroupActiveProposalsRequestData>(
+		groupActiveProposalsRequestMetadata,
+	)

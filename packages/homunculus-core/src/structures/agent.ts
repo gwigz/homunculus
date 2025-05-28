@@ -1,9 +1,7 @@
 import { type AvatarCache, cache } from "~/cache"
-import { AcknowledgeTimeoutError } from "~/network/acknowledger"
-import { ImprovedInstantMessage, UUIDNameRequest } from "~/network/packets"
-import { UUID, Vector3 } from "~/network/types"
-import type { Client } from ".."
-import type { Entity } from "./entity"
+import type { Client } from "~/client"
+import { AcknowledgeTimeoutError, packets, UUID, Vector3 } from "~/network"
+import type { Entity } from "~/structures"
 
 const ONE_HOUR = 1000 * 60 * 60
 
@@ -54,11 +52,9 @@ export class Agent {
 			}
 
 			if (!avatar || avatar.lastUpdated < Date.now() - ONE_HOUR) {
-				const request = new UUIDNameRequest({
-					uuidNameBlock: [{ id: this.key }],
-				})
-
-				await this.client.sendReliable([request])
+				await this.client.sendReliable([
+					packets.uuidNameRequest({ uuidNameBlock: [{ id: this.key }] }),
+				])
 			}
 		} catch (error) {
 			if (error instanceof AcknowledgeTimeoutError) {
@@ -105,7 +101,7 @@ export class Agent {
 	 */
 	public message(message: string) {
 		return this.client.send([
-			new ImprovedInstantMessage({
+			packets.improvedInstantMessage({
 				messageBlock: {
 					id: this.key,
 					dialog: 0,

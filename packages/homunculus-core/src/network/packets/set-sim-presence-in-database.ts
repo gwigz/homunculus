@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface SetSimPresenceInDatabaseData {
 	simData?: {
@@ -25,28 +29,34 @@ export interface SetSimPresenceInDatabaseData {
 	}
 }
 
-export class SetSimPresenceInDatabase extends Packet<SetSimPresenceInDatabaseData> {
-	public static override id = 23
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const setSimPresenceInDatabaseMetadata = {
+	id: 23,
+	name: "SetSimPresenceInDatabase",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "simData",
+			parameters: [
+				["regionId", UUID],
+				["hostName", Variable1],
+				["gridX", U32],
+				["gridY", U32],
+				["pid", S32],
+				["agentCount", S32],
+				["timeToLive", S32],
+				["status", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"simData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["regionId", Types.UUID],
-					["hostName", Types.Variable1],
-					["gridX", Types.U32],
-					["gridY", Types.U32],
-					["pid", Types.S32],
-					["agentCount", Types.S32],
-					["timeToLive", Types.S32],
-					["status", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const setSimPresenceInDatabase =
+	createPacketSender<SetSimPresenceInDatabaseData>(
+		setSimPresenceInDatabaseMetadata,
+	)
+
+export const createSetSimPresenceInDatabaseDelegate =
+	createPacketDelegate<SetSimPresenceInDatabaseData>(
+		setSimPresenceInDatabaseMetadata,
+	)

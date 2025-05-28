@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, U64, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface SendXferPacketData {
 	xferId?: {
@@ -22,29 +26,27 @@ export interface SendXferPacketData {
 	}
 }
 
-export class SendXferPacket extends Packet<SendXferPacketData> {
-	public static override id = 18
-	public static override frequency = 2
-	public static override trusted = false
-	public static override compression = false
+export const sendXferPacketMetadata = {
+	id: 18,
+	name: "SendXferPacket",
+	blocks: [
+		{
+			name: "xferId",
+			parameters: [
+				["id", U64],
+				["packet", U32],
+			],
+		},
+		{
+			name: "dataPacket",
+			parameters: [["data", Variable2]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"xferId",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["id", Types.U64],
-					["packet", Types.U32],
-				]),
-			},
-		],
-		[
-			"dataPacket",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["data", Types.Variable2]]),
-			},
-		],
-	])
-}
+export const sendXferPacket = createPacketSender<SendXferPacketData>(
+	sendXferPacketMetadata,
+)
+
+export const createSendXferPacketDelegate =
+	createPacketDelegate<SendXferPacketData>(sendXferPacketMetadata)

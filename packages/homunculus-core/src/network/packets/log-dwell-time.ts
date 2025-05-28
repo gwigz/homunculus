@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, U8, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface LogDwellTimeData {
 	dwellInfo?: {
@@ -25,28 +29,30 @@ export interface LogDwellTimeData {
 	}
 }
 
-export class LogDwellTime extends Packet<LogDwellTimeData> {
-	public static override id = 18
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const logDwellTimeMetadata = {
+	id: 18,
+	name: "LogDwellTime",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "dwellInfo",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["duration", F32],
+				["simName", Variable1],
+				["regionX", U32],
+				["regionY", U32],
+				["avgAgentsInView", U8],
+				["avgViewerFps", U8],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"dwellInfo",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["duration", Types.F32],
-					["simName", Types.Variable1],
-					["regionX", Types.U32],
-					["regionY", Types.U32],
-					["avgAgentsInView", Types.U8],
-					["avgViewerFps", Types.U8],
-				]),
-			},
-		],
-	])
-}
+export const logDwellTime =
+	createPacketSender<LogDwellTimeData>(logDwellTimeMetadata)
+
+export const createLogDwellTimeDelegate =
+	createPacketDelegate<LogDwellTimeData>(logDwellTimeMetadata)

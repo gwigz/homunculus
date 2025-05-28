@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, U8, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AvatarTextureUpdateData {
 	agentData: {
@@ -27,38 +31,40 @@ export interface AvatarTextureUpdateData {
 	}[]
 }
 
-export class AvatarTextureUpdate extends Packet<AvatarTextureUpdateData> {
-	public static override id = 4
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const avatarTextureUpdateMetadata = {
+	id: 4,
+	name: "AvatarTextureUpdate",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["texturesChanged", Bool],
+			],
+		},
+		{
+			name: "wearableData",
+			parameters: [
+				["cacheId", UUID],
+				["textureIndex", U8],
+				["hostName", Variable1],
+			],
+			multiple: true,
+		},
+		{
+			name: "textureData",
+			parameters: [["textureId", UUID]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["texturesChanged", Types.Bool],
-				]),
-			},
-		],
-		[
-			"wearableData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["cacheId", Types.UUID],
-					["textureIndex", Types.U8],
-					["hostName", Types.Variable1],
-				]),
-			},
-		],
-		[
-			"textureData",
-			{
-				parameters: new Map<string, Types.Type>([["textureId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const avatarTextureUpdate = createPacketSender<AvatarTextureUpdateData>(
+	avatarTextureUpdateMetadata,
+)
+
+export const createAvatarTextureUpdateDelegate =
+	createPacketDelegate<AvatarTextureUpdateData>(avatarTextureUpdateMetadata)

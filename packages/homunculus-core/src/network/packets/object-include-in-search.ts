@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectIncludeInSearchData {
 	agentData?: {
@@ -23,31 +27,31 @@ export interface ObjectIncludeInSearchData {
 	}[]
 }
 
-export class ObjectIncludeInSearch extends Packet<ObjectIncludeInSearchData> {
-	public static override id = 424
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const objectIncludeInSearchMetadata = {
+	id: 424,
+	name: "ObjectIncludeInSearch",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [
+				["objectLocalId", U32],
+				["includeInSearch", Bool],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["objectLocalId", Types.U32],
-					["includeInSearch", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const objectIncludeInSearch =
+	createPacketSender<ObjectIncludeInSearchData>(objectIncludeInSearchMetadata)
+
+export const createObjectIncludeInSearchDelegate =
+	createPacketDelegate<ObjectIncludeInSearchData>(objectIncludeInSearchMetadata)

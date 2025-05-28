@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ParcelSelectObjectsData {
 	agentData?: {
@@ -26,38 +30,37 @@ export interface ParcelSelectObjectsData {
 	}[]
 }
 
-export class ParcelSelectObjects extends Packet<ParcelSelectObjectsData> {
-	public static override id = 202
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const parcelSelectObjectsMetadata = {
+	id: 202,
+	name: "ParcelSelectObjects",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "parcelData",
+			parameters: [
+				["localId", S32],
+				["returnType", U32],
+			],
+		},
+		{
+			name: "returnIDs",
+			parameters: [["returnId", UUID]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"parcelData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["localId", Types.S32],
-					["returnType", Types.U32],
-				]),
-			},
-		],
-		[
-			"returnIDs",
-			{
-				parameters: new Map<string, Types.Type>([["returnId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const parcelSelectObjects = createPacketSender<ParcelSelectObjectsData>(
+	parcelSelectObjectsMetadata,
+)
+
+export const createParcelSelectObjectsDelegate =
+	createPacketDelegate<ParcelSelectObjectsData>(parcelSelectObjectsMetadata)

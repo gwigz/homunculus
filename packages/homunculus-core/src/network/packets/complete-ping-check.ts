@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U8 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface CompletePingCheckData {
 	pingId?: {
@@ -18,19 +22,20 @@ export interface CompletePingCheckData {
 	}
 }
 
-export class CompletePingCheck extends Packet<CompletePingCheckData> {
-	public static override id = 2
-	public static override frequency = 2
-	public static override trusted = false
-	public static override compression = false
+export const completePingCheckMetadata = {
+	id: 2,
+	name: "CompletePingCheck",
+	blocks: [
+		{
+			name: "pingId",
+			parameters: [["pingId", U8]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"pingId",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["pingId", Types.U8]]),
-			},
-		],
-	])
-}
+export const completePingCheck = createPacketSender<CompletePingCheckData>(
+	completePingCheckMetadata,
+)
+
+export const createCompletePingCheckDelegate =
+	createPacketDelegate<CompletePingCheckData>(completePingCheckMetadata)

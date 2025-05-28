@@ -9,13 +9,17 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { IP, Port, U32, UUID, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RpcScriptRequestInboundForwardData {
 	dataBlock?: {
-		rPCServerIp: Types.IP
-		rPCServerPort: Types.Port
+		rPCServerIp: IP
+		rPCServerPort: Port
 		taskId: string
 		itemId: string
 		channelId: string
@@ -24,27 +28,33 @@ export interface RpcScriptRequestInboundForwardData {
 	}
 }
 
-export class RpcScriptRequestInboundForward extends Packet<RpcScriptRequestInboundForwardData> {
-	public static override id = 416
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const rpcScriptRequestInboundForwardMetadata = {
+	id: 416,
+	name: "RpcScriptRequestInboundForward",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "dataBlock",
+			parameters: [
+				["rPCServerIp", IP],
+				["rPCServerPort", Port],
+				["taskId", UUID],
+				["itemId", UUID],
+				["channelId", UUID],
+				["intValue", U32],
+				["stringValue", Variable2],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"dataBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["rPCServerIp", Types.IP],
-					["rPCServerPort", Types.Port],
-					["taskId", Types.UUID],
-					["itemId", Types.UUID],
-					["channelId", Types.UUID],
-					["intValue", Types.U32],
-					["stringValue", Types.Variable2],
-				]),
-			},
-		],
-	])
-}
+export const rpcScriptRequestInboundForward =
+	createPacketSender<RpcScriptRequestInboundForwardData>(
+		rpcScriptRequestInboundForwardMetadata,
+	)
+
+export const createRpcScriptRequestInboundForwardDelegate =
+	createPacketDelegate<RpcScriptRequestInboundForwardData>(
+		rpcScriptRequestInboundForwardMetadata,
+	)

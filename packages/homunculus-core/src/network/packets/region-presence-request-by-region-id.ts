@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RegionPresenceRequestByRegionIDData {
 	regionData?: {
@@ -18,18 +22,26 @@ export interface RegionPresenceRequestByRegionIDData {
 	}[]
 }
 
-export class RegionPresenceRequestByRegionID extends Packet<RegionPresenceRequestByRegionIDData> {
-	public static override id = 14
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const regionPresenceRequestByRegionIdMetadata = {
+	id: 14,
+	name: "RegionPresenceRequestByRegionID",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "regionData",
+			parameters: [["regionId", UUID]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"regionData",
-			{
-				parameters: new Map<string, Types.Type>([["regionId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const regionPresenceRequestByRegionId =
+	createPacketSender<RegionPresenceRequestByRegionIDData>(
+		regionPresenceRequestByRegionIdMetadata,
+	)
+
+export const createRegionPresenceRequestByRegionIDDelegate =
+	createPacketDelegate<RegionPresenceRequestByRegionIDData>(
+		regionPresenceRequestByRegionIdMetadata,
+	)

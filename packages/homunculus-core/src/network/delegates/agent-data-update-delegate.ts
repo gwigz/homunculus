@@ -1,14 +1,17 @@
-import type { AgentDataUpdate } from "~/network/packets"
-import { Delegate } from "./delegate"
+import { packets } from "~/network"
 
-class AgentDataUpdateDelegate extends Delegate {
-	public override handle(packet: AgentDataUpdate) {
-		const data = packet.data.agentData!
-		const self = this.client.self
+packets.createAgentDataUpdateDelegate({
+	handle: (packet, context) => {
+		const self = context.client.self
 
 		if (self) {
-			self.firstName = data.firstName.toString("utf8").slice(0, -1)
-			self.lastName = data.lastName.toString("utf8").slice(0, -1)
+			self.firstName = packet.data
+				.agentData!.firstName.toString("utf8")
+				.slice(0, -1)
+
+			self.lastName = packet.data
+				.agentData!.lastName.toString("utf8")
+				.slice(0, -1)
 		}
 
 		/*
@@ -19,7 +22,5 @@ class AgentDataUpdateDelegate extends Delegate {
         permissions: data.groupPowers
       }
     */
-	}
-}
-
-export default AgentDataUpdateDelegate
+	},
+})

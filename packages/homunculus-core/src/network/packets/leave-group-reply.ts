@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface LeaveGroupReplyData {
 	agentData?: {
@@ -22,29 +26,29 @@ export interface LeaveGroupReplyData {
 	}
 }
 
-export class LeaveGroupReply extends Packet<LeaveGroupReplyData> {
-	public static override id = 348
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const leaveGroupReplyMetadata = {
+	id: 348,
+	name: "LeaveGroupReply",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "groupData",
+			parameters: [
+				["groupId", UUID],
+				["success", Bool],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"groupData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["groupId", Types.UUID],
-					["success", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const leaveGroupReply = createPacketSender<LeaveGroupReplyData>(
+	leaveGroupReplyMetadata,
+)
+
+export const createLeaveGroupReplyDelegate =
+	createPacketDelegate<LeaveGroupReplyData>(leaveGroupReplyMetadata)

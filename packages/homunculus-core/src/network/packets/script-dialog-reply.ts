@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ScriptDialogReplyData {
 	agentData?: {
@@ -25,34 +29,34 @@ export interface ScriptDialogReplyData {
 	}
 }
 
-export class ScriptDialogReply extends Packet<ScriptDialogReplyData> {
-	public static override id = 191
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const scriptDialogReplyMetadata = {
+	id: 191,
+	name: "ScriptDialogReply",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "data",
+			parameters: [
+				["objectId", UUID],
+				["chatChannel", S32],
+				["buttonIndex", S32],
+				["buttonLabel", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["objectId", Types.UUID],
-					["chatChannel", Types.S32],
-					["buttonIndex", Types.S32],
-					["buttonLabel", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const scriptDialogReply = createPacketSender<ScriptDialogReplyData>(
+	scriptDialogReplyMetadata,
+)
+
+export const createScriptDialogReplyDelegate =
+	createPacketDelegate<ScriptDialogReplyData>(scriptDialogReplyMetadata)

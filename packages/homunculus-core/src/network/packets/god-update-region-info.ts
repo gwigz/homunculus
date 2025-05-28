@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, S32, U32, U64, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface GodUpdateRegionInfoData {
 	agentData?: {
@@ -32,46 +36,43 @@ export interface GodUpdateRegionInfoData {
 	}[]
 }
 
-export class GodUpdateRegionInfo extends Packet<GodUpdateRegionInfoData> {
-	public static override id = 143
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const godUpdateRegionInfoMetadata = {
+	id: 143,
+	name: "GodUpdateRegionInfo",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "regionInfo",
+			parameters: [
+				["simName", Variable1],
+				["estateId", U32],
+				["parentEstateId", U32],
+				["regionFlags", U32],
+				["billableFactor", F32],
+				["pricePerMeter", S32],
+				["redirectGridX", S32],
+				["redirectGridY", S32],
+			],
+		},
+		{
+			name: "regionInfo2",
+			parameters: [["regionFlagsExtended", U64]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"regionInfo",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["simName", Types.Variable1],
-					["estateId", Types.U32],
-					["parentEstateId", Types.U32],
-					["regionFlags", Types.U32],
-					["billableFactor", Types.F32],
-					["pricePerMeter", Types.S32],
-					["redirectGridX", Types.S32],
-					["redirectGridY", Types.S32],
-				]),
-			},
-		],
-		[
-			"regionInfo2",
-			{
-				parameters: new Map<string, Types.Type>([
-					["regionFlagsExtended", Types.U64],
-				]),
-			},
-		],
-	])
-}
+export const godUpdateRegionInfo = createPacketSender<GodUpdateRegionInfoData>(
+	godUpdateRegionInfoMetadata,
+)
+
+export const createGodUpdateRegionInfoDelegate =
+	createPacketDelegate<GodUpdateRegionInfoData>(godUpdateRegionInfoMetadata)

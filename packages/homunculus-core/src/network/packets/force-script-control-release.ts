@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ForceScriptControlReleaseData {
 	agentData?: {
@@ -19,22 +23,27 @@ export interface ForceScriptControlReleaseData {
 	}
 }
 
-export class ForceScriptControlRelease extends Packet<ForceScriptControlReleaseData> {
-	public static override id = 192
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const forceScriptControlReleaseMetadata = {
+	id: 192,
+	name: "ForceScriptControlRelease",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const forceScriptControlRelease =
+	createPacketSender<ForceScriptControlReleaseData>(
+		forceScriptControlReleaseMetadata,
+	)
+
+export const createForceScriptControlReleaseDelegate =
+	createPacketDelegate<ForceScriptControlReleaseData>(
+		forceScriptControlReleaseMetadata,
+	)

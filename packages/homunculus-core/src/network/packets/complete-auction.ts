@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface CompleteAuctionData {
 	parcelData?: {
@@ -18,18 +22,23 @@ export interface CompleteAuctionData {
 	}[]
 }
 
-export class CompleteAuction extends Packet<CompleteAuctionData> {
-	public static override id = 231
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const completeAuctionMetadata = {
+	id: 231,
+	name: "CompleteAuction",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "parcelData",
+			parameters: [["parcelId", UUID]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"parcelData",
-			{
-				parameters: new Map<string, Types.Type>([["parcelId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const completeAuction = createPacketSender<CompleteAuctionData>(
+	completeAuctionMetadata,
+)
+
+export const createCompleteAuctionDelegate =
+	createPacketDelegate<CompleteAuctionData>(completeAuctionMetadata)

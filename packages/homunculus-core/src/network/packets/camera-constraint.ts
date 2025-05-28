@@ -9,28 +9,35 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Vector4 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface CameraConstraintData {
 	cameraCollidePlane?: {
-		plane: Types.Vector4
+		plane: Vector4
 	}
 }
 
-export class CameraConstraint extends Packet<CameraConstraintData> {
-	public static override id = 22
-	public static override frequency = 2
-	public static override trusted = true
-	public static override compression = true
+export const cameraConstraintMetadata = {
+	id: 22,
+	name: "CameraConstraint",
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "cameraCollidePlane",
+			parameters: [["plane", Vector4]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"cameraCollidePlane",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["plane", Types.Vector4]]),
-			},
-		],
-	])
-}
+export const cameraConstraint = createPacketSender<CameraConstraintData>(
+	cameraConstraintMetadata,
+)
+
+export const createCameraConstraintDelegate =
+	createPacketDelegate<CameraConstraintData>(cameraConstraintMetadata)

@@ -1,7 +1,19 @@
 import assert from "node:assert"
-import { PacketBuffer, PacketLookup } from "~/network/helpers"
-import type { Packet } from "./packets"
-import * as Types from "./types"
+import {
+	type PacketBlock,
+	PacketBuffer,
+	PacketLookup,
+	type PacketMetadata,
+	type Type,
+	U8,
+} from "~/network"
+
+export interface DeserializedPacket {
+	data: Record<string, Record<string, any>>
+	sequence: number
+	reliable?: boolean
+	metadata: PacketMetadata
+}
 
 /**
  * @link http://wiki.secondlife.com/wiki/Packet_Layout
@@ -19,44 +31,39 @@ export class Deserializer {
 		return PacketLookup.find(buffer.id)
 	}
 
-	public convert(PacketConstructor: typeof Packet<any>, buffer: PacketBuffer) {
+	public convert(metadata: PacketMetadata, buffer: PacketBuffer) {
 		const data: Record<string, Record<string, any>> = {}
-
-		if (PacketConstructor.format === undefined) {
-			return new PacketConstructor(data)
-		}
 
 		// set position and uncompress blocks, if we need too
 		buffer.prepare()
 
 		// parse everything...
-		for (const [block, format] of PacketConstructor.format) {
-			if (format.quantity === 1) {
-				data[block] = this.readParameters(buffer, format)
-			} else {
-				const quantity = buffer.read(Types.U8)
+		if (metadata.blocks) {
+			for (const block of metadata.blocks) {
+				if (block.multiple) {
+					const quantity = buffer.read(U8)
 
-				data[block] = []
+					data[block.name] = []
 
-				for (let i = 0; i < quantity; i++) {
-					data[block].push(this.readParameters(buffer, format))
+					for (let i = 0; i < quantity; i++) {
+						data[block.name]!.push(this.readParameters(buffer, block))
+					}
+				} else {
+					data[block.name] = this.readParameters(buffer, block)
 				}
 			}
 		}
 
-		const packet: Packet<any> = new PacketConstructor(data)
-
-		packet.index = buffer.sequence
-		packet.reliable = buffer.reliable
-
-		return packet
+		return {
+			data,
+			sequence: buffer.sequence,
+			...(buffer.reliable && { reliable: true }),
+			metadata,
+		} satisfies DeserializedPacket
 	}
 
-	private readParameters(
-		buffer: PacketBuffer,
-		format: { parameters: Map<string, Types.Type> },
-	) {
-		const parameters: Record<string, Types.Type> = {}
+	private readParameters(buffer: PacketBuffer, format: PacketBlock) {
+		const parameters: Record<string, Type> = {}
 
 		for (const [name, Type] of format.parameters) {
 			parameters[name] = buffer.read(Type)

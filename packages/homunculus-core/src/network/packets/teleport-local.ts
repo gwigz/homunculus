@@ -9,38 +9,45 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface TeleportLocalData {
 	info?: {
 		agentId: string
 		locationId: number
-		position: Types.Vector3
-		lookAt: Types.Vector3
+		position: Vector3
+		lookAt: Vector3
 		teleportFlags: number
 	}
 }
 
-export class TeleportLocal extends Packet<TeleportLocalData> {
-	public static override id = 64
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const teleportLocalMetadata = {
+	id: 64,
+	name: "TeleportLocal",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "info",
+			parameters: [
+				["agentId", UUID],
+				["locationId", U32],
+				["position", Vector3],
+				["lookAt", Vector3],
+				["teleportFlags", U32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"info",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["locationId", Types.U32],
-					["position", Types.Vector3],
-					["lookAt", Types.Vector3],
-					["teleportFlags", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const teleportLocal = createPacketSender<TeleportLocalData>(
+	teleportLocalMetadata,
+)
+
+export const createTeleportLocalDelegate =
+	createPacketDelegate<TeleportLocalData>(teleportLocalMetadata)

@@ -18,6 +18,7 @@ interface Block {
 
 interface Packet {
 	name: string
+	camelCaseName: string
 	frequency: number
 	id: number
 	trusted: boolean
@@ -26,9 +27,9 @@ interface Packet {
 }
 
 enum Frequency {
-	Low = 0,
+	High = 0,
 	Medium = 1,
-	High = 2,
+	Low = 2,
 	Fixed = 3,
 }
 
@@ -156,11 +157,11 @@ function getTypeScriptType(type: string): string {
 			"Quaternion",
 		].includes(type)
 	) {
-		return `Types.${type}`
+		return type
 	}
 
 	if (type === "Vector3d") {
-		return "Types.Vector3D"
+		return "Vector3D"
 	}
 
 	throw new Error(`Unknown type: ${type}`)
@@ -305,7 +306,8 @@ function parseMessageTemplate(content: string): Packet[] {
 			console.log(`Raw ID: ${id}`)
 
 			const packet: Packet = {
-				name: name === "Error" ? "GenericError" : name,
+				name,
+				camelCaseName: toLowerCamel(name),
 				frequency: parseFrequency(frequency),
 				id: id.startsWith("0x")
 					? Number.parseInt(id.slice(2), 16)
@@ -389,12 +391,7 @@ async function generatePackets() {
 			// console.log("Blocks:", JSON.stringify(packet.blocks, null, 2))
 
 			const output = ejs.render(ejsTemplate, {
-				packetName: packet.name,
-				packetId: packet.id,
-				frequency: packet.frequency,
-				trusted: packet.trusted,
-				compression: packet.compression,
-				blocks: packet.blocks,
+				...packet,
 
 				// utilities
 				shouldMakeAgentDataOptional,

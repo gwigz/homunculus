@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, S32, U8, U32, UUID, Variable1, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ParcelPropertiesUpdateData {
 	agentData?: {
@@ -34,55 +38,56 @@ export interface ParcelPropertiesUpdateData {
 		category: number
 		authBuyerId: string
 		snapshotId: string
-		userLocation: Types.Vector3
-		userLookAt: Types.Vector3
+		userLocation: Vector3
+		userLookAt: Vector3
 		landingType: number
 	}
 }
 
-export class ParcelPropertiesUpdate extends Packet<ParcelPropertiesUpdateData> {
-	public static override id = 198
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const parcelPropertiesUpdateMetadata = {
+	id: 198,
+	name: "ParcelPropertiesUpdate",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "parcelData",
+			parameters: [
+				["localId", S32],
+				["flags", U32],
+				["parcelFlags", U32],
+				["salePrice", S32],
+				["name", Variable1],
+				["desc", Variable1],
+				["musicUrl", Variable1],
+				["mediaUrl", Variable1],
+				["mediaId", UUID],
+				["mediaAutoScale", U8],
+				["groupId", UUID],
+				["passPrice", S32],
+				["passHours", F32],
+				["category", U8],
+				["authBuyerId", UUID],
+				["snapshotId", UUID],
+				["userLocation", Vector3],
+				["userLookAt", Vector3],
+				["landingType", U8],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"parcelData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["localId", Types.S32],
-					["flags", Types.U32],
-					["parcelFlags", Types.U32],
-					["salePrice", Types.S32],
-					["name", Types.Variable1],
-					["desc", Types.Variable1],
-					["musicUrl", Types.Variable1],
-					["mediaUrl", Types.Variable1],
-					["mediaId", Types.UUID],
-					["mediaAutoScale", Types.U8],
-					["groupId", Types.UUID],
-					["passPrice", Types.S32],
-					["passHours", Types.F32],
-					["category", Types.U8],
-					["authBuyerId", Types.UUID],
-					["snapshotId", Types.UUID],
-					["userLocation", Types.Vector3],
-					["userLookAt", Types.Vector3],
-					["landingType", Types.U8],
-				]),
-			},
-		],
-	])
-}
+export const parcelPropertiesUpdate =
+	createPacketSender<ParcelPropertiesUpdateData>(parcelPropertiesUpdateMetadata)
+
+export const createParcelPropertiesUpdateDelegate =
+	createPacketDelegate<ParcelPropertiesUpdateData>(
+		parcelPropertiesUpdateMetadata,
+	)

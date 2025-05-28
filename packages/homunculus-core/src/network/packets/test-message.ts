@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface TestMessageData {
 	testBlock1?: {
@@ -23,29 +27,30 @@ export interface TestMessageData {
 	}[]
 }
 
-export class TestMessage extends Packet<TestMessageData> {
-	public static override id = 1
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const testMessageMetadata = {
+	id: 1,
+	name: "TestMessage",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "testBlock1",
+			parameters: [["test1", U32]],
+		},
+		{
+			name: "neighborBlock",
+			parameters: [
+				["test0", U32],
+				["test1", U32],
+				["test2", U32],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"testBlock1",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["test1", Types.U32]]),
-			},
-		],
-		[
-			"neighborBlock",
-			{
-				parameters: new Map<string, Types.Type>([
-					["test0", Types.U32],
-					["test1", Types.U32],
-					["test2", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const testMessage =
+	createPacketSender<TestMessageData>(testMessageMetadata)
+
+export const createTestMessageDelegate =
+	createPacketDelegate<TestMessageData>(testMessageMetadata)

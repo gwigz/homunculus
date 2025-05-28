@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S16, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectExportSelectedData {
 	agentData: {
@@ -23,29 +27,30 @@ export interface ObjectExportSelectedData {
 	}[]
 }
 
-export class ObjectExportSelected extends Packet<ObjectExportSelectedData> {
-	public static override id = 123
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const objectExportSelectedMetadata = {
+	id: 123,
+	name: "ObjectExportSelected",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["requestId", UUID],
+				["volumeDetail", S16],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [["objectId", UUID]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["requestId", Types.UUID],
-					["volumeDetail", Types.S16],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([["objectId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const objectExportSelected =
+	createPacketSender<ObjectExportSelectedData>(objectExportSelectedMetadata)
+
+export const createObjectExportSelectedDelegate =
+	createPacketDelegate<ObjectExportSelectedData>(objectExportSelectedMetadata)

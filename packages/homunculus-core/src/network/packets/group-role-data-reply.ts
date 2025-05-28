@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, U32, U64, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface GroupRoleDataReplyData {
 	agentData?: {
@@ -31,43 +35,42 @@ export interface GroupRoleDataReplyData {
 	}[]
 }
 
-export class GroupRoleDataReply extends Packet<GroupRoleDataReplyData> {
-	public static override id = 372
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const groupRoleDataReplyMetadata = {
+	id: 372,
+	name: "GroupRoleDataReply",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "groupData",
+			parameters: [
+				["groupId", UUID],
+				["requestId", UUID],
+				["roleCount", S32],
+			],
+		},
+		{
+			name: "roleData",
+			parameters: [
+				["roleId", UUID],
+				["name", Variable1],
+				["title", Variable1],
+				["description", Variable1],
+				["powers", U64],
+				["members", U32],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"groupData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["groupId", Types.UUID],
-					["requestId", Types.UUID],
-					["roleCount", Types.S32],
-				]),
-			},
-		],
-		[
-			"roleData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["roleId", Types.UUID],
-					["name", Types.Variable1],
-					["title", Types.Variable1],
-					["description", Types.Variable1],
-					["powers", Types.U64],
-					["members", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const groupRoleDataReply = createPacketSender<GroupRoleDataReplyData>(
+	groupRoleDataReplyMetadata,
+)
+
+export const createGroupRoleDataReplyDelegate =
+	createPacketDelegate<GroupRoleDataReplyData>(groupRoleDataReplyMetadata)

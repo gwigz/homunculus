@@ -1,14 +1,23 @@
-import { PacketBuffer } from "~/network/helpers/packet-buffer"
-import type { ObjectUpdateCompressed } from "~/network/packets"
-import * as Types from "~/network/types"
-import { Color4 } from "~/network/types"
+import {
+	Color4,
+	F32,
+	PacketBuffer,
+	ParticleSystem,
+	packets,
+	Text,
+	U8,
+	U16,
+	U32,
+	UUID,
+	Variable1,
+	Vector3,
+} from "~/network"
 import { Agent, Entity } from "~/structures"
 import { Constants } from "~/utilities"
 import {
 	type CompressedObjectProperties,
 	CompressedObjectValue,
-} from "./compressed-object-value"
-import { Delegate } from "./delegate"
+} from "../helpers/compressed-object-value"
 
 const Flags = {
 	NONE: 0x0,
@@ -33,79 +42,155 @@ const Flags = {
 // }
 
 const compressedObjectProperties: CompressedObjectProperties = [
-	["type", Types.U8],
-	["state", Types.U8],
-	["crc", Types.U32],
-	["material", Types.U8],
-	["action", Types.U8],
-	["scale", Types.Vector3],
-	["position", Types.Vector3],
-	["rotation", Types.Vector3],
-	["flags", Types.U32],
-	["owner", Types.UUID],
+	["type", U8],
+	["state", U8],
+	["crc", U32],
+	["material", U8],
+	["action", U8],
+	["scale", Vector3],
+	["position", Vector3],
+	["rotation", Vector3],
+	["flags", U32],
+	["owner", UUID],
 	[
 		"velocity.angular",
-		new CompressedObjectValue(Types.Vector3, Flags.ANGULAR_VELOCITY),
+		new CompressedObjectValue(Vector3, Flags.ANGULAR_VELOCITY),
 	],
-	["parent", new CompressedObjectValue(Types.U32, Flags.PARENT, 0)],
-	["tree", new CompressedObjectValue(Types.U8, Flags.TREE_TYPE)],
-	["data", new CompressedObjectValue(Types.Variable1, Flags.SCRATCH_PAD)],
-	["text.value", new CompressedObjectValue(Types.Text, Flags.TEXT)],
-	["text.color", new CompressedObjectValue(Types.Color4, Flags.TEXT)],
-	["media.url", new CompressedObjectValue(Types.Text, Flags.MEDIA_URL)],
-	[
-		"particles",
-		new CompressedObjectValue(Types.ParticleSystem, Flags.PARTICLES),
-	],
+	["parent", new CompressedObjectValue(U32, Flags.PARENT, 0)],
+	["tree", new CompressedObjectValue(U8, Flags.TREE_TYPE)],
+	["data", new CompressedObjectValue(Variable1, Flags.SCRATCH_PAD)],
+	["text.value", new CompressedObjectValue(Text, Flags.TEXT)],
+	["text.color", new CompressedObjectValue(Color4, Flags.TEXT)],
+	["media.url", new CompressedObjectValue(Text, Flags.MEDIA_URL)],
+	["particles", new CompressedObjectValue(ParticleSystem, Flags.PARTICLES)],
 	["parameters", 0],
-	["sound.key", new CompressedObjectValue(Types.UUID, Flags.SOUND_DATA)],
-	["sound.gain", new CompressedObjectValue(Types.F32, Flags.SOUND_DATA)],
-	["sound.flags", new CompressedObjectValue(Types.U8, Flags.SOUND_DATA)],
-	["sound.radius", new CompressedObjectValue(Types.F32, Flags.SOUND_DATA)],
-	["name", new CompressedObjectValue(Types.Text, Flags.NAME)],
-	// ['path.curve', Types.U8],
-	// ['path.begin', Types.U16],
-	// ['path.end', Types.U16],
-	// ['path.scale.x', Types.U8],
-	// ['path.scale.y', Types.U8],
-	// ['path.shear.x', Types.U8],
-	// ['path.shear.y', Types.U8],
-	// ['path.twist.length', Types.S8],
-	// ['path.twist.begin', Types.S8],
-	// ['path.radius.offset', Types.S8],
-	// ['path.taper.y', Types.S8],
-	// ['path.taper.x', Types.S8],
-	// ['path.revolutions', Types.U8],
-	// ['path.skew', Types.S8],
-	// ['profile.curve', Types.U8],
-	// ['profile.begin', Types.U16],
-	// ['profile.end', Types.U16],
-	// ['profile.hollow', Types.U16],
-	// ['textures', Types.Variable4],
-	// ['animation', new CompressedObjectValue(Types.U32, Flags.TEXTURE_ANIMATION)]
+	["sound.key", new CompressedObjectValue(UUID, Flags.SOUND_DATA)],
+	["sound.gain", new CompressedObjectValue(F32, Flags.SOUND_DATA)],
+	["sound.flags", new CompressedObjectValue(U8, Flags.SOUND_DATA)],
+	["sound.radius", new CompressedObjectValue(F32, Flags.SOUND_DATA)],
+	["name", new CompressedObjectValue(Text, Flags.NAME)],
+	// ['path.curve', U8],
+	// ['path.begin', U16],
+	// ['path.end', U16],
+	// ['path.scale.x', U8],
+	// ['path.scale.y', U8],
+	// ['path.shear.x', U8],
+	// ['path.shear.y', U8],
+	// ['path.twist.length', S8],
+	// ['path.twist.begin', S8],
+	// ['path.radius.offset', S8],
+	// ['path.taper.y', S8],
+	// ['path.taper.x', S8],
+	// ['path.revolutions', U8],
+	// ['path.skew', S8],
+	// ['profile.curve', U8],
+	// ['profile.begin', U16],
+	// ['profile.end', U16],
+	// ['profile.hollow', U16],
+	// ['textures', Variable4],
+	// ['animation', new CompressedObjectValue(U32, Flags.TEXTURE_ANIMATION)]
 ]
 
-class ObjectUpdateCompressedDelegate extends Delegate {
-	public override handle(packet: ObjectUpdateCompressed) {
+function updateEntity(entity: Entity, buffer: PacketBuffer) {
+	let flags = Flags.NONE
+
+	for (const [key, type] of compressedObjectProperties) {
+		if (key === "parameters") {
+			const count = buffer.read(U8)
+
+			// skip parameters for now
+			// this just contains flex, light, mesh, and sculpt data
+			for (let i = 0; i < count; i++) {
+				buffer.skip(U16.size)
+				buffer.skip(buffer.read(U32))
+			}
+
+			continue
+		}
+
+		const value =
+			type instanceof CompressedObjectValue
+				? type.read(buffer, flags)
+				: buffer.read(type)
+
+		if (value === undefined) {
+			continue
+		}
+
+		switch (key) {
+			case "flags":
+				flags = value
+				break
+
+			case "velocity.angular":
+			case "tree":
+			case "data":
+			case "media.url":
+			case "particles":
+			case "parameters":
+			case "sound.key":
+			case "sound.gain":
+			case "sound.flags":
+			case "sound.radius":
+				// ignored values, for now
+				break
+
+			case "text.value":
+				if (value?.length > 1) {
+					if (entity.text) {
+						entity.text.value = value.slice(0, -1)
+					} else {
+						entity.text = {
+							value: value.slice(0, -1),
+							color: Color4.zero,
+						}
+					}
+				} else {
+					entity.text = undefined
+				}
+				break
+
+			case "text.color":
+				if (entity.text) {
+					entity.text.color = value
+				}
+				break
+
+			case "name":
+				entity.name = value
+				break
+
+			default:
+				// @ts-ignore fix later
+				entity[key] = value
+				break
+		}
+	}
+
+	return entity
+}
+
+packets.createObjectUpdateCompressedDelegate({
+	handle: (packet, context) => {
 		const handle = packet.data.regionData!.regionHandle
-		const region = this.client.regions.get(handle)
+		const region = context.client.regions.get(handle)
 
 		if (!region) {
 			throw Error(Constants.Errors.UNEXPECTED_OBJECT_UPDATE)
 		}
 
-		for (const data of packet.data.objectData!) {
-			const buffer = new PacketBuffer(data.data as Buffer, true)
-			const flags = data.updateFlags
-			const key = buffer.read(Types.UUID) as string
-			const id = buffer.read(Types.U32) as number
+		for (const objectData of packet.data.objectData!) {
+			const buffer = new PacketBuffer(objectData.data as Buffer, true)
+			const flags = objectData.updateFlags
+			const key = buffer.read(UUID) as string
+			const id = buffer.read(U32) as number
 
 			const insert = !region.objects.has(id)
 
 			try {
 				const entity = insert
-					? this.update(new Entity(this.client, { id, key, flags }), buffer)
-					: this.update(region.objects.get(id)!, buffer)
+					? updateEntity(new Entity(context.client, { id, key, flags }), buffer)
+					: updateEntity(region.objects.get(id)!, buffer)
 
 				entity.flags |= flags
 
@@ -113,97 +198,19 @@ class ObjectUpdateCompressedDelegate extends Delegate {
 					region.objects.set(id, entity)
 
 					if (entity.type === 47) {
-						region.agents.set(entity.key, new Agent(this.client, entity))
+						region.agents.set(entity.key, new Agent(context.client, entity))
 					}
 				}
 
-				if (entity.type === 47 && entity.key === this.client.self.key) {
-					this.client.self.state = entity.state
-					this.client.self.position = entity.position!
-					this.client.self.rotation = entity.rotation!
+				if (entity.type === 47 && entity.key === context.client.self.key) {
+					context.client.self.state = entity.state
+					context.client.self.position = entity.position!
+					context.client.self.rotation = entity.rotation!
 				}
 			} catch (error) {
-				this.client.emit("debug", `Error updating object "${key}".`)
-				this.client.emit("error", error as Error)
+				context.client.emit("debug", `Error updating object "${key}".`)
+				context.client.emit("error", error as Error)
 			}
 		}
-	}
-
-	public update(entity: Entity, buffer: PacketBuffer) {
-		let flags = Flags.NONE
-
-		for (const [key, type] of compressedObjectProperties) {
-			if (key === "parameters") {
-				const count = buffer.read(Types.U8)
-
-				// skip parameters for now
-				// this just contains flex, light, mesh, and sculpt data
-				for (let i = 0; i < count; i++) {
-					buffer.skip(Types.U16.size)
-					buffer.skip(buffer.read(Types.U32))
-				}
-
-				continue
-			}
-
-			const value =
-				type instanceof CompressedObjectValue
-					? type.read(buffer, flags)
-					: buffer.read(type)
-
-			if (value === undefined) {
-				continue
-			}
-
-			switch (key) {
-				case "flags":
-					flags = value
-					break
-
-				case "velocity.angular":
-				case "tree":
-				case "data":
-				case "media.url":
-				case "particles":
-				case "parameters":
-				case "sound.key":
-				case "sound.gain":
-				case "sound.flags":
-				case "sound.radius":
-					// ignored values, for now
-					break
-
-				case "text.value":
-					if (value?.length > 1) {
-						if (entity.text) {
-							entity.text.value = value.slice(0, -1)
-						} else {
-							entity.text = { value: value.slice(0, -1), color: Color4.zero }
-						}
-					} else {
-						entity.text = undefined
-					}
-					break
-
-				case "text.color":
-					if (entity.text) {
-						entity.text.color = value
-					}
-					break
-
-				case "name":
-					entity.name = value
-					break
-
-				default:
-					// @ts-ignore fix later
-					entity[key] = value
-					break
-			}
-		}
-
-		return entity
-	}
-}
-
-export default ObjectUpdateCompressedDelegate
+	},
+})

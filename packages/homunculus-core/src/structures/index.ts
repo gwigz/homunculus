@@ -1,4 +1,5 @@
 export * from "./agent"
+export * from "./agents"
 export * from "./entities"
 export * from "./entity"
 export * from "./nearby"

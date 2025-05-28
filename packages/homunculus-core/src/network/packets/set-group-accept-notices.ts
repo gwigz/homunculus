@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface SetGroupAcceptNoticesData {
 	agentData?: {
@@ -26,41 +30,34 @@ export interface SetGroupAcceptNoticesData {
 	}
 }
 
-export class SetGroupAcceptNotices extends Packet<SetGroupAcceptNoticesData> {
-	public static override id = 370
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const setGroupAcceptNoticesMetadata = {
+	id: 370,
+	name: "SetGroupAcceptNotices",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "data",
+			parameters: [
+				["groupId", UUID],
+				["acceptNotices", Bool],
+			],
+		},
+		{
+			name: "newData",
+			parameters: [["listInProfile", Bool]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["groupId", Types.UUID],
-					["acceptNotices", Types.Bool],
-				]),
-			},
-		],
-		[
-			"newData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["listInProfile", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const setGroupAcceptNotices =
+	createPacketSender<SetGroupAcceptNoticesData>(setGroupAcceptNoticesMetadata)
+
+export const createSetGroupAcceptNoticesDelegate =
+	createPacketDelegate<SetGroupAcceptNoticesData>(setGroupAcceptNoticesMetadata)

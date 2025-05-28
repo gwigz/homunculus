@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { IP, S32, U8, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface LogFailedMoneyTransactionData {
 	transactionData?: {
@@ -21,38 +25,44 @@ export interface LogFailedMoneyTransactionData {
 		destId: string
 		flags: number
 		amount: number
-		simulatorIp: Types.IP
+		simulatorIp: IP
 		gridX: number
 		gridY: number
 		failureType: number
 	}
 }
 
-export class LogFailedMoneyTransaction extends Packet<LogFailedMoneyTransactionData> {
-	public static override id = 20
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const logFailedMoneyTransactionMetadata = {
+	id: 20,
+	name: "LogFailedMoneyTransaction",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "transactionData",
+			parameters: [
+				["transactionId", UUID],
+				["transactionTime", U32],
+				["transactionType", S32],
+				["sourceId", UUID],
+				["destId", UUID],
+				["flags", U8],
+				["amount", S32],
+				["simulatorIp", IP],
+				["gridX", U32],
+				["gridY", U32],
+				["failureType", U8],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"transactionData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["transactionId", Types.UUID],
-					["transactionTime", Types.U32],
-					["transactionType", Types.S32],
-					["sourceId", Types.UUID],
-					["destId", Types.UUID],
-					["flags", Types.U8],
-					["amount", Types.S32],
-					["simulatorIp", Types.IP],
-					["gridX", Types.U32],
-					["gridY", Types.U32],
-					["failureType", Types.U8],
-				]),
-			},
-		],
-	])
-}
+export const logFailedMoneyTransaction =
+	createPacketSender<LogFailedMoneyTransactionData>(
+		logFailedMoneyTransactionMetadata,
+	)
+
+export const createLogFailedMoneyTransactionDelegate =
+	createPacketDelegate<LogFailedMoneyTransactionData>(
+		logFailedMoneyTransactionMetadata,
+	)

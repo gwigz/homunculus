@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Fixed32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface CreateTrustedCircuitData {
 	dataBlock?: {
@@ -19,22 +23,23 @@ export interface CreateTrustedCircuitData {
 	}
 }
 
-export class CreateTrustedCircuit extends Packet<CreateTrustedCircuitData> {
-	public static override id = 392
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const createTrustedCircuitMetadata = {
+	id: 392,
+	name: "CreateTrustedCircuit",
+	frequency: 2,
+	blocks: [
+		{
+			name: "dataBlock",
+			parameters: [
+				["endPointId", UUID],
+				["digest", Fixed32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"dataBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["endPointId", Types.UUID],
-					["digest", Types.Fixed32],
-				]),
-			},
-		],
-	])
-}
+export const createTrustedCircuit =
+	createPacketSender<CreateTrustedCircuitData>(createTrustedCircuitMetadata)
+
+export const createCreateTrustedCircuitDelegate =
+	createPacketDelegate<CreateTrustedCircuitData>(createTrustedCircuitMetadata)

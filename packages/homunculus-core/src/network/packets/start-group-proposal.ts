@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, S32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface StartGroupProposalData {
 	agentData?: {
@@ -26,35 +30,35 @@ export interface StartGroupProposalData {
 	}
 }
 
-export class StartGroupProposal extends Packet<StartGroupProposalData> {
-	public static override id = 363
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const startGroupProposalMetadata = {
+	id: 363,
+	name: "StartGroupProposal",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "proposalData",
+			parameters: [
+				["groupId", UUID],
+				["quorum", S32],
+				["majority", F32],
+				["duration", S32],
+				["proposalText", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"proposalData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["groupId", Types.UUID],
-					["quorum", Types.S32],
-					["majority", Types.F32],
-					["duration", Types.S32],
-					["proposalText", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const startGroupProposal = createPacketSender<StartGroupProposalData>(
+	startGroupProposalMetadata,
+)
+
+export const createStartGroupProposalDelegate =
+	createPacketDelegate<StartGroupProposalData>(startGroupProposalMetadata)

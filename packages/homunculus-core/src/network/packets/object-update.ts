@@ -9,8 +9,24 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import {
+	Color4,
+	F32,
+	S8,
+	U8,
+	U16,
+	U32,
+	U64,
+	UUID,
+	Variable1,
+	Variable2,
+	Vector3,
+} from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectUpdateData {
 	regionData?: {
@@ -25,7 +41,7 @@ export interface ObjectUpdateData {
 		pCode: number
 		material: number
 		clickAction: number
-		scale: Types.Vector3
+		scale: Vector3
 		objectData: string | Buffer
 		parentId: number
 		updateFlags: number
@@ -52,7 +68,7 @@ export interface ObjectUpdateData {
 		nameValue: string | Buffer
 		data: string | Buffer
 		text: string | Buffer
-		textColor: Types.Color4
+		textColor: Color4
 		mediaUrl: string | Buffer
 		pSBlock: string | Buffer
 		extraParams: string | Buffer
@@ -62,80 +78,81 @@ export interface ObjectUpdateData {
 		flags: number
 		radius: number
 		jointType: number
-		jointPivot: Types.Vector3
-		jointAxisOrAnchor: Types.Vector3
+		jointPivot: Vector3
+		jointAxisOrAnchor: Vector3
 	}[]
 }
 
-export class ObjectUpdate extends Packet<ObjectUpdateData> {
-	public static override id = 12
-	public static override frequency = 2
-	public static override trusted = true
-	public static override compression = true
+export const objectUpdateMetadata = {
+	id: 12,
+	name: "ObjectUpdate",
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "regionData",
+			parameters: [
+				["regionHandle", U64],
+				["timeDilation", U16],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [
+				["id", U32],
+				["state", U8],
+				["fullId", UUID],
+				["crc", U32],
+				["pCode", U8],
+				["material", U8],
+				["clickAction", U8],
+				["scale", Vector3],
+				["objectData", Variable1],
+				["parentId", U32],
+				["updateFlags", U32],
+				["pathCurve", U8],
+				["profileCurve", U8],
+				["pathBegin", U16],
+				["pathEnd", U16],
+				["pathScaleX", U8],
+				["pathScaleY", U8],
+				["pathShearX", U8],
+				["pathShearY", U8],
+				["pathTwist", S8],
+				["pathTwistBegin", S8],
+				["pathRadiusOffset", S8],
+				["pathTaperX", S8],
+				["pathTaperY", S8],
+				["pathRevolutions", U8],
+				["pathSkew", S8],
+				["profileBegin", U16],
+				["profileEnd", U16],
+				["profileHollow", U16],
+				["textureEntry", Variable2],
+				["textureAnim", Variable1],
+				["nameValue", Variable2],
+				["data", Variable2],
+				["text", Variable1],
+				["textColor", Color4],
+				["mediaUrl", Variable1],
+				["pSBlock", Variable1],
+				["extraParams", Variable1],
+				["sound", UUID],
+				["ownerId", UUID],
+				["gain", F32],
+				["flags", U8],
+				["radius", F32],
+				["jointType", U8],
+				["jointPivot", Vector3],
+				["jointAxisOrAnchor", Vector3],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"regionData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["regionHandle", Types.U64],
-					["timeDilation", Types.U16],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["id", Types.U32],
-					["state", Types.U8],
-					["fullId", Types.UUID],
-					["crc", Types.U32],
-					["pCode", Types.U8],
-					["material", Types.U8],
-					["clickAction", Types.U8],
-					["scale", Types.Vector3],
-					["objectData", Types.Variable1],
-					["parentId", Types.U32],
-					["updateFlags", Types.U32],
-					["pathCurve", Types.U8],
-					["profileCurve", Types.U8],
-					["pathBegin", Types.U16],
-					["pathEnd", Types.U16],
-					["pathScaleX", Types.U8],
-					["pathScaleY", Types.U8],
-					["pathShearX", Types.U8],
-					["pathShearY", Types.U8],
-					["pathTwist", Types.S8],
-					["pathTwistBegin", Types.S8],
-					["pathRadiusOffset", Types.S8],
-					["pathTaperX", Types.S8],
-					["pathTaperY", Types.S8],
-					["pathRevolutions", Types.U8],
-					["pathSkew", Types.S8],
-					["profileBegin", Types.U16],
-					["profileEnd", Types.U16],
-					["profileHollow", Types.U16],
-					["textureEntry", Types.Variable2],
-					["textureAnim", Types.Variable1],
-					["nameValue", Types.Variable2],
-					["data", Types.Variable2],
-					["text", Types.Variable1],
-					["textColor", Types.Color4],
-					["mediaUrl", Types.Variable1],
-					["pSBlock", Types.Variable1],
-					["extraParams", Types.Variable1],
-					["sound", Types.UUID],
-					["ownerId", Types.UUID],
-					["gain", Types.F32],
-					["flags", Types.U8],
-					["radius", Types.F32],
-					["jointType", Types.U8],
-					["jointPivot", Types.Vector3],
-					["jointAxisOrAnchor", Types.Vector3],
-				]),
-			},
-		],
-	])
-}
+export const objectUpdate =
+	createPacketSender<ObjectUpdateData>(objectUpdateMetadata)
+
+export const createObjectUpdateDelegate =
+	createPacketDelegate<ObjectUpdateData>(objectUpdateMetadata)

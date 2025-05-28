@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectDuplicateData {
 	agentData: {
@@ -19,7 +23,7 @@ export interface ObjectDuplicateData {
 		groupId: string
 	}
 	sharedData?: {
-		offset: Types.Vector3
+		offset: Vector3
 		duplicateFlags: number
 	}
 	objectData?: {
@@ -27,39 +31,38 @@ export interface ObjectDuplicateData {
 	}[]
 }
 
-export class ObjectDuplicate extends Packet<ObjectDuplicateData> {
-	public static override id = 90
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const objectDuplicateMetadata = {
+	id: 90,
+	name: "ObjectDuplicate",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["groupId", UUID],
+			],
+		},
+		{
+			name: "sharedData",
+			parameters: [
+				["offset", Vector3],
+				["duplicateFlags", U32],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [["objectLocalId", U32]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["groupId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"sharedData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["offset", Types.Vector3],
-					["duplicateFlags", Types.U32],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([["objectLocalId", Types.U32]]),
-			},
-		],
-	])
-}
+export const objectDuplicate = createPacketSender<ObjectDuplicateData>(
+	objectDuplicateMetadata,
+)
+
+export const createObjectDuplicateDelegate =
+	createPacketDelegate<ObjectDuplicateData>(objectDuplicateMetadata)

@@ -1,10 +1,13 @@
+// initialize packets
+import "~/network/packets"
+
+// initialize delegates
+import "~/services"
+import "~/network/delegates"
+
+// export everything
 export * from "~/client"
-export { Delegate } from "~/network/delegates"
-export * from "~/network/helpers"
-export type { Packet } from "~/network/packets"
-export * as Packets from "~/network/packets"
-export * from "~/network/types"
-export * from "~/schema/environment-schema"
+export * from "~/network"
+export * from "~/schema"
 export * from "~/structures"
-export type { NearbyChatMessage, NearbyEvents } from "~/structures/nearby"
-export { Constants } from "~/utilities"
+export * from "~/utilities"

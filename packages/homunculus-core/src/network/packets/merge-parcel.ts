@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface MergeParcelData {
 	masterParcelData?: {
@@ -21,25 +25,26 @@ export interface MergeParcelData {
 	}[]
 }
 
-export class MergeParcel extends Packet<MergeParcelData> {
-	public static override id = 223
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const mergeParcelMetadata = {
+	id: 223,
+	name: "MergeParcel",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "masterParcelData",
+			parameters: [["masterId", UUID]],
+		},
+		{
+			name: "slaveParcelData",
+			parameters: [["slaveId", UUID]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"masterParcelData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["masterId", Types.UUID]]),
-			},
-		],
-		[
-			"slaveParcelData",
-			{
-				parameters: new Map<string, Types.Type>([["slaveId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const mergeParcel =
+	createPacketSender<MergeParcelData>(mergeParcelMetadata)
+
+export const createMergeParcelDelegate =
+	createPacketDelegate<MergeParcelData>(mergeParcelMetadata)

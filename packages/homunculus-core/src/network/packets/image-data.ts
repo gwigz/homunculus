@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U8, U16, U32, UUID, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ImageDataData {
 	imageId?: {
@@ -24,31 +28,28 @@ export interface ImageDataData {
 	}
 }
 
-export class ImageData extends Packet<ImageDataData> {
-	public static override id = 9
-	public static override frequency = 2
-	public static override trusted = true
-	public static override compression = false
+export const imageDataMetadata = {
+	id: 9,
+	name: "ImageData",
+	trusted: true,
+	blocks: [
+		{
+			name: "imageId",
+			parameters: [
+				["id", UUID],
+				["codec", U8],
+				["size", U32],
+				["packets", U16],
+			],
+		},
+		{
+			name: "imageData",
+			parameters: [["data", Variable2]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"imageId",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["id", Types.UUID],
-					["codec", Types.U8],
-					["size", Types.U32],
-					["packets", Types.U16],
-				]),
-			},
-		],
-		[
-			"imageData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["data", Types.Variable2]]),
-			},
-		],
-	])
-}
+export const imageData = createPacketSender<ImageDataData>(imageDataMetadata)
+
+export const createImageDataDelegate =
+	createPacketDelegate<ImageDataData>(imageDataMetadata)

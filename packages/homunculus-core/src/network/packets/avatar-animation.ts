@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AvatarAnimationData {
 	sender?: {
@@ -28,42 +32,39 @@ export interface AvatarAnimationData {
 	}[]
 }
 
-export class AvatarAnimation extends Packet<AvatarAnimationData> {
-	public static override id = 20
-	public static override frequency = 2
-	public static override trusted = true
-	public static override compression = false
+export const avatarAnimationMetadata = {
+	id: 20,
+	name: "AvatarAnimation",
+	trusted: true,
+	blocks: [
+		{
+			name: "sender",
+			parameters: [["id", UUID]],
+		},
+		{
+			name: "animationList",
+			parameters: [
+				["animId", UUID],
+				["animSequenceId", S32],
+			],
+			multiple: true,
+		},
+		{
+			name: "animationSourceList",
+			parameters: [["objectId", UUID]],
+			multiple: true,
+		},
+		{
+			name: "physicalAvatarEventList",
+			parameters: [["typeData", Variable1]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"sender",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["id", Types.UUID]]),
-			},
-		],
-		[
-			"animationList",
-			{
-				parameters: new Map<string, Types.Type>([
-					["animId", Types.UUID],
-					["animSequenceId", Types.S32],
-				]),
-			},
-		],
-		[
-			"animationSourceList",
-			{
-				parameters: new Map<string, Types.Type>([["objectId", Types.UUID]]),
-			},
-		],
-		[
-			"physicalAvatarEventList",
-			{
-				parameters: new Map<string, Types.Type>([
-					["typeData", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const avatarAnimation = createPacketSender<AvatarAnimationData>(
+	avatarAnimationMetadata,
+)
+
+export const createAvatarAnimationDelegate =
+	createPacketDelegate<AvatarAnimationData>(avatarAnimationMetadata)

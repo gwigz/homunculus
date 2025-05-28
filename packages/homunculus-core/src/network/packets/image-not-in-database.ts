@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ImageNotInDatabaseData {
 	imageId?: {
@@ -18,19 +22,22 @@ export interface ImageNotInDatabaseData {
 	}
 }
 
-export class ImageNotInDatabase extends Packet<ImageNotInDatabaseData> {
-	public static override id = 86
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const imageNotInDatabaseMetadata = {
+	id: 86,
+	name: "ImageNotInDatabase",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "imageId",
+			parameters: [["id", UUID]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"imageId",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["id", Types.UUID]]),
-			},
-		],
-	])
-}
+export const imageNotInDatabase = createPacketSender<ImageNotInDatabaseData>(
+	imageNotInDatabaseMetadata,
+)
+
+export const createImageNotInDatabaseDelegate =
+	createPacketDelegate<ImageNotInDatabaseData>(imageNotInDatabaseMetadata)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface EmailMessageRequestData {
 	dataBlock?: {
@@ -20,23 +24,26 @@ export interface EmailMessageRequestData {
 	}
 }
 
-export class EmailMessageRequest extends Packet<EmailMessageRequestData> {
-	public static override id = 335
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const emailMessageRequestMetadata = {
+	id: 335,
+	name: "EmailMessageRequest",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "dataBlock",
+			parameters: [
+				["objectId", UUID],
+				["fromAddress", Variable1],
+				["subject", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"dataBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["objectId", Types.UUID],
-					["fromAddress", Types.Variable1],
-					["subject", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const emailMessageRequest = createPacketSender<EmailMessageRequestData>(
+	emailMessageRequestMetadata,
+)
+
+export const createEmailMessageRequestDelegate =
+	createPacketDelegate<EmailMessageRequestData>(emailMessageRequestMetadata)

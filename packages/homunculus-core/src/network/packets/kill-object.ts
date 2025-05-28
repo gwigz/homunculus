@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface KillObjectData {
 	objectData?: {
@@ -18,18 +22,20 @@ export interface KillObjectData {
 	}[]
 }
 
-export class KillObject extends Packet<KillObjectData> {
-	public static override id = 16
-	public static override frequency = 2
-	public static override trusted = true
-	public static override compression = false
+export const killObjectMetadata = {
+	id: 16,
+	name: "KillObject",
+	trusted: true,
+	blocks: [
+		{
+			name: "objectData",
+			parameters: [["id", U32]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([["id", Types.U32]]),
-			},
-		],
-	])
-}
+export const killObject = createPacketSender<KillObjectData>(killObjectMetadata)
+
+export const createKillObjectDelegate =
+	createPacketDelegate<KillObjectData>(killObjectMetadata)

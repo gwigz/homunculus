@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface KickUserAckData {
 	userInfo?: {
@@ -19,22 +23,24 @@ export interface KickUserAckData {
 	}
 }
 
-export class KickUserAck extends Packet<KickUserAckData> {
-	public static override id = 164
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const kickUserAckMetadata = {
+	id: 164,
+	name: "KickUserAck",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "userInfo",
+			parameters: [
+				["sessionId", UUID],
+				["flags", U32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"userInfo",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["sessionId", Types.UUID],
-					["flags", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const kickUserAck =
+	createPacketSender<KickUserAckData>(kickUserAckMetadata)
+
+export const createKickUserAckDelegate =
+	createPacketDelegate<KickUserAckData>(kickUserAckMetadata)

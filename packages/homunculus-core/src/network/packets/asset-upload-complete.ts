@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, S8, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AssetUploadCompleteData {
 	assetBlock?: {
@@ -20,23 +24,25 @@ export interface AssetUploadCompleteData {
 	}
 }
 
-export class AssetUploadComplete extends Packet<AssetUploadCompleteData> {
-	public static override id = 334
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const assetUploadCompleteMetadata = {
+	id: 334,
+	name: "AssetUploadComplete",
+	frequency: 2,
+	blocks: [
+		{
+			name: "assetBlock",
+			parameters: [
+				["uuid", UUID],
+				["type", S8],
+				["success", Bool],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"assetBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["uuid", Types.UUID],
-					["type", Types.S8],
-					["success", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const assetUploadComplete = createPacketSender<AssetUploadCompleteData>(
+	assetUploadCompleteMetadata,
+)
+
+export const createAssetUploadCompleteDelegate =
+	createPacketDelegate<AssetUploadCompleteData>(assetUploadCompleteMetadata)

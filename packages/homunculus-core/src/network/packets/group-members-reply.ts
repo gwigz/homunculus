@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, S32, U64, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface GroupMembersReplyData {
 	agentData?: {
@@ -31,43 +35,43 @@ export interface GroupMembersReplyData {
 	}[]
 }
 
-export class GroupMembersReply extends Packet<GroupMembersReplyData> {
-	public static override id = 367
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const groupMembersReplyMetadata = {
+	id: 367,
+	name: "GroupMembersReply",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "groupData",
+			parameters: [
+				["groupId", UUID],
+				["requestId", UUID],
+				["memberCount", S32],
+			],
+		},
+		{
+			name: "memberData",
+			parameters: [
+				["agentId", UUID],
+				["contribution", S32],
+				["onlineStatus", Variable1],
+				["agentPowers", U64],
+				["title", Variable1],
+				["isOwner", Bool],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"groupData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["groupId", Types.UUID],
-					["requestId", Types.UUID],
-					["memberCount", Types.S32],
-				]),
-			},
-		],
-		[
-			"memberData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["contribution", Types.S32],
-					["onlineStatus", Types.Variable1],
-					["agentPowers", Types.U64],
-					["title", Types.Variable1],
-					["isOwner", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const groupMembersReply = createPacketSender<GroupMembersReplyData>(
+	groupMembersReplyMetadata,
+)
+
+export const createGroupMembersReplyDelegate =
+	createPacketDelegate<GroupMembersReplyData>(groupMembersReplyMetadata)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface InviteGroupResponseData {
 	inviteData?: {
@@ -22,25 +26,28 @@ export interface InviteGroupResponseData {
 	}
 }
 
-export class InviteGroupResponse extends Packet<InviteGroupResponseData> {
-	public static override id = 350
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const inviteGroupResponseMetadata = {
+	id: 350,
+	name: "InviteGroupResponse",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "inviteData",
+			parameters: [
+				["agentId", UUID],
+				["inviteeId", UUID],
+				["groupId", UUID],
+				["roleId", UUID],
+				["membershipFee", S32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"inviteData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["inviteeId", Types.UUID],
-					["groupId", Types.UUID],
-					["roleId", Types.UUID],
-					["membershipFee", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const inviteGroupResponse = createPacketSender<InviteGroupResponseData>(
+	inviteGroupResponseMetadata,
+)
+
+export const createInviteGroupResponseDelegate =
+	createPacketDelegate<InviteGroupResponseData>(inviteGroupResponseMetadata)

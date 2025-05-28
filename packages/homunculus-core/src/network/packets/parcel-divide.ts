@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ParcelDivideData {
 	agentData?: {
@@ -25,34 +29,32 @@ export interface ParcelDivideData {
 	}
 }
 
-export class ParcelDivide extends Packet<ParcelDivideData> {
-	public static override id = 211
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const parcelDivideMetadata = {
+	id: 211,
+	name: "ParcelDivide",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "parcelData",
+			parameters: [
+				["west", F32],
+				["south", F32],
+				["east", F32],
+				["north", F32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"parcelData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["west", Types.F32],
-					["south", Types.F32],
-					["east", Types.F32],
-					["north", Types.F32],
-				]),
-			},
-		],
-	])
-}
+export const parcelDivide =
+	createPacketSender<ParcelDivideData>(parcelDivideMetadata)
+
+export const createParcelDivideDelegate =
+	createPacketDelegate<ParcelDivideData>(parcelDivideMetadata)

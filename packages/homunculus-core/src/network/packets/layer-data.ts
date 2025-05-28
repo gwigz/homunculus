@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U8, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface LayerDataData {
 	layerId?: {
@@ -21,26 +25,23 @@ export interface LayerDataData {
 	}
 }
 
-export class LayerData extends Packet<LayerDataData> {
-	public static override id = 11
-	public static override frequency = 2
-	public static override trusted = true
-	public static override compression = false
+export const layerDataMetadata = {
+	id: 11,
+	name: "LayerData",
+	trusted: true,
+	blocks: [
+		{
+			name: "layerId",
+			parameters: [["type", U8]],
+		},
+		{
+			name: "layerData",
+			parameters: [["data", Variable2]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"layerId",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["type", Types.U8]]),
-			},
-		],
-		[
-			"layerData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["data", Types.Variable2]]),
-			},
-		],
-	])
-}
+export const layerData = createPacketSender<LayerDataData>(layerDataMetadata)
+
+export const createLayerDataDelegate =
+	createPacketDelegate<LayerDataData>(layerDataMetadata)

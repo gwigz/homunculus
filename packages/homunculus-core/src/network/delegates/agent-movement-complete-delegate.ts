@@ -1,30 +1,25 @@
-import {
-	type AgentMovementComplete,
-	AgentThrottle,
-	SetAlwaysRun,
-} from "~/network/packets"
-import { Region } from "~/structures/region"
-import { Delegate } from "./delegate"
+import { packets } from "~/network"
+import { Region } from "~/structures"
 
-class AgentMovementCompleteDelegate extends Delegate {
-	private counter = 0
+let counter = 0
 
-	public override async handle(packet: AgentMovementComplete) {
-		this.client.emit("debug", "Agent movement complete...")
-
-		const data = packet.data.data!
+packets.createAgentMovementCompleteDelegate({
+	handle: async (packet, context) => {
+		context.client.emit("debug", "Agent movement complete...")
 
 		// const sim = packet.data.simData[0]
 		// const simulator = this.client.simulator
 
 		// simulator.channel = sim.channelVersion
 
-		this.client.self.position = data.position
-		this.client.self.lookAt = data.lookAt
+		const data = packet.data.data!
+
+		context.client.self.position = data.position
+		context.client.self.lookAt = data.lookAt
 
 		const handle = data.regionHandle as bigint
 
-		this.client.regions.set(handle, new Region(this.client, { handle }))
+		context.client.regions.set(handle, new Region(context.client, { handle }))
 
 		// client.throttle/bandwidth?
 		const throttle = 500 * 1024
@@ -47,17 +42,15 @@ class AgentMovementCompleteDelegate extends Delegate {
 		throttles.writeFloatLE(texture, 20)
 		throttles.writeFloatLE(asset, 24)
 
-		await this.circuit.send([
-			new AgentThrottle({
-				throttle: { genCounter: this.counter++, throttles },
+		await context.circuit.send([
+			packets.agentThrottle({
+				throttle: { genCounter: counter++, throttles },
 			}),
-			new SetAlwaysRun({ agentData: { alwaysRun: false } }),
+			packets.setAlwaysRun({ agentData: { alwaysRun: false } }),
 			// new AgentDataUpdateRequest(),
 		])
 
 		// notify the core that we're connected, after a short delay
-		setTimeout(() => this.core.ready(), 1_000)
-	}
-}
-
-export default AgentMovementCompleteDelegate
+		setTimeout(() => context.core.ready(), 1_000)
+	},
+})

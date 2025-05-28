@@ -9,36 +9,42 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U64, UUID, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface DataHomeLocationReplyData {
 	info?: {
 		agentId: string
 		regionHandle: number | bigint
-		position: Types.Vector3
-		lookAt: Types.Vector3
+		position: Vector3
+		lookAt: Vector3
 	}
 }
 
-export class DataHomeLocationReply extends Packet<DataHomeLocationReplyData> {
-	public static override id = 68
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const dataHomeLocationReplyMetadata = {
+	id: 68,
+	name: "DataHomeLocationReply",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "info",
+			parameters: [
+				["agentId", UUID],
+				["regionHandle", U64],
+				["position", Vector3],
+				["lookAt", Vector3],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"info",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["regionHandle", Types.U64],
-					["position", Types.Vector3],
-					["lookAt", Types.Vector3],
-				]),
-			},
-		],
-	])
-}
+export const dataHomeLocationReply =
+	createPacketSender<DataHomeLocationReplyData>(dataHomeLocationReplyMetadata)
+
+export const createDataHomeLocationReplyDelegate =
+	createPacketDelegate<DataHomeLocationReplyData>(dataHomeLocationReplyMetadata)

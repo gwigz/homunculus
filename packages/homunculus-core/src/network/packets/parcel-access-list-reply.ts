@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ParcelAccessListReplyData {
 	data?: {
@@ -26,34 +30,36 @@ export interface ParcelAccessListReplyData {
 	}[]
 }
 
-export class ParcelAccessListReply extends Packet<ParcelAccessListReplyData> {
-	public static override id = 216
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const parcelAccessListReplyMetadata = {
+	id: 216,
+	name: "ParcelAccessListReply",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "data",
+			parameters: [
+				["agentId", UUID],
+				["sequenceId", S32],
+				["flags", U32],
+				["localId", S32],
+			],
+		},
+		{
+			name: "list",
+			parameters: [
+				["id", UUID],
+				["time", S32],
+				["flags", U32],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sequenceId", Types.S32],
-					["flags", Types.U32],
-					["localId", Types.S32],
-				]),
-			},
-		],
-		[
-			"list",
-			{
-				parameters: new Map<string, Types.Type>([
-					["id", Types.UUID],
-					["time", Types.S32],
-					["flags", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const parcelAccessListReply =
+	createPacketSender<ParcelAccessListReplyData>(parcelAccessListReplyMetadata)
+
+export const createParcelAccessListReplyDelegate =
+	createPacketDelegate<ParcelAccessListReplyData>(parcelAccessListReplyMetadata)

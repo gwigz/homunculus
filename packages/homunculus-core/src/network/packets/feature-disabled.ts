@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface FeatureDisabledData {
 	failureInfo?: {
@@ -20,23 +24,26 @@ export interface FeatureDisabledData {
 	}
 }
 
-export class FeatureDisabled extends Packet<FeatureDisabledData> {
-	public static override id = 19
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const featureDisabledMetadata = {
+	id: 19,
+	name: "FeatureDisabled",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "failureInfo",
+			parameters: [
+				["errorMessage", Variable1],
+				["agentId", UUID],
+				["transactionId", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"failureInfo",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["errorMessage", Types.Variable1],
-					["agentId", Types.UUID],
-					["transactionId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const featureDisabled = createPacketSender<FeatureDisabledData>(
+	featureDisabledMetadata,
+)
+
+export const createFeatureDisabledDelegate =
+	createPacketDelegate<FeatureDisabledData>(featureDisabledMetadata)

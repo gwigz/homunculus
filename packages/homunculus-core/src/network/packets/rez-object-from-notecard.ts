@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, U8, U32, UUID, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RezObjectFromNotecardData {
 	agentData: {
@@ -21,8 +25,8 @@ export interface RezObjectFromNotecardData {
 	rezData?: {
 		fromTaskId: string
 		bypassRaycast: number
-		rayStart: Types.Vector3
-		rayEnd: Types.Vector3
+		rayStart: Vector3
+		rayEnd: Vector3
 		rayTargetId: string
 		rayEndIsIntersection: boolean
 		rezSelected: boolean
@@ -41,59 +45,54 @@ export interface RezObjectFromNotecardData {
 	}[]
 }
 
-export class RezObjectFromNotecard extends Packet<RezObjectFromNotecardData> {
-	public static override id = 294
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const rezObjectFromNotecardMetadata = {
+	id: 294,
+	name: "RezObjectFromNotecard",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["groupId", UUID],
+			],
+		},
+		{
+			name: "rezData",
+			parameters: [
+				["fromTaskId", UUID],
+				["bypassRaycast", U8],
+				["rayStart", Vector3],
+				["rayEnd", Vector3],
+				["rayTargetId", UUID],
+				["rayEndIsIntersection", Bool],
+				["rezSelected", Bool],
+				["removeItem", Bool],
+				["itemFlags", U32],
+				["groupMask", U32],
+				["everyoneMask", U32],
+				["nextOwnerMask", U32],
+			],
+		},
+		{
+			name: "notecardData",
+			parameters: [
+				["notecardItemId", UUID],
+				["objectId", UUID],
+			],
+		},
+		{
+			name: "inventoryData",
+			parameters: [["itemId", UUID]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["groupId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"rezData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["fromTaskId", Types.UUID],
-					["bypassRaycast", Types.U8],
-					["rayStart", Types.Vector3],
-					["rayEnd", Types.Vector3],
-					["rayTargetId", Types.UUID],
-					["rayEndIsIntersection", Types.Bool],
-					["rezSelected", Types.Bool],
-					["removeItem", Types.Bool],
-					["itemFlags", Types.U32],
-					["groupMask", Types.U32],
-					["everyoneMask", Types.U32],
-					["nextOwnerMask", Types.U32],
-				]),
-			},
-		],
-		[
-			"notecardData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["notecardItemId", Types.UUID],
-					["objectId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"inventoryData",
-			{
-				parameters: new Map<string, Types.Type>([["itemId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const rezObjectFromNotecard =
+	createPacketSender<RezObjectFromNotecardData>(rezObjectFromNotecardMetadata)
+
+export const createRezObjectFromNotecardDelegate =
+	createPacketDelegate<RezObjectFromNotecardData>(rezObjectFromNotecardMetadata)

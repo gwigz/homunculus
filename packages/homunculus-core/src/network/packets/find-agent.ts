@@ -9,14 +9,18 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F64, IP, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface FindAgentData {
 	agentBlock?: {
 		hunter: string
 		prey: string
-		spaceIp: Types.IP
+		spaceIp: IP
 	}
 	locationBlock?: {
 		globalX: number
@@ -24,32 +28,31 @@ export interface FindAgentData {
 	}[]
 }
 
-export class FindAgent extends Packet<FindAgentData> {
-	public static override id = 256
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const findAgentMetadata = {
+	id: 256,
+	name: "FindAgent",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentBlock",
+			parameters: [
+				["hunter", UUID],
+				["prey", UUID],
+				["spaceIp", IP],
+			],
+		},
+		{
+			name: "locationBlock",
+			parameters: [
+				["globalX", F64],
+				["globalY", F64],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["hunter", Types.UUID],
-					["prey", Types.UUID],
-					["spaceIp", Types.IP],
-				]),
-			},
-		],
-		[
-			"locationBlock",
-			{
-				parameters: new Map<string, Types.Type>([
-					["globalX", Types.F64],
-					["globalY", Types.F64],
-				]),
-			},
-		],
-	])
-}
+export const findAgent = createPacketSender<FindAgentData>(findAgentMetadata)
+
+export const createFindAgentDelegate =
+	createPacketDelegate<FindAgentData>(findAgentMetadata)

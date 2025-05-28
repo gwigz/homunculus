@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface PreloadSoundData {
 	dataBlock?: {
@@ -20,22 +24,26 @@ export interface PreloadSoundData {
 	}[]
 }
 
-export class PreloadSound extends Packet<PreloadSoundData> {
-	public static override id = 15
-	public static override frequency = 1
-	public static override trusted = true
-	public static override compression = false
+export const preloadSoundMetadata = {
+	id: 15,
+	name: "PreloadSound",
+	frequency: 1,
+	trusted: true,
+	blocks: [
+		{
+			name: "dataBlock",
+			parameters: [
+				["objectId", UUID],
+				["ownerId", UUID],
+				["soundId", UUID],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"dataBlock",
-			{
-				parameters: new Map<string, Types.Type>([
-					["objectId", Types.UUID],
-					["ownerId", Types.UUID],
-					["soundId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const preloadSound =
+	createPacketSender<PreloadSoundData>(preloadSoundMetadata)
+
+export const createPreloadSoundDelegate =
+	createPacketDelegate<PreloadSoundData>(preloadSoundMetadata)

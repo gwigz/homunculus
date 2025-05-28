@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, S32, UUID, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface UpdateGroupInfoData {
 	agentData?: {
@@ -29,38 +33,38 @@ export interface UpdateGroupInfoData {
 	}
 }
 
-export class UpdateGroupInfo extends Packet<UpdateGroupInfoData> {
-	public static override id = 341
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const updateGroupInfoMetadata = {
+	id: 341,
+	name: "UpdateGroupInfo",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "groupData",
+			parameters: [
+				["groupId", UUID],
+				["charter", Variable2],
+				["showInList", Bool],
+				["insigniaId", UUID],
+				["membershipFee", S32],
+				["openEnrollment", Bool],
+				["allowPublish", Bool],
+				["maturePublish", Bool],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"groupData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["groupId", Types.UUID],
-					["charter", Types.Variable2],
-					["showInList", Types.Bool],
-					["insigniaId", Types.UUID],
-					["membershipFee", Types.S32],
-					["openEnrollment", Types.Bool],
-					["allowPublish", Types.Bool],
-					["maturePublish", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const updateGroupInfo = createPacketSender<UpdateGroupInfoData>(
+	updateGroupInfoMetadata,
+)
+
+export const createUpdateGroupInfoDelegate =
+	createPacketDelegate<UpdateGroupInfoData>(updateGroupInfoMetadata)

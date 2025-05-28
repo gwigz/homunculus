@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface TeleportRequestData {
 	agentData?: {
@@ -19,38 +23,37 @@ export interface TeleportRequestData {
 	}
 	info?: {
 		regionId: string
-		position: Types.Vector3
-		lookAt: Types.Vector3
+		position: Vector3
+		lookAt: Vector3
 	}
 }
 
-export class TeleportRequest extends Packet<TeleportRequestData> {
-	public static override id = 62
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const teleportRequestMetadata = {
+	id: 62,
+	name: "TeleportRequest",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "info",
+			parameters: [
+				["regionId", UUID],
+				["position", Vector3],
+				["lookAt", Vector3],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"info",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["regionId", Types.UUID],
-					["position", Types.Vector3],
-					["lookAt", Types.Vector3],
-				]),
-			},
-		],
-	])
-}
+export const teleportRequest = createPacketSender<TeleportRequestData>(
+	teleportRequestMetadata,
+)
+
+export const createTeleportRequestDelegate =
+	createPacketDelegate<TeleportRequestData>(teleportRequestMetadata)

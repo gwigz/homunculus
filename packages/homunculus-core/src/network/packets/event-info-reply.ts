@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID, Variable1, Variable2, Vector3D } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface EventInfoReplyData {
 	agentData?: {
@@ -28,45 +32,45 @@ export interface EventInfoReplyData {
 		cover: number
 		amount: number
 		simName: string | Buffer
-		globalPos: Types.Vector3D
+		globalPos: Vector3D
 		eventFlags: number
 	}
 }
 
-export class EventInfoReply extends Packet<EventInfoReplyData> {
-	public static override id = 180
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const eventInfoReplyMetadata = {
+	id: 180,
+	name: "EventInfoReply",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "eventData",
+			parameters: [
+				["eventId", U32],
+				["creator", Variable1],
+				["name", Variable1],
+				["category", Variable1],
+				["desc", Variable2],
+				["date", Variable1],
+				["dateUtc", U32],
+				["duration", U32],
+				["cover", U32],
+				["amount", U32],
+				["simName", Variable1],
+				["globalPos", Vector3D],
+				["eventFlags", U32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"eventData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["eventId", Types.U32],
-					["creator", Types.Variable1],
-					["name", Types.Variable1],
-					["category", Types.Variable1],
-					["desc", Types.Variable2],
-					["date", Types.Variable1],
-					["dateUtc", Types.U32],
-					["duration", Types.U32],
-					["cover", Types.U32],
-					["amount", Types.U32],
-					["simName", Types.Variable1],
-					["globalPos", Types.Vector3D],
-					["eventFlags", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const eventInfoReply = createPacketSender<EventInfoReplyData>(
+	eventInfoReplyMetadata,
+)
+
+export const createEventInfoReplyDelegate =
+	createPacketDelegate<EventInfoReplyData>(eventInfoReplyMetadata)

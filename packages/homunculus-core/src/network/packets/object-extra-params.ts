@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, U16, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectExtraParamsData {
 	agentData?: {
@@ -26,34 +30,36 @@ export interface ObjectExtraParamsData {
 	}[]
 }
 
-export class ObjectExtraParams extends Packet<ObjectExtraParamsData> {
-	public static override id = 99
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const objectExtraParamsMetadata = {
+	id: 99,
+	name: "ObjectExtraParams",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [
+				["objectLocalId", U32],
+				["paramType", U16],
+				["paramInUse", Bool],
+				["paramSize", U32],
+				["paramData", Variable1],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["objectLocalId", Types.U32],
-					["paramType", Types.U16],
-					["paramInUse", Types.Bool],
-					["paramSize", Types.U32],
-					["paramData", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const objectExtraParams = createPacketSender<ObjectExtraParamsData>(
+	objectExtraParamsMetadata,
+)
+
+export const createObjectExtraParamsDelegate =
+	createPacketDelegate<ObjectExtraParamsData>(objectExtraParamsMetadata)

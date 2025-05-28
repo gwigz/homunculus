@@ -1,5 +1,5 @@
 import { z } from "zod/v4"
-import { Vector3 } from "~/network/types"
+import { Vector3 } from "~/network"
 
 function toCamelCase(str: string): string {
 	return str.replace(/[_-](\w)/g, (_, c) => (c ? c.toUpperCase() : ""))

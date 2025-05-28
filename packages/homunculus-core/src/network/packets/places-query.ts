@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S8, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface PlacesQueryData {
 	agentData: {
@@ -29,44 +33,38 @@ export interface PlacesQueryData {
 	}
 }
 
-export class PlacesQuery extends Packet<PlacesQueryData> {
-	public static override id = 29
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const placesQueryMetadata = {
+	id: 29,
+	name: "PlacesQuery",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["queryId", UUID],
+			],
+		},
+		{
+			name: "transactionData",
+			parameters: [["transactionId", UUID]],
+		},
+		{
+			name: "queryData",
+			parameters: [
+				["queryText", Variable1],
+				["queryFlags", U32],
+				["category", S8],
+				["simName", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["queryId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"transactionData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["transactionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"queryData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["queryText", Types.Variable1],
-					["queryFlags", Types.U32],
-					["category", Types.S8],
-					["simName", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const placesQuery =
+	createPacketSender<PlacesQueryData>(placesQueryMetadata)
+
+export const createPlacesQueryDelegate =
+	createPacketDelegate<PlacesQueryData>(placesQueryMetadata)

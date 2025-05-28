@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, S8, S32, U8, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface InventoryDescendentsData {
 	agentData: {
@@ -51,64 +55,65 @@ export interface InventoryDescendentsData {
 	}[]
 }
 
-export class InventoryDescendents extends Packet<InventoryDescendentsData> {
-	public static override id = 278
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const inventoryDescendentsMetadata = {
+	id: 278,
+	name: "InventoryDescendents",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["folderId", UUID],
+				["ownerId", UUID],
+				["version", S32],
+				["descendents", S32],
+			],
+		},
+		{
+			name: "folderData",
+			parameters: [
+				["folderId", UUID],
+				["parentId", UUID],
+				["type", S8],
+				["name", Variable1],
+			],
+			multiple: true,
+		},
+		{
+			name: "itemData",
+			parameters: [
+				["itemId", UUID],
+				["folderId", UUID],
+				["creatorId", UUID],
+				["ownerId", UUID],
+				["groupId", UUID],
+				["baseMask", U32],
+				["ownerMask", U32],
+				["groupMask", U32],
+				["everyoneMask", U32],
+				["nextOwnerMask", U32],
+				["groupOwned", Bool],
+				["assetId", UUID],
+				["type", S8],
+				["invType", S8],
+				["flags", U32],
+				["saleType", U8],
+				["salePrice", S32],
+				["name", Variable1],
+				["description", Variable1],
+				["creationDate", S32],
+				["crc", U32],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["folderId", Types.UUID],
-					["ownerId", Types.UUID],
-					["version", Types.S32],
-					["descendents", Types.S32],
-				]),
-			},
-		],
-		[
-			"folderData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["folderId", Types.UUID],
-					["parentId", Types.UUID],
-					["type", Types.S8],
-					["name", Types.Variable1],
-				]),
-			},
-		],
-		[
-			"itemData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["itemId", Types.UUID],
-					["folderId", Types.UUID],
-					["creatorId", Types.UUID],
-					["ownerId", Types.UUID],
-					["groupId", Types.UUID],
-					["baseMask", Types.U32],
-					["ownerMask", Types.U32],
-					["groupMask", Types.U32],
-					["everyoneMask", Types.U32],
-					["nextOwnerMask", Types.U32],
-					["groupOwned", Types.Bool],
-					["assetId", Types.UUID],
-					["type", Types.S8],
-					["invType", Types.S8],
-					["flags", Types.U32],
-					["saleType", Types.U8],
-					["salePrice", Types.S32],
-					["name", Types.Variable1],
-					["description", Types.Variable1],
-					["creationDate", Types.S32],
-					["crc", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const inventoryDescendents =
+	createPacketSender<InventoryDescendentsData>(inventoryDescendentsMetadata)
+
+export const createInventoryDescendentsDelegate =
+	createPacketDelegate<InventoryDescendentsData>(inventoryDescendentsMetadata)

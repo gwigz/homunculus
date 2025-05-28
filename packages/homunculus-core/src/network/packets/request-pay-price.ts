@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RequestPayPriceData {
 	objectData?: {
@@ -18,19 +22,21 @@ export interface RequestPayPriceData {
 	}
 }
 
-export class RequestPayPrice extends Packet<RequestPayPriceData> {
-	public static override id = 161
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const requestPayPriceMetadata = {
+	id: 161,
+	name: "RequestPayPrice",
+	frequency: 2,
+	blocks: [
+		{
+			name: "objectData",
+			parameters: [["objectId", UUID]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"objectData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["objectId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const requestPayPrice = createPacketSender<RequestPayPriceData>(
+	requestPayPriceMetadata,
+)
+
+export const createRequestPayPriceDelegate =
+	createPacketDelegate<RequestPayPriceData>(requestPayPriceMetadata)

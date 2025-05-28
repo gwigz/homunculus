@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, S8, S32, U8, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface UpdateTaskInventoryData {
 	agentData?: {
@@ -46,61 +50,58 @@ export interface UpdateTaskInventoryData {
 	}
 }
 
-export class UpdateTaskInventory extends Packet<UpdateTaskInventoryData> {
-	public static override id = 286
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const updateTaskInventoryMetadata = {
+	id: 286,
+	name: "UpdateTaskInventory",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "updateData",
+			parameters: [
+				["localId", U32],
+				["key", U8],
+			],
+		},
+		{
+			name: "inventoryData",
+			parameters: [
+				["itemId", UUID],
+				["folderId", UUID],
+				["creatorId", UUID],
+				["ownerId", UUID],
+				["groupId", UUID],
+				["baseMask", U32],
+				["ownerMask", U32],
+				["groupMask", U32],
+				["everyoneMask", U32],
+				["nextOwnerMask", U32],
+				["groupOwned", Bool],
+				["transactionId", UUID],
+				["type", S8],
+				["invType", S8],
+				["flags", U32],
+				["saleType", U8],
+				["salePrice", S32],
+				["name", Variable1],
+				["description", Variable1],
+				["creationDate", S32],
+				["crc", U32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"updateData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["localId", Types.U32],
-					["key", Types.U8],
-				]),
-			},
-		],
-		[
-			"inventoryData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["itemId", Types.UUID],
-					["folderId", Types.UUID],
-					["creatorId", Types.UUID],
-					["ownerId", Types.UUID],
-					["groupId", Types.UUID],
-					["baseMask", Types.U32],
-					["ownerMask", Types.U32],
-					["groupMask", Types.U32],
-					["everyoneMask", Types.U32],
-					["nextOwnerMask", Types.U32],
-					["groupOwned", Types.Bool],
-					["transactionId", Types.UUID],
-					["type", Types.S8],
-					["invType", Types.S8],
-					["flags", Types.U32],
-					["saleType", Types.U8],
-					["salePrice", Types.S32],
-					["name", Types.Variable1],
-					["description", Types.Variable1],
-					["creationDate", Types.S32],
-					["crc", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const updateTaskInventory = createPacketSender<UpdateTaskInventoryData>(
+	updateTaskInventoryMetadata,
+)
+
+export const createUpdateTaskInventoryDelegate =
+	createPacketDelegate<UpdateTaskInventoryData>(updateTaskInventoryMetadata)

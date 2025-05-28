@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, U32 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ForceObjectSelectData {
 	header?: {
@@ -21,25 +25,27 @@ export interface ForceObjectSelectData {
 	}[]
 }
 
-export class ForceObjectSelect extends Packet<ForceObjectSelectData> {
-	public static override id = 205
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const forceObjectSelectMetadata = {
+	id: 205,
+	name: "ForceObjectSelect",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "header",
+			parameters: [["resetList", Bool]],
+		},
+		{
+			name: "data",
+			parameters: [["localId", U32]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"header",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["resetList", Types.Bool]]),
-			},
-		],
-		[
-			"data",
-			{
-				parameters: new Map<string, Types.Type>([["localId", Types.U32]]),
-			},
-		],
-	])
-}
+export const forceObjectSelect = createPacketSender<ForceObjectSelectData>(
+	forceObjectSelectMetadata,
+)
+
+export const createForceObjectSelectDelegate =
+	createPacketDelegate<ForceObjectSelectData>(forceObjectSelectMetadata)

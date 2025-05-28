@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, U8, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AttachedSoundData {
 	dataBlock?: {
@@ -22,25 +26,28 @@ export interface AttachedSoundData {
 	}
 }
 
-export class AttachedSound extends Packet<AttachedSoundData> {
-	public static override id = 13
-	public static override frequency = 1
-	public static override trusted = true
-	public static override compression = false
+export const attachedSoundMetadata = {
+	id: 13,
+	name: "AttachedSound",
+	frequency: 1,
+	trusted: true,
+	blocks: [
+		{
+			name: "dataBlock",
+			parameters: [
+				["soundId", UUID],
+				["objectId", UUID],
+				["ownerId", UUID],
+				["gain", F32],
+				["flags", U8],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"dataBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["soundId", Types.UUID],
-					["objectId", Types.UUID],
-					["ownerId", Types.UUID],
-					["gain", Types.F32],
-					["flags", Types.U8],
-				]),
-			},
-		],
-	])
-}
+export const attachedSound = createPacketSender<AttachedSoundData>(
+	attachedSoundMetadata,
+)
+
+export const createAttachedSoundDelegate =
+	createPacketDelegate<AttachedSoundData>(attachedSoundMetadata)

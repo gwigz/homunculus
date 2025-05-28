@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, U32 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ScriptControlChangeData {
 	data?: {
@@ -20,22 +24,27 @@ export interface ScriptControlChangeData {
 	}[]
 }
 
-export class ScriptControlChange extends Packet<ScriptControlChangeData> {
-	public static override id = 189
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const scriptControlChangeMetadata = {
+	id: 189,
+	name: "ScriptControlChange",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "data",
+			parameters: [
+				["takeControls", Bool],
+				["controls", U32],
+				["passToAgent", Bool],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"data",
-			{
-				parameters: new Map<string, Types.Type>([
-					["takeControls", Types.Bool],
-					["controls", Types.U32],
-					["passToAgent", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const scriptControlChange = createPacketSender<ScriptControlChangeData>(
+	scriptControlChangeMetadata,
+)
+
+export const createScriptControlChangeDelegate =
+	createPacketDelegate<ScriptControlChangeData>(scriptControlChangeMetadata)

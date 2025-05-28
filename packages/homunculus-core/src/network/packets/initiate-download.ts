@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface InitiateDownloadData {
 	agentData?: {
@@ -22,29 +26,28 @@ export interface InitiateDownloadData {
 	}
 }
 
-export class InitiateDownload extends Packet<InitiateDownloadData> {
-	public static override id = 403
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const initiateDownloadMetadata = {
+	id: 403,
+	name: "InitiateDownload",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "fileData",
+			parameters: [
+				["simFilename", Variable1],
+				["viewerFilename", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"fileData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["simFilename", Types.Variable1],
-					["viewerFilename", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const initiateDownload = createPacketSender<InitiateDownloadData>(
+	initiateDownloadMetadata,
+)
+
+export const createInitiateDownloadDelegate =
+	createPacketDelegate<InitiateDownloadData>(initiateDownloadMetadata)

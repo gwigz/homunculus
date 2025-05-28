@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface MapItemReplyData {
 	agentData?: {
@@ -30,42 +34,40 @@ export interface MapItemReplyData {
 	}[]
 }
 
-export class MapItemReply extends Packet<MapItemReplyData> {
-	public static override id = 411
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const mapItemReplyMetadata = {
+	id: 411,
+	name: "MapItemReply",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["flags", U32],
+			],
+		},
+		{
+			name: "requestData",
+			parameters: [["itemType", U32]],
+		},
+		{
+			name: "data",
+			parameters: [
+				["x", U32],
+				["y", U32],
+				["id", UUID],
+				["extra", S32],
+				["extra2", S32],
+				["name", Variable1],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["flags", Types.U32],
-				]),
-			},
-		],
-		[
-			"requestData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["itemType", Types.U32]]),
-			},
-		],
-		[
-			"data",
-			{
-				parameters: new Map<string, Types.Type>([
-					["x", Types.U32],
-					["y", Types.U32],
-					["id", Types.UUID],
-					["extra", Types.S32],
-					["extra2", Types.S32],
-					["name", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const mapItemReply =
+	createPacketSender<MapItemReplyData>(mapItemReplyMetadata)
+
+export const createMapItemReplyDelegate =
+	createPacketDelegate<MapItemReplyData>(mapItemReplyMetadata)

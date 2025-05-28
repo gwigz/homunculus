@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface PayPriceReplyData {
 	objectData?: {
@@ -22,28 +26,30 @@ export interface PayPriceReplyData {
 	}[]
 }
 
-export class PayPriceReply extends Packet<PayPriceReplyData> {
-	public static override id = 162
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const payPriceReplyMetadata = {
+	id: 162,
+	name: "PayPriceReply",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "objectData",
+			parameters: [
+				["objectId", UUID],
+				["defaultPayPrice", S32],
+			],
+		},
+		{
+			name: "buttonData",
+			parameters: [["payButton", S32]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"objectData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["objectId", Types.UUID],
-					["defaultPayPrice", Types.S32],
-				]),
-			},
-		],
-		[
-			"buttonData",
-			{
-				parameters: new Map<string, Types.Type>([["payButton", Types.S32]]),
-			},
-		],
-	])
-}
+export const payPriceReply = createPacketSender<PayPriceReplyData>(
+	payPriceReplyMetadata,
+)
+
+export const createPayPriceReplyDelegate =
+	createPacketDelegate<PayPriceReplyData>(payPriceReplyMetadata)

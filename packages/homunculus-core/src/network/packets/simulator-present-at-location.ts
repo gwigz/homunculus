@@ -9,19 +9,23 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, IP, Port, U8, U32, UUID, Variable1, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface SimulatorPresentAtLocationData {
 	simulatorPublicHostBlock?: {
-		port: Types.Port
-		simulatorIp: Types.IP
+		port: Port
+		simulatorIp: IP
 		gridX: number
 		gridY: number
 	}
 	neighborBlock?: {
-		ip: Types.IP
-		port: Types.Port
+		ip: IP
+		port: Port
 	}[]
 	simulatorBlock?: {
 		simName: string | Buffer
@@ -33,60 +37,61 @@ export interface SimulatorPresentAtLocationData {
 	}
 	telehubBlock?: {
 		hasTelehub: boolean
-		telehubPos: Types.Vector3
+		telehubPos: Vector3
 	}[]
 }
 
-export class SimulatorPresentAtLocation extends Packet<SimulatorPresentAtLocationData> {
-	public static override id = 11
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const simulatorPresentAtLocationMetadata = {
+	id: 11,
+	name: "SimulatorPresentAtLocation",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "simulatorPublicHostBlock",
+			parameters: [
+				["port", Port],
+				["simulatorIp", IP],
+				["gridX", U32],
+				["gridY", U32],
+			],
+		},
+		{
+			name: "neighborBlock",
+			parameters: [
+				["ip", IP],
+				["port", Port],
+			],
+			multiple: true,
+		},
+		{
+			name: "simulatorBlock",
+			parameters: [
+				["simName", Variable1],
+				["simAccess", U8],
+				["regionFlags", U32],
+				["regionId", UUID],
+				["estateId", U32],
+				["parentEstateId", U32],
+			],
+		},
+		{
+			name: "telehubBlock",
+			parameters: [
+				["hasTelehub", Bool],
+				["telehubPos", Vector3],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"simulatorPublicHostBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["port", Types.Port],
-					["simulatorIp", Types.IP],
-					["gridX", Types.U32],
-					["gridY", Types.U32],
-				]),
-			},
-		],
-		[
-			"neighborBlock",
-			{
-				parameters: new Map<string, Types.Type>([
-					["ip", Types.IP],
-					["port", Types.Port],
-				]),
-			},
-		],
-		[
-			"simulatorBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["simName", Types.Variable1],
-					["simAccess", Types.U8],
-					["regionFlags", Types.U32],
-					["regionId", Types.UUID],
-					["estateId", Types.U32],
-					["parentEstateId", Types.U32],
-				]),
-			},
-		],
-		[
-			"telehubBlock",
-			{
-				parameters: new Map<string, Types.Type>([
-					["hasTelehub", Types.Bool],
-					["telehubPos", Types.Vector3],
-				]),
-			},
-		],
-	])
-}
+export const simulatorPresentAtLocation =
+	createPacketSender<SimulatorPresentAtLocationData>(
+		simulatorPresentAtLocationMetadata,
+	)
+
+export const createSimulatorPresentAtLocationDelegate =
+	createPacketDelegate<SimulatorPresentAtLocationData>(
+		simulatorPresentAtLocationMetadata,
+	)

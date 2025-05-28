@@ -1,15 +1,11 @@
-import type { HealthMessage } from "~/network/packets"
-import { Delegate } from "./delegate"
+import { packets } from "~/network"
 
-class HealthMessageDelegate extends Delegate {
-	public override handle(packet: HealthMessage) {
-		const data = packet.data.healthData!
-		const self = this.client.self
+packets.createHealthMessageDelegate({
+	handle: (packet, context) => {
+		const self = context.client.self
 
 		if (self) {
-			self.health = data.health
+			self.health = packet.data.healthData!.health
 		}
-	}
-}
-
-export default HealthMessageDelegate
+	},
+})

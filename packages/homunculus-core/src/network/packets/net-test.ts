@@ -9,28 +9,32 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Port } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface NetTestData {
 	netBlock?: {
-		port: Types.Port
+		port: Port
 	}
 }
 
-export class NetTest extends Packet<NetTestData> {
-	public static override id = 326
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const netTestMetadata = {
+	id: 326,
+	name: "NetTest",
+	frequency: 2,
+	blocks: [
+		{
+			name: "netBlock",
+			parameters: [["port", Port]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"netBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["port", Types.Port]]),
-			},
-		],
-	])
-}
+export const netTest = createPacketSender<NetTestData>(netTestMetadata)
+
+export const createNetTestDelegate =
+	createPacketDelegate<NetTestData>(netTestMetadata)

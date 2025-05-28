@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface UseCachedMuteListData {
 	agentData?: {
@@ -18,19 +22,21 @@ export interface UseCachedMuteListData {
 	}
 }
 
-export class UseCachedMuteList extends Packet<UseCachedMuteListData> {
-	public static override id = 319
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const useCachedMuteListMetadata = {
+	id: 319,
+	name: "UseCachedMuteList",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const useCachedMuteList = createPacketSender<UseCachedMuteListData>(
+	useCachedMuteListMetadata,
+)
+
+export const createUseCachedMuteListDelegate =
+	createPacketDelegate<UseCachedMuteListData>(useCachedMuteListMetadata)

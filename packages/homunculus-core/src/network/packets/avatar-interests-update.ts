@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AvatarInterestsUpdateData {
 	agentData?: {
@@ -26,35 +30,34 @@ export interface AvatarInterestsUpdateData {
 	}
 }
 
-export class AvatarInterestsUpdate extends Packet<AvatarInterestsUpdateData> {
-	public static override id = 175
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const avatarInterestsUpdateMetadata = {
+	id: 175,
+	name: "AvatarInterestsUpdate",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "propertiesData",
+			parameters: [
+				["wantToMask", U32],
+				["wantToText", Variable1],
+				["skillsMask", U32],
+				["skillsText", Variable1],
+				["languagesText", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"propertiesData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["wantToMask", Types.U32],
-					["wantToText", Types.Variable1],
-					["skillsMask", Types.U32],
-					["skillsText", Types.Variable1],
-					["languagesText", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const avatarInterestsUpdate =
+	createPacketSender<AvatarInterestsUpdateData>(avatarInterestsUpdateMetadata)
+
+export const createAvatarInterestsUpdateDelegate =
+	createPacketDelegate<AvatarInterestsUpdateData>(avatarInterestsUpdateMetadata)

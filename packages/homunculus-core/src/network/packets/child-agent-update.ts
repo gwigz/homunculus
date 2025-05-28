@@ -9,8 +9,23 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import {
+	Bool,
+	F32,
+	Quaternion,
+	U8,
+	U32,
+	U64,
+	UUID,
+	Variable1,
+	Variable2,
+	Vector3,
+} from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ChildAgentUpdateData {
 	agentData: {
@@ -18,20 +33,20 @@ export interface ChildAgentUpdateData {
 		viewerCircuitCode: number
 		agentId?: string
 		sessionId?: string
-		agentPos: Types.Vector3
-		agentVel: Types.Vector3
-		center: Types.Vector3
-		size: Types.Vector3
-		atAxis: Types.Vector3
-		leftAxis: Types.Vector3
-		upAxis: Types.Vector3
+		agentPos: Vector3
+		agentVel: Vector3
+		center: Vector3
+		size: Vector3
+		atAxis: Vector3
+		leftAxis: Vector3
+		upAxis: Vector3
 		changedGrid: boolean
 		far: number
 		aspect: number
 		throttles: string | Buffer
 		locomotionState: number
-		headRotation: Types.Quaternion
-		bodyRotation: Types.Quaternion
+		headRotation: Quaternion
+		bodyRotation: Quaternion
 		controlFlags: number
 		energyLevel: number
 		godLevel?: number
@@ -68,98 +83,94 @@ export interface ChildAgentUpdateData {
 	}[]
 }
 
-export class ChildAgentUpdate extends Packet<ChildAgentUpdateData> {
-	public static override id = 25
-	public static override frequency = 2
-	public static override trusted = true
-	public static override compression = true
+export const childAgentUpdateMetadata = {
+	id: 25,
+	name: "ChildAgentUpdate",
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["regionHandle", U64],
+				["viewerCircuitCode", U32],
+				["agentId", UUID],
+				["sessionId", UUID],
+				["agentPos", Vector3],
+				["agentVel", Vector3],
+				["center", Vector3],
+				["size", Vector3],
+				["atAxis", Vector3],
+				["leftAxis", Vector3],
+				["upAxis", Vector3],
+				["changedGrid", Bool],
+				["far", F32],
+				["aspect", F32],
+				["throttles", Variable1],
+				["locomotionState", U32],
+				["headRotation", Quaternion],
+				["bodyRotation", Quaternion],
+				["controlFlags", U32],
+				["energyLevel", F32],
+				["godLevel", U8],
+				["alwaysRun", Bool],
+				["preyAgent", UUID],
+				["agentAccess", U8],
+				["agentTextures", Variable2],
+				["activeGroupId", UUID],
+			],
+		},
+		{
+			name: "groupData",
+			parameters: [
+				["groupId", UUID],
+				["groupPowers", U64],
+				["acceptNotices", Bool],
+			],
+			multiple: true,
+		},
+		{
+			name: "animationData",
+			parameters: [
+				["animation", UUID],
+				["objectId", UUID],
+			],
+			multiple: true,
+		},
+		{
+			name: "granterBlock",
+			parameters: [["granterId", UUID]],
+			multiple: true,
+		},
+		{
+			name: "nVPairData",
+			parameters: [["nVPairs", Variable2]],
+			multiple: true,
+		},
+		{
+			name: "visualParam",
+			parameters: [["paramValue", U8]],
+			multiple: true,
+		},
+		{
+			name: "agentAccess",
+			parameters: [
+				["agentLegacyAccess", U8],
+				["agentMaxAccess", U8],
+			],
+			multiple: true,
+		},
+		{
+			name: "agentInfo",
+			parameters: [["flags", U32]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["regionHandle", Types.U64],
-					["viewerCircuitCode", Types.U32],
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["agentPos", Types.Vector3],
-					["agentVel", Types.Vector3],
-					["center", Types.Vector3],
-					["size", Types.Vector3],
-					["atAxis", Types.Vector3],
-					["leftAxis", Types.Vector3],
-					["upAxis", Types.Vector3],
-					["changedGrid", Types.Bool],
-					["far", Types.F32],
-					["aspect", Types.F32],
-					["throttles", Types.Variable1],
-					["locomotionState", Types.U32],
-					["headRotation", Types.Quaternion],
-					["bodyRotation", Types.Quaternion],
-					["controlFlags", Types.U32],
-					["energyLevel", Types.F32],
-					["godLevel", Types.U8],
-					["alwaysRun", Types.Bool],
-					["preyAgent", Types.UUID],
-					["agentAccess", Types.U8],
-					["agentTextures", Types.Variable2],
-					["activeGroupId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"groupData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["groupId", Types.UUID],
-					["groupPowers", Types.U64],
-					["acceptNotices", Types.Bool],
-				]),
-			},
-		],
-		[
-			"animationData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["animation", Types.UUID],
-					["objectId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"granterBlock",
-			{
-				parameters: new Map<string, Types.Type>([["granterId", Types.UUID]]),
-			},
-		],
-		[
-			"nVPairData",
-			{
-				parameters: new Map<string, Types.Type>([["nVPairs", Types.Variable2]]),
-			},
-		],
-		[
-			"visualParam",
-			{
-				parameters: new Map<string, Types.Type>([["paramValue", Types.U8]]),
-			},
-		],
-		[
-			"agentAccess",
-			{
-				parameters: new Map<string, Types.Type>([
-					["agentLegacyAccess", Types.U8],
-					["agentMaxAccess", Types.U8],
-				]),
-			},
-		],
-		[
-			"agentInfo",
-			{
-				parameters: new Map<string, Types.Type>([["flags", Types.U32]]),
-			},
-		],
-	])
-}
+export const childAgentUpdate = createPacketSender<ChildAgentUpdateData>(
+	childAgentUpdateMetadata,
+)
+
+export const createChildAgentUpdateDelegate =
+	createPacketDelegate<ChildAgentUpdateData>(childAgentUpdateMetadata)

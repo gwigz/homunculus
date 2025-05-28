@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectScaleData {
 	agentData?: {
@@ -19,35 +23,36 @@ export interface ObjectScaleData {
 	}
 	objectData?: {
 		objectLocalId: number
-		scale: Types.Vector3
+		scale: Vector3
 	}[]
 }
 
-export class ObjectScale extends Packet<ObjectScaleData> {
-	public static override id = 92
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const objectScaleMetadata = {
+	id: 92,
+	name: "ObjectScale",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [
+				["objectLocalId", U32],
+				["scale", Vector3],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["objectLocalId", Types.U32],
-					["scale", Types.Vector3],
-				]),
-			},
-		],
-	])
-}
+export const objectScale =
+	createPacketSender<ObjectScaleData>(objectScaleMetadata)
+
+export const createObjectScaleDelegate =
+	createPacketDelegate<ObjectScaleData>(objectScaleMetadata)

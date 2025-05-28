@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface GroupAccountTransactionsReplyData {
 	agentData: {
@@ -32,46 +36,49 @@ export interface GroupAccountTransactionsReplyData {
 	}[]
 }
 
-export class GroupAccountTransactionsReply extends Packet<GroupAccountTransactionsReplyData> {
-	public static override id = 358
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const groupAccountTransactionsReplyMetadata = {
+	id: 358,
+	name: "GroupAccountTransactionsReply",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["groupId", UUID],
+			],
+		},
+		{
+			name: "moneyData",
+			parameters: [
+				["requestId", UUID],
+				["intervalDays", S32],
+				["currentInterval", S32],
+				["startDate", Variable1],
+			],
+		},
+		{
+			name: "historyData",
+			parameters: [
+				["time", Variable1],
+				["user", Variable1],
+				["type", S32],
+				["item", Variable1],
+				["amount", S32],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["groupId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"moneyData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["requestId", Types.UUID],
-					["intervalDays", Types.S32],
-					["currentInterval", Types.S32],
-					["startDate", Types.Variable1],
-				]),
-			},
-		],
-		[
-			"historyData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["time", Types.Variable1],
-					["user", Types.Variable1],
-					["type", Types.S32],
-					["item", Types.Variable1],
-					["amount", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const groupAccountTransactionsReply =
+	createPacketSender<GroupAccountTransactionsReplyData>(
+		groupAccountTransactionsReplyMetadata,
+	)
+
+export const createGroupAccountTransactionsReplyDelegate =
+	createPacketDelegate<GroupAccountTransactionsReplyData>(
+		groupAccountTransactionsReplyMetadata,
+	)

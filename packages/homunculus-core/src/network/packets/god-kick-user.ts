@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface GodKickUserData {
 	userInfo?: {
@@ -22,25 +26,26 @@ export interface GodKickUserData {
 	}
 }
 
-export class GodKickUser extends Packet<GodKickUserData> {
-	public static override id = 165
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const godKickUserMetadata = {
+	id: 165,
+	name: "GodKickUser",
+	frequency: 2,
+	blocks: [
+		{
+			name: "userInfo",
+			parameters: [
+				["godId", UUID],
+				["godSessionId", UUID],
+				["agentId", UUID],
+				["kickFlags", U32],
+				["reason", Variable2],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"userInfo",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["godId", Types.UUID],
-					["godSessionId", Types.UUID],
-					["agentId", Types.UUID],
-					["kickFlags", Types.U32],
-					["reason", Types.Variable2],
-				]),
-			},
-		],
-	])
-}
+export const godKickUser =
+	createPacketSender<GodKickUserData>(godKickUserMetadata)
+
+export const createGodKickUserDelegate =
+	createPacketDelegate<GodKickUserData>(godKickUserMetadata)

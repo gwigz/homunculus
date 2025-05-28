@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, U8, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectBuyData {
 	agentData: {
@@ -26,34 +30,34 @@ export interface ObjectBuyData {
 	}[]
 }
 
-export class ObjectBuy extends Packet<ObjectBuyData> {
-	public static override id = 102
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const objectBuyMetadata = {
+	id: 102,
+	name: "ObjectBuy",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["groupId", UUID],
+				["categoryId", UUID],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [
+				["objectLocalId", U32],
+				["saleType", U8],
+				["salePrice", S32],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["groupId", Types.UUID],
-					["categoryId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["objectLocalId", Types.U32],
-					["saleType", Types.U8],
-					["salePrice", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const objectBuy = createPacketSender<ObjectBuyData>(objectBuyMetadata)
+
+export const createObjectBuyDelegate =
+	createPacketDelegate<ObjectBuyData>(objectBuyMetadata)

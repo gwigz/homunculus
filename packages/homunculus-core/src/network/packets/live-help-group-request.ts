@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface LiveHelpGroupRequestData {
 	requestData?: {
@@ -19,22 +23,24 @@ export interface LiveHelpGroupRequestData {
 	}
 }
 
-export class LiveHelpGroupRequest extends Packet<LiveHelpGroupRequestData> {
-	public static override id = 379
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const liveHelpGroupRequestMetadata = {
+	id: 379,
+	name: "LiveHelpGroupRequest",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "requestData",
+			parameters: [
+				["requestId", UUID],
+				["agentId", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"requestData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["requestId", Types.UUID],
-					["agentId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const liveHelpGroupRequest =
+	createPacketSender<LiveHelpGroupRequestData>(liveHelpGroupRequestMetadata)
+
+export const createLiveHelpGroupRequestDelegate =
+	createPacketDelegate<LiveHelpGroupRequestData>(liveHelpGroupRequestMetadata)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RedoData {
 	agentData: {
@@ -23,29 +27,27 @@ export interface RedoData {
 	}[]
 }
 
-export class Redo extends Packet<RedoData> {
-	public static override id = 76
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const redoMetadata = {
+	id: 76,
+	name: "Redo",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["groupId", UUID],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [["objectId", UUID]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["groupId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([["objectId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const redo = createPacketSender<RedoData>(redoMetadata)
+
+export const createRedoDelegate = createPacketDelegate<RedoData>(redoMetadata)

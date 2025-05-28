@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AgentFOVData {
 	agentData?: {
@@ -24,33 +28,30 @@ export interface AgentFOVData {
 	}
 }
 
-export class AgentFOV extends Packet<AgentFOVData> {
-	public static override id = 82
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const agentFovMetadata = {
+	id: 82,
+	name: "AgentFOV",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["circuitCode", U32],
+			],
+		},
+		{
+			name: "fOVBlock",
+			parameters: [
+				["genCounter", U32],
+				["verticalAngle", F32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["circuitCode", Types.U32],
-				]),
-			},
-		],
-		[
-			"fOVBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["genCounter", Types.U32],
-					["verticalAngle", Types.F32],
-				]),
-			},
-		],
-	])
-}
+export const agentFov = createPacketSender<AgentFOVData>(agentFovMetadata)
+
+export const createAgentFOVDelegate =
+	createPacketDelegate<AgentFOVData>(agentFovMetadata)

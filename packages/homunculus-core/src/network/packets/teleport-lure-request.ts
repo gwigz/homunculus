@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface TeleportLureRequestData {
 	info?: {
@@ -21,24 +25,26 @@ export interface TeleportLureRequestData {
 	}
 }
 
-export class TeleportLureRequest extends Packet<TeleportLureRequestData> {
-	public static override id = 71
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const teleportLureRequestMetadata = {
+	id: 71,
+	name: "TeleportLureRequest",
+	frequency: 2,
+	blocks: [
+		{
+			name: "info",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["lureId", UUID],
+				["teleportFlags", U32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"info",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["lureId", Types.UUID],
-					["teleportFlags", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const teleportLureRequest = createPacketSender<TeleportLureRequestData>(
+	teleportLureRequestMetadata,
+)
+
+export const createTeleportLureRequestDelegate =
+	createPacketDelegate<TeleportLureRequestData>(teleportLureRequestMetadata)

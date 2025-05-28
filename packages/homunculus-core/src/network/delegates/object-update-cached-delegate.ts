@@ -1,18 +1,14 @@
-import {
-	type ObjectUpdateCached,
-	RequestMultipleObjects,
-} from "~/network/packets"
-import { Delegate } from "./delegate"
+import { packets } from "~/network"
 
-class ObjectUpdateCachedDelegate extends Delegate {
-	public override handle(packet: ObjectUpdateCached) {
-		const uncached = packet.data.objectData!.map((data: any) => ({
+packets.createObjectUpdateCachedDelegate({
+	handle: (packet, context) => {
+		const uncached = packet.data.objectData!.map((data) => ({
 			id: data.id,
 			cacheMissType: 0,
 		}))
 
-		this.circuit.send([new RequestMultipleObjects({ objectData: uncached })])
-	}
-}
-
-export default ObjectUpdateCachedDelegate
+		context.circuit.send([
+			packets.requestMultipleObjects({ objectData: uncached }),
+		])
+	},
+})

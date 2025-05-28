@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectAnimationData {
 	sender?: {
@@ -22,28 +26,29 @@ export interface ObjectAnimationData {
 	}[]
 }
 
-export class ObjectAnimation extends Packet<ObjectAnimationData> {
-	public static override id = 30
-	public static override frequency = 2
-	public static override trusted = true
-	public static override compression = false
+export const objectAnimationMetadata = {
+	id: 30,
+	name: "ObjectAnimation",
+	trusted: true,
+	blocks: [
+		{
+			name: "sender",
+			parameters: [["id", UUID]],
+		},
+		{
+			name: "animationList",
+			parameters: [
+				["animId", UUID],
+				["animSequenceId", S32],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"sender",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["id", Types.UUID]]),
-			},
-		],
-		[
-			"animationList",
-			{
-				parameters: new Map<string, Types.Type>([
-					["animId", Types.UUID],
-					["animSequenceId", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const objectAnimation = createPacketSender<ObjectAnimationData>(
+	objectAnimationMetadata,
+)
+
+export const createObjectAnimationDelegate =
+	createPacketDelegate<ObjectAnimationData>(objectAnimationMetadata)

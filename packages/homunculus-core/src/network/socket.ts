@@ -1,15 +1,16 @@
+import assert from "node:assert"
 import {
 	createSocket,
 	type RemoteInfo,
 	type Socket as UdpSocket,
 } from "node:dgram"
 import type { Client } from "~/client"
-import { sharedServices } from "~/services"
+import { services } from "~/services"
 import { Constants } from "~/utilities"
 import type { Circuit } from "./circuit"
 import type { Core } from "./core"
 
-class Socket {
+export class Socket {
 	private socket: UdpSocket
 
 	constructor(
@@ -20,9 +21,7 @@ class Socket {
 	}
 
 	public send(circuit: Circuit, buffer: Buffer) {
-		if (!(buffer instanceof Buffer)) {
-			return Promise.resolve()
-		}
+		assert(buffer instanceof Buffer, "Invalid buffer")
 
 		return new Promise<void>((resolve, reject) => {
 			this.socket.send(buffer, circuit.port, circuit.address, (error) => {
@@ -38,12 +37,12 @@ class Socket {
 	}
 
 	public async receive(buffer: Buffer, info: RemoteInfo) {
-		const circuit = this.core.circuits.get(`${info.address}:${info.port}`)
+		this.core.circuits
+			.get(`${info.address}:${info.port}`)
+			?.receive(services.deserializer.read(buffer))
+	}
 
-		if (circuit && buffer.length) {
-			circuit.receive(sharedServices.deserializer.read(buffer))
-		}
+	public close() {
+		this.socket.close()
 	}
 }
-
-export default Socket

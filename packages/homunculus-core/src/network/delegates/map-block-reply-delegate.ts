@@ -1,28 +1,25 @@
-import type { MapBlockReply } from "~/network/packets"
-import { Delegate } from "./delegate"
+import { packets } from "~/network"
 
-class MapBlockReplyDelegate extends Delegate {
-	public override handle(packet: MapBlockReply) {
-		for (const data of packet.data.data!) {
-			const x = data.x * 256
-			const y = data.y * 256
+packets.createMapBlockReplyDelegate({
+	handle: (packet, context) => {
+		for (const mapBlock of packet.data.data!) {
+			const x = mapBlock.x * 256
+			const y = mapBlock.y * 256
 
 			const handle = ((BigInt(x) << 32n) | BigInt(y)).toString()
 
-			if (this.client.regions.has(handle)) {
-				this.client.regions.get(handle)?.update({
-					name: data.name.toString().slice(0, -1),
+			if (context.client.regions.has(handle)) {
+				context.client.regions.get(handle)?.update({
+					name: mapBlock.name.toString().slice(0, -1),
 				})
 			} else {
-				this.client.emit(
+				context.client.emit(
 					"error",
 					new Error(
-						`Received unexpected map reply for region "${data.name.toString().slice(0, -1)}".`,
+						`Received unexpected map reply for region "${mapBlock.name.toString().slice(0, -1)}".`,
 					),
 				)
 			}
 		}
-	}
-}
-
-export default MapBlockReplyDelegate
+	},
+})

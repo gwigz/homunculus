@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AtomicPassObjectData {
 	taskData?: {
@@ -19,22 +23,24 @@ export interface AtomicPassObjectData {
 	}
 }
 
-export class AtomicPassObject extends Packet<AtomicPassObjectData> {
-	public static override id = 28
-	public static override frequency = 2
-	public static override trusted = true
-	public static override compression = false
+export const atomicPassObjectMetadata = {
+	id: 28,
+	name: "AtomicPassObject",
+	trusted: true,
+	blocks: [
+		{
+			name: "taskData",
+			parameters: [
+				["taskId", UUID],
+				["attachmentNeedsSave", Bool],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"taskData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["taskId", Types.UUID],
-					["attachmentNeedsSave", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const atomicPassObject = createPacketSender<AtomicPassObjectData>(
+	atomicPassObjectMetadata,
+)
+
+export const createAtomicPassObjectDelegate =
+	createPacketDelegate<AtomicPassObjectData>(atomicPassObjectMetadata)

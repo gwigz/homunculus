@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, F32, S32, U8, U32, U64, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RegionHandshakeData {
 	regionInfo?: {
@@ -55,73 +59,70 @@ export interface RegionHandshakeData {
 	}[]
 }
 
-export class RegionHandshake extends Packet<RegionHandshakeData> {
-	public static override id = 148
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const regionHandshakeMetadata = {
+	id: 148,
+	name: "RegionHandshake",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "regionInfo",
+			parameters: [
+				["regionFlags", U32],
+				["simAccess", U8],
+				["simName", Variable1],
+				["simOwner", UUID],
+				["isEstateManager", Bool],
+				["waterHeight", F32],
+				["billableFactor", F32],
+				["cacheId", UUID],
+				["terrainBase0", UUID],
+				["terrainBase1", UUID],
+				["terrainBase2", UUID],
+				["terrainBase3", UUID],
+				["terrainDetail0", UUID],
+				["terrainDetail1", UUID],
+				["terrainDetail2", UUID],
+				["terrainDetail3", UUID],
+				["terrainStartHeight00", F32],
+				["terrainStartHeight01", F32],
+				["terrainStartHeight10", F32],
+				["terrainStartHeight11", F32],
+				["terrainHeightRange00", F32],
+				["terrainHeightRange01", F32],
+				["terrainHeightRange10", F32],
+				["terrainHeightRange11", F32],
+			],
+		},
+		{
+			name: "regionInfo2",
+			parameters: [["regionId", UUID]],
+		},
+		{
+			name: "regionInfo3",
+			parameters: [
+				["cPUClassId", S32],
+				["cPURatio", S32],
+				["coloName", Variable1],
+				["productSku", Variable1],
+				["productName", Variable1],
+			],
+		},
+		{
+			name: "regionInfo4",
+			parameters: [
+				["regionFlagsExtended", U64],
+				["regionProtocols", U64],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"regionInfo",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["regionFlags", Types.U32],
-					["simAccess", Types.U8],
-					["simName", Types.Variable1],
-					["simOwner", Types.UUID],
-					["isEstateManager", Types.Bool],
-					["waterHeight", Types.F32],
-					["billableFactor", Types.F32],
-					["cacheId", Types.UUID],
-					["terrainBase0", Types.UUID],
-					["terrainBase1", Types.UUID],
-					["terrainBase2", Types.UUID],
-					["terrainBase3", Types.UUID],
-					["terrainDetail0", Types.UUID],
-					["terrainDetail1", Types.UUID],
-					["terrainDetail2", Types.UUID],
-					["terrainDetail3", Types.UUID],
-					["terrainStartHeight00", Types.F32],
-					["terrainStartHeight01", Types.F32],
-					["terrainStartHeight10", Types.F32],
-					["terrainStartHeight11", Types.F32],
-					["terrainHeightRange00", Types.F32],
-					["terrainHeightRange01", Types.F32],
-					["terrainHeightRange10", Types.F32],
-					["terrainHeightRange11", Types.F32],
-				]),
-			},
-		],
-		[
-			"regionInfo2",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["regionId", Types.UUID]]),
-			},
-		],
-		[
-			"regionInfo3",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["cPUClassId", Types.S32],
-					["cPURatio", Types.S32],
-					["coloName", Types.Variable1],
-					["productSku", Types.Variable1],
-					["productName", Types.Variable1],
-				]),
-			},
-		],
-		[
-			"regionInfo4",
-			{
-				parameters: new Map<string, Types.Type>([
-					["regionFlagsExtended", Types.U64],
-					["regionProtocols", Types.U64],
-				]),
-			},
-		],
-	])
-}
+export const regionHandshake = createPacketSender<RegionHandshakeData>(
+	regionHandshakeMetadata,
+)
+
+export const createRegionHandshakeDelegate =
+	createPacketDelegate<RegionHandshakeData>(regionHandshakeMetadata)

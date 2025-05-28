@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface TerminateFriendshipData {
 	agentData?: {
@@ -22,29 +26,28 @@ export interface TerminateFriendshipData {
 	}
 }
 
-export class TerminateFriendship extends Packet<TerminateFriendshipData> {
-	public static override id = 300
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const terminateFriendshipMetadata = {
+	id: 300,
+	name: "TerminateFriendship",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "exBlock",
+			parameters: [["otherId", UUID]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"exBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["otherId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const terminateFriendship = createPacketSender<TerminateFriendshipData>(
+	terminateFriendshipMetadata,
+)
+
+export const createTerminateFriendshipDelegate =
+	createPacketDelegate<TerminateFriendshipData>(terminateFriendshipMetadata)

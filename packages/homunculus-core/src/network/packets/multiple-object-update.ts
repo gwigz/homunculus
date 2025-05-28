@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U8, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface MultipleObjectUpdateData {
 	agentData?: {
@@ -24,32 +28,33 @@ export interface MultipleObjectUpdateData {
 	}[]
 }
 
-export class MultipleObjectUpdate extends Packet<MultipleObjectUpdateData> {
-	public static override id = 2
-	public static override frequency = 1
-	public static override trusted = false
-	public static override compression = true
+export const multipleObjectUpdateMetadata = {
+	id: 2,
+	name: "MultipleObjectUpdate",
+	frequency: 1,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [
+				["objectLocalId", U32],
+				["type", U8],
+				["data", Variable1],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["objectLocalId", Types.U32],
-					["type", Types.U8],
-					["data", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const multipleObjectUpdate =
+	createPacketSender<MultipleObjectUpdateData>(multipleObjectUpdateMetadata)
+
+export const createMultipleObjectUpdateDelegate =
+	createPacketDelegate<MultipleObjectUpdateData>(multipleObjectUpdateMetadata)

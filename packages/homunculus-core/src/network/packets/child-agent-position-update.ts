@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, U32, U64, UUID, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ChildAgentPositionUpdateData {
 	agentData: {
@@ -18,43 +22,48 @@ export interface ChildAgentPositionUpdateData {
 		viewerCircuitCode: number
 		agentId?: string
 		sessionId?: string
-		agentPos: Types.Vector3
-		agentVel: Types.Vector3
-		center: Types.Vector3
-		size: Types.Vector3
-		atAxis: Types.Vector3
-		leftAxis: Types.Vector3
-		upAxis: Types.Vector3
+		agentPos: Vector3
+		agentVel: Vector3
+		center: Vector3
+		size: Vector3
+		atAxis: Vector3
+		leftAxis: Vector3
+		upAxis: Vector3
 		changedGrid: boolean
 	}
 }
 
-export class ChildAgentPositionUpdate extends Packet<ChildAgentPositionUpdateData> {
-	public static override id = 27
-	public static override frequency = 2
-	public static override trusted = true
-	public static override compression = false
+export const childAgentPositionUpdateMetadata = {
+	id: 27,
+	name: "ChildAgentPositionUpdate",
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["regionHandle", U64],
+				["viewerCircuitCode", U32],
+				["agentId", UUID],
+				["sessionId", UUID],
+				["agentPos", Vector3],
+				["agentVel", Vector3],
+				["center", Vector3],
+				["size", Vector3],
+				["atAxis", Vector3],
+				["leftAxis", Vector3],
+				["upAxis", Vector3],
+				["changedGrid", Bool],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["regionHandle", Types.U64],
-					["viewerCircuitCode", Types.U32],
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["agentPos", Types.Vector3],
-					["agentVel", Types.Vector3],
-					["center", Types.Vector3],
-					["size", Types.Vector3],
-					["atAxis", Types.Vector3],
-					["leftAxis", Types.Vector3],
-					["upAxis", Types.Vector3],
-					["changedGrid", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const childAgentPositionUpdate =
+	createPacketSender<ChildAgentPositionUpdateData>(
+		childAgentPositionUpdateMetadata,
+	)
+
+export const createChildAgentPositionUpdateDelegate =
+	createPacketDelegate<ChildAgentPositionUpdateData>(
+		childAgentPositionUpdateMetadata,
+	)

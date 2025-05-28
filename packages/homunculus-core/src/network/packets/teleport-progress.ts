@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface TeleportProgressData {
 	agentData?: {
@@ -22,29 +26,29 @@ export interface TeleportProgressData {
 	}
 }
 
-export class TeleportProgress extends Packet<TeleportProgressData> {
-	public static override id = 66
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const teleportProgressMetadata = {
+	id: 66,
+	name: "TeleportProgress",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "info",
+			parameters: [
+				["teleportFlags", U32],
+				["message", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"info",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["teleportFlags", Types.U32],
-					["message", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const teleportProgress = createPacketSender<TeleportProgressData>(
+	teleportProgressMetadata,
+)
+
+export const createTeleportProgressDelegate =
+	createPacketDelegate<TeleportProgressData>(teleportProgressMetadata)

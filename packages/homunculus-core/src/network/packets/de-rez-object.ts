@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U8, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface DeRezObjectData {
 	agentData?: {
@@ -30,42 +34,40 @@ export interface DeRezObjectData {
 	}[]
 }
 
-export class DeRezObject extends Packet<DeRezObjectData> {
-	public static override id = 291
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const deRezObjectMetadata = {
+	id: 291,
+	name: "DeRezObject",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "agentBlock",
+			parameters: [
+				["groupId", UUID],
+				["destination", U8],
+				["destinationId", UUID],
+				["transactionId", UUID],
+				["packetCount", U8],
+				["packetNumber", U8],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [["objectLocalId", U32]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"agentBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["groupId", Types.UUID],
-					["destination", Types.U8],
-					["destinationId", Types.UUID],
-					["transactionId", Types.UUID],
-					["packetCount", Types.U8],
-					["packetNumber", Types.U8],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([["objectLocalId", Types.U32]]),
-			},
-		],
-	])
-}
+export const deRezObject =
+	createPacketSender<DeRezObjectData>(deRezObjectMetadata)
+
+export const createDeRezObjectDelegate =
+	createPacketDelegate<DeRezObjectData>(deRezObjectMetadata)

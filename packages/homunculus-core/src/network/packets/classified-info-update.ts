@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, U8, U32, UUID, Variable1, Variable2, Vector3D } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ClassifiedInfoUpdateData {
 	agentData?: {
@@ -25,46 +29,44 @@ export interface ClassifiedInfoUpdateData {
 		parcelId: string
 		parentEstate: number
 		snapshotId: string
-		posGlobal: Types.Vector3D
+		posGlobal: Vector3D
 		classifiedFlags: number
 		priceForListing: number
 	}
 }
 
-export class ClassifiedInfoUpdate extends Packet<ClassifiedInfoUpdateData> {
-	public static override id = 45
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const classifiedInfoUpdateMetadata = {
+	id: 45,
+	name: "ClassifiedInfoUpdate",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "data",
+			parameters: [
+				["classifiedId", UUID],
+				["category", U32],
+				["name", Variable1],
+				["desc", Variable2],
+				["parcelId", UUID],
+				["parentEstate", U32],
+				["snapshotId", UUID],
+				["posGlobal", Vector3D],
+				["classifiedFlags", U8],
+				["priceForListing", S32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["classifiedId", Types.UUID],
-					["category", Types.U32],
-					["name", Types.Variable1],
-					["desc", Types.Variable2],
-					["parcelId", Types.UUID],
-					["parentEstate", Types.U32],
-					["snapshotId", Types.UUID],
-					["posGlobal", Types.Vector3D],
-					["classifiedFlags", Types.U8],
-					["priceForListing", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const classifiedInfoUpdate =
+	createPacketSender<ClassifiedInfoUpdateData>(classifiedInfoUpdateMetadata)
+
+export const createClassifiedInfoUpdateDelegate =
+	createPacketDelegate<ClassifiedInfoUpdateData>(classifiedInfoUpdateMetadata)

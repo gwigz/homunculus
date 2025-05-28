@@ -1,12 +1,24 @@
-import assert from "node:assert"
+import { services } from "~/services"
+import type { DelegateConfig } from "../delegate"
 
-export class Packet<T extends object> {
+export interface PacketBlock {
+	name: string
+	parameters: Array<[name: string, type: { toBuffer: (value: any) => Buffer }]>
+	multiple?: true
+}
+
+export interface PacketMetadata {
 	/**
 	 * Packet ID, this value is only unique per-frequency range, see key get
 	 * method of Packet, plus the buffer helper of the network namespace for
 	 * generating a lookup codes.
 	 */
-	public static id: number
+	id: number
+
+	/**
+	 * Packet name, this is used mainly just to identify the packet in debugging.
+	 */
+	name: string
 
 	/**
 	 * Packet frequency. This value determines whether the message ID is 8, 16, or
@@ -14,25 +26,32 @@ export class Packet<T extends object> {
 	 * frequencies and 32,000 in "Low". A message with a "Fixed" frequency also
 	 * defines its own ID and is considered to be a signal.
 	 *
-	 * 0: Low
+	 * 0: High (undefined)
 	 * 1: Medium
-	 * 2: High
+	 * 2: Low
 	 * 3: Fixed
+	 *
+	 * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
 	 */
-	public static frequency: number
+	frequency?: 1 | 2 | 3
 
 	/**
 	 * If this value is true, the client cannot send this packet as circuits only
 	 * accept trusted packets from internal connections (to utility servers etc).
 	 */
-	public static trusted: boolean
+	trusted?: true
 
 	/**
 	 * States if this packet should use or be using zero-coding, to attempt to
 	 * compress the sequences of zeros in the message in order to reduce network
 	 * load.
 	 */
-	public static compression: boolean
+	compression?: true
+
+	/**
+	 * Reliable flag, suggests that this packet should be sent reliably.
+	 */
+	reliable?: true
 
 	/**
 	 * Determines the blocks that are are contained in the message and it's
@@ -40,19 +59,30 @@ export class Packet<T extends object> {
 	 *
 	 * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
 	 */
-	public static format: Map<string, any>
+	blocks?: Array<PacketBlock>
+}
 
-	public index?: number
-	public reliable?: boolean
-	public data: T
+export interface Packet<T extends object> {
+	data: T
+	reliable?: boolean
+	metadata: PacketMetadata
+}
 
-	constructor(data: T) {
-		assert.notEqual(
-			this.constructor,
-			Packet,
-			"Do not instantiate from the packet class, use extended classes!",
-		)
+export function createPacketSender<T extends object>(metadata: PacketMetadata) {
+	return (data: T, reliable?: boolean) =>
+		({
+			data,
+			reliable,
+			metadata,
+		}) satisfies Packet<T>
+}
 
-		this.data = data
-	}
+export function createPacketDelegate<T extends object>(
+	metadata: PacketMetadata,
+) {
+	return (config: Omit<DelegateConfig<T>, "metadata">) =>
+		services.delegate.register<T>({
+			...config,
+			metadata,
+		})
 }

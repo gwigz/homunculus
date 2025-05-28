@@ -9,13 +9,17 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, S32, U8, UUID, Variable1, Variable2, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ChatPassData {
 	chatData?: {
 		channel: number
-		position: Types.Vector3
+		position: Vector3
 		id: string
 		ownerId: string
 		name: string | Buffer
@@ -27,30 +31,32 @@ export interface ChatPassData {
 	}
 }
 
-export class ChatPass extends Packet<ChatPassData> {
-	public static override id = 239
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const chatPassMetadata = {
+	id: 239,
+	name: "ChatPass",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "chatData",
+			parameters: [
+				["channel", S32],
+				["position", Vector3],
+				["id", UUID],
+				["ownerId", UUID],
+				["name", Variable1],
+				["sourceType", U8],
+				["type", U8],
+				["radius", F32],
+				["simAccess", U8],
+				["message", Variable2],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"chatData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["channel", Types.S32],
-					["position", Types.Vector3],
-					["id", Types.UUID],
-					["ownerId", Types.UUID],
-					["name", Types.Variable1],
-					["sourceType", Types.U8],
-					["type", Types.U8],
-					["radius", Types.F32],
-					["simAccess", Types.U8],
-					["message", Types.Variable2],
-				]),
-			},
-		],
-	])
-}
+export const chatPass = createPacketSender<ChatPassData>(chatPassMetadata)
+
+export const createChatPassDelegate =
+	createPacketDelegate<ChatPassData>(chatPassMetadata)

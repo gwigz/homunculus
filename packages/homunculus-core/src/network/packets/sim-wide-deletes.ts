@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface SimWideDeletesData {
 	agentData?: {
@@ -23,32 +27,31 @@ export interface SimWideDeletesData {
 	}
 }
 
-export class SimWideDeletes extends Packet<SimWideDeletesData> {
-	public static override id = 129
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const simWideDeletesMetadata = {
+	id: 129,
+	name: "SimWideDeletes",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "dataBlock",
+			parameters: [
+				["targetId", UUID],
+				["flags", U32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"dataBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["targetId", Types.UUID],
-					["flags", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const simWideDeletes = createPacketSender<SimWideDeletesData>(
+	simWideDeletesMetadata,
+)
+
+export const createSimWideDeletesDelegate =
+	createPacketDelegate<SimWideDeletesData>(simWideDeletesMetadata)

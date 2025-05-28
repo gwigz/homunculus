@@ -9,41 +9,48 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { IP, Port, U8, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface NeighborListData {
 	neighborBlock?: {
-		ip: Types.IP
-		port: Types.Port
-		publicIp: Types.IP
-		publicPort: Types.Port
+		ip: IP
+		port: Port
+		publicIp: IP
+		publicPort: Port
 		regionId: string
 		name: string | Buffer
 		simAccess: number
 	}[]
 }
 
-export class NeighborList extends Packet<NeighborListData> {
-	public static override id = 3
-	public static override frequency = 2
-	public static override trusted = true
-	public static override compression = false
+export const neighborListMetadata = {
+	id: 3,
+	name: "NeighborList",
+	trusted: true,
+	blocks: [
+		{
+			name: "neighborBlock",
+			parameters: [
+				["ip", IP],
+				["port", Port],
+				["publicIp", IP],
+				["publicPort", Port],
+				["regionId", UUID],
+				["name", Variable1],
+				["simAccess", U8],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"neighborBlock",
-			{
-				parameters: new Map<string, Types.Type>([
-					["ip", Types.IP],
-					["port", Types.Port],
-					["publicIp", Types.IP],
-					["publicPort", Types.Port],
-					["regionId", Types.UUID],
-					["name", Types.Variable1],
-					["simAccess", Types.U8],
-				]),
-			},
-		],
-	])
-}
+export const neighborList =
+	createPacketSender<NeighborListData>(neighborListMetadata)
+
+export const createNeighborListDelegate =
+	createPacketDelegate<NeighborListData>(neighborListMetadata)

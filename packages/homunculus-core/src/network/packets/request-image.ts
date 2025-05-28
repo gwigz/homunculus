@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, S8, U8, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RequestImageData {
 	agentData?: {
@@ -26,34 +30,33 @@ export interface RequestImageData {
 	}[]
 }
 
-export class RequestImage extends Packet<RequestImageData> {
-	public static override id = 8
-	public static override frequency = 2
-	public static override trusted = false
-	public static override compression = false
+export const requestImageMetadata = {
+	id: 8,
+	name: "RequestImage",
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "requestImage",
+			parameters: [
+				["image", UUID],
+				["discardLevel", S8],
+				["downloadPriority", F32],
+				["packet", U32],
+				["type", U8],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"requestImage",
-			{
-				parameters: new Map<string, Types.Type>([
-					["image", Types.UUID],
-					["discardLevel", Types.S8],
-					["downloadPriority", Types.F32],
-					["packet", Types.U32],
-					["type", Types.U8],
-				]),
-			},
-		],
-	])
-}
+export const requestImage =
+	createPacketSender<RequestImageData>(requestImageMetadata)
+
+export const createRequestImageDelegate =
+	createPacketDelegate<RequestImageData>(requestImageMetadata)

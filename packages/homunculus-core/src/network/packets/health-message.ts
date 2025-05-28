@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface HealthMessageData {
 	healthData?: {
@@ -18,19 +22,23 @@ export interface HealthMessageData {
 	}
 }
 
-export class HealthMessage extends Packet<HealthMessageData> {
-	public static override id = 138
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const healthMessageMetadata = {
+	id: 138,
+	name: "HealthMessage",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "healthData",
+			parameters: [["health", F32]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"healthData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["health", Types.F32]]),
-			},
-		],
-	])
-}
+export const healthMessage = createPacketSender<HealthMessageData>(
+	healthMessageMetadata,
+)
+
+export const createHealthMessageDelegate =
+	createPacketDelegate<HealthMessageData>(healthMessageMetadata)

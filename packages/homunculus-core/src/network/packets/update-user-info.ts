@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface UpdateUserInfoData {
 	agentData?: {
@@ -23,32 +27,31 @@ export interface UpdateUserInfoData {
 	}
 }
 
-export class UpdateUserInfo extends Packet<UpdateUserInfoData> {
-	public static override id = 401
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const updateUserInfoMetadata = {
+	id: 401,
+	name: "UpdateUserInfo",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "userData",
+			parameters: [
+				["iMViaEMail", Bool],
+				["directoryVisibility", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"userData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["iMViaEMail", Types.Bool],
-					["directoryVisibility", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const updateUserInfo = createPacketSender<UpdateUserInfoData>(
+	updateUserInfoMetadata,
+)
+
+export const createUpdateUserInfoDelegate =
+	createPacketDelegate<UpdateUserInfoData>(updateUserInfoMetadata)

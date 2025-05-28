@@ -1,9 +1,8 @@
 import assert from "node:assert"
 import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
-import { type AuthenticatorOptions, Core } from "~/network"
-import { Vector3 } from "~/network/types"
+import { type AuthenticatorOptions, Core, Vector3 } from "~/network"
 import { loginOptionsSchema } from "~/schema/environment-schema"
-import { sharedServices } from "~/services"
+import { services } from "~/services"
 import { Nearby } from "~/structures"
 import { Regions } from "~/structures/regions"
 import { Self } from "~/structures/self"
@@ -101,7 +100,7 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 			`Attempting login using username "${credentials.username}"...`,
 		)
 
-		const response = await sharedServices.authenticator.login(credentials)
+		const response = await services.authenticator.login(credentials)
 
 		if (!response.login) {
 			throw new Error(response.message)

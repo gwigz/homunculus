@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, U8, U32, UUID, Variable1, Variable2, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ImprovedInstantMessageData {
 	agentData?: {
@@ -22,7 +26,7 @@ export interface ImprovedInstantMessageData {
 		toAgentId: string
 		parentEstateId: number
 		regionId: string
-		position: Types.Vector3
+		position: Vector3
 		offline: number
 		dialog: number
 		id: string
@@ -33,42 +37,43 @@ export interface ImprovedInstantMessageData {
 	}
 }
 
-export class ImprovedInstantMessage extends Packet<ImprovedInstantMessageData> {
-	public static override id = 254
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const improvedInstantMessageMetadata = {
+	id: 254,
+	name: "ImprovedInstantMessage",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "messageBlock",
+			parameters: [
+				["fromGroup", Bool],
+				["toAgentId", UUID],
+				["parentEstateId", U32],
+				["regionId", UUID],
+				["position", Vector3],
+				["offline", U8],
+				["dialog", U8],
+				["id", UUID],
+				["timestamp", U32],
+				["fromAgentName", Variable1],
+				["message", Variable2],
+				["binaryBucket", Variable2],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"messageBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["fromGroup", Types.Bool],
-					["toAgentId", Types.UUID],
-					["parentEstateId", Types.U32],
-					["regionId", Types.UUID],
-					["position", Types.Vector3],
-					["offline", Types.U8],
-					["dialog", Types.U8],
-					["id", Types.UUID],
-					["timestamp", Types.U32],
-					["fromAgentName", Types.Variable1],
-					["message", Types.Variable2],
-					["binaryBucket", Types.Variable2],
-				]),
-			},
-		],
-	])
-}
+export const improvedInstantMessage =
+	createPacketSender<ImprovedInstantMessageData>(improvedInstantMessageMetadata)
+
+export const createImprovedInstantMessageDelegate =
+	createPacketDelegate<ImprovedInstantMessageData>(
+		improvedInstantMessageMetadata,
+	)

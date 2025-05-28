@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ScriptAnswerYesData {
 	agentData?: {
@@ -24,33 +28,32 @@ export interface ScriptAnswerYesData {
 	}
 }
 
-export class ScriptAnswerYes extends Packet<ScriptAnswerYesData> {
-	public static override id = 132
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const scriptAnswerYesMetadata = {
+	id: 132,
+	name: "ScriptAnswerYes",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "data",
+			parameters: [
+				["taskId", UUID],
+				["itemId", UUID],
+				["questions", S32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["taskId", Types.UUID],
-					["itemId", Types.UUID],
-					["questions", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const scriptAnswerYes = createPacketSender<ScriptAnswerYesData>(
+	scriptAnswerYesMetadata,
+)
+
+export const createScriptAnswerYesDelegate =
+	createPacketDelegate<ScriptAnswerYesData>(scriptAnswerYesMetadata)

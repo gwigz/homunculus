@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RequestObjectPropertiesFamilyData {
 	agentData?: {
@@ -23,32 +27,35 @@ export interface RequestObjectPropertiesFamilyData {
 	}
 }
 
-export class RequestObjectPropertiesFamily extends Packet<RequestObjectPropertiesFamilyData> {
-	public static override id = 5
-	public static override frequency = 1
-	public static override trusted = false
-	public static override compression = true
+export const requestObjectPropertiesFamilyMetadata = {
+	id: 5,
+	name: "RequestObjectPropertiesFamily",
+	frequency: 1,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [
+				["requestFlags", U32],
+				["objectId", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["requestFlags", Types.U32],
-					["objectId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const requestObjectPropertiesFamily =
+	createPacketSender<RequestObjectPropertiesFamilyData>(
+		requestObjectPropertiesFamilyMetadata,
+	)
+
+export const createRequestObjectPropertiesFamilyDelegate =
+	createPacketDelegate<RequestObjectPropertiesFamilyData>(
+		requestObjectPropertiesFamilyMetadata,
+	)

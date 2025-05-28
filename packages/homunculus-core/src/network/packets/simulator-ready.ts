@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, U8, U32, UUID, Variable1, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface SimulatorReadyData {
 	simulatorBlock?: {
@@ -23,40 +27,41 @@ export interface SimulatorReadyData {
 	}
 	telehubBlock?: {
 		hasTelehub: boolean
-		telehubPos: Types.Vector3
+		telehubPos: Vector3
 	}
 }
 
-export class SimulatorReady extends Packet<SimulatorReadyData> {
-	public static override id = 9
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const simulatorReadyMetadata = {
+	id: 9,
+	name: "SimulatorReady",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "simulatorBlock",
+			parameters: [
+				["simName", Variable1],
+				["simAccess", U8],
+				["regionFlags", U32],
+				["regionId", UUID],
+				["estateId", U32],
+				["parentEstateId", U32],
+			],
+		},
+		{
+			name: "telehubBlock",
+			parameters: [
+				["hasTelehub", Bool],
+				["telehubPos", Vector3],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"simulatorBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["simName", Types.Variable1],
-					["simAccess", Types.U8],
-					["regionFlags", Types.U32],
-					["regionId", Types.UUID],
-					["estateId", Types.U32],
-					["parentEstateId", Types.U32],
-				]),
-			},
-		],
-		[
-			"telehubBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["hasTelehub", Types.Bool],
-					["telehubPos", Types.Vector3],
-				]),
-			},
-		],
-	])
-}
+export const simulatorReady = createPacketSender<SimulatorReadyData>(
+	simulatorReadyMetadata,
+)
+
+export const createSimulatorReadyDelegate =
+	createPacketDelegate<SimulatorReadyData>(simulatorReadyMetadata)

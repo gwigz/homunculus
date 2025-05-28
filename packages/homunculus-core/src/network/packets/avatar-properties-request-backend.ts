@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, U8, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AvatarPropertiesRequestBackendData {
 	agentData: {
@@ -21,24 +25,30 @@ export interface AvatarPropertiesRequestBackendData {
 	}
 }
 
-export class AvatarPropertiesRequestBackend extends Packet<AvatarPropertiesRequestBackendData> {
-	public static override id = 170
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const avatarPropertiesRequestBackendMetadata = {
+	id: 170,
+	name: "AvatarPropertiesRequestBackend",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["avatarId", UUID],
+				["godLevel", U8],
+				["webProfilesDisabled", Bool],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["avatarId", Types.UUID],
-					["godLevel", Types.U8],
-					["webProfilesDisabled", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const avatarPropertiesRequestBackend =
+	createPacketSender<AvatarPropertiesRequestBackendData>(
+		avatarPropertiesRequestBackendMetadata,
+	)
+
+export const createAvatarPropertiesRequestBackendDelegate =
+	createPacketDelegate<AvatarPropertiesRequestBackendData>(
+		avatarPropertiesRequestBackendMetadata,
+	)

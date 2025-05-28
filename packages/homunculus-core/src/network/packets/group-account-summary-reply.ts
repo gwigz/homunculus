@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface GroupAccountSummaryReplyData {
 	agentData: {
@@ -41,50 +45,54 @@ export interface GroupAccountSummaryReplyData {
 	}
 }
 
-export class GroupAccountSummaryReply extends Packet<GroupAccountSummaryReplyData> {
-	public static override id = 354
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const groupAccountSummaryReplyMetadata = {
+	id: 354,
+	name: "GroupAccountSummaryReply",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["groupId", UUID],
+			],
+		},
+		{
+			name: "moneyData",
+			parameters: [
+				["requestId", UUID],
+				["intervalDays", S32],
+				["currentInterval", S32],
+				["startDate", Variable1],
+				["balance", S32],
+				["totalCredits", S32],
+				["totalDebits", S32],
+				["objectTaxCurrent", S32],
+				["lightTaxCurrent", S32],
+				["landTaxCurrent", S32],
+				["groupTaxCurrent", S32],
+				["parcelDirFeeCurrent", S32],
+				["objectTaxEstimate", S32],
+				["lightTaxEstimate", S32],
+				["landTaxEstimate", S32],
+				["groupTaxEstimate", S32],
+				["parcelDirFeeEstimate", S32],
+				["nonExemptMembers", S32],
+				["lastTaxDate", Variable1],
+				["taxDate", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["groupId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"moneyData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["requestId", Types.UUID],
-					["intervalDays", Types.S32],
-					["currentInterval", Types.S32],
-					["startDate", Types.Variable1],
-					["balance", Types.S32],
-					["totalCredits", Types.S32],
-					["totalDebits", Types.S32],
-					["objectTaxCurrent", Types.S32],
-					["lightTaxCurrent", Types.S32],
-					["landTaxCurrent", Types.S32],
-					["groupTaxCurrent", Types.S32],
-					["parcelDirFeeCurrent", Types.S32],
-					["objectTaxEstimate", Types.S32],
-					["lightTaxEstimate", Types.S32],
-					["landTaxEstimate", Types.S32],
-					["groupTaxEstimate", Types.S32],
-					["parcelDirFeeEstimate", Types.S32],
-					["nonExemptMembers", Types.S32],
-					["lastTaxDate", Types.Variable1],
-					["taxDate", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const groupAccountSummaryReply =
+	createPacketSender<GroupAccountSummaryReplyData>(
+		groupAccountSummaryReplyMetadata,
+	)
+
+export const createGroupAccountSummaryReplyDelegate =
+	createPacketDelegate<GroupAccountSummaryReplyData>(
+		groupAccountSummaryReplyMetadata,
+	)

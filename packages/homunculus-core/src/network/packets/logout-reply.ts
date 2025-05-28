@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface LogoutReplyData {
 	agentData?: {
@@ -22,28 +26,30 @@ export interface LogoutReplyData {
 	}[]
 }
 
-export class LogoutReply extends Packet<LogoutReplyData> {
-	public static override id = 253
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const logoutReplyMetadata = {
+	id: 253,
+	name: "LogoutReply",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "inventoryData",
+			parameters: [["itemId", UUID]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"inventoryData",
-			{
-				parameters: new Map<string, Types.Type>([["itemId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const logoutReply =
+	createPacketSender<LogoutReplyData>(logoutReplyMetadata)
+
+export const createLogoutReplyDelegate =
+	createPacketDelegate<LogoutReplyData>(logoutReplyMetadata)

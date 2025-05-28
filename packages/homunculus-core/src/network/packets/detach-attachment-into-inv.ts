@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface DetachAttachmentIntoInvData {
 	objectData?: {
@@ -19,22 +23,27 @@ export interface DetachAttachmentIntoInvData {
 	}
 }
 
-export class DetachAttachmentIntoInv extends Packet<DetachAttachmentIntoInvData> {
-	public static override id = 397
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const detachAttachmentIntoInvMetadata = {
+	id: 397,
+	name: "DetachAttachmentIntoInv",
+	frequency: 2,
+	blocks: [
+		{
+			name: "objectData",
+			parameters: [
+				["agentId", UUID],
+				["itemId", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"objectData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["itemId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const detachAttachmentIntoInv =
+	createPacketSender<DetachAttachmentIntoInvData>(
+		detachAttachmentIntoInvMetadata,
+	)
+
+export const createDetachAttachmentIntoInvDelegate =
+	createPacketDelegate<DetachAttachmentIntoInvData>(
+		detachAttachmentIntoInvMetadata,
+	)

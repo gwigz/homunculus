@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectDeleteData {
 	agentData: {
@@ -23,29 +27,30 @@ export interface ObjectDeleteData {
 	}[]
 }
 
-export class ObjectDelete extends Packet<ObjectDeleteData> {
-	public static override id = 89
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const objectDeleteMetadata = {
+	id: 89,
+	name: "ObjectDelete",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["force", Bool],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [["objectLocalId", U32]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["force", Types.Bool],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([["objectLocalId", Types.U32]]),
-			},
-		],
-	])
-}
+export const objectDelete =
+	createPacketSender<ObjectDeleteData>(objectDeleteMetadata)
+
+export const createObjectDeleteDelegate =
+	createPacketDelegate<ObjectDeleteData>(objectDeleteMetadata)

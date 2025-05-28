@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, U32, UUID, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectGrabData {
 	agentData?: {
@@ -19,57 +23,54 @@ export interface ObjectGrabData {
 	}
 	objectData?: {
 		localId: number
-		grabOffset: Types.Vector3
+		grabOffset: Vector3
 	}
 	surfaceInfo?: {
-		uVCoord: Types.Vector3
-		sTCoord: Types.Vector3
+		uVCoord: Vector3
+		sTCoord: Vector3
 		faceIndex: number
-		position: Types.Vector3
-		normal: Types.Vector3
-		binormal: Types.Vector3
+		position: Vector3
+		normal: Vector3
+		binormal: Vector3
 	}[]
 }
 
-export class ObjectGrab extends Packet<ObjectGrabData> {
-	public static override id = 117
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const objectGrabMetadata = {
+	id: 117,
+	name: "ObjectGrab",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [
+				["localId", U32],
+				["grabOffset", Vector3],
+			],
+		},
+		{
+			name: "surfaceInfo",
+			parameters: [
+				["uVCoord", Vector3],
+				["sTCoord", Vector3],
+				["faceIndex", S32],
+				["position", Vector3],
+				["normal", Vector3],
+				["binormal", Vector3],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["localId", Types.U32],
-					["grabOffset", Types.Vector3],
-				]),
-			},
-		],
-		[
-			"surfaceInfo",
-			{
-				parameters: new Map<string, Types.Type>([
-					["uVCoord", Types.Vector3],
-					["sTCoord", Types.Vector3],
-					["faceIndex", Types.S32],
-					["position", Types.Vector3],
-					["normal", Types.Vector3],
-					["binormal", Types.Vector3],
-				]),
-			},
-		],
-	])
-}
+export const objectGrab = createPacketSender<ObjectGrabData>(objectGrabMetadata)
+
+export const createObjectGrabDelegate =
+	createPacketDelegate<ObjectGrabData>(objectGrabMetadata)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, F32, U8, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectFlagUpdateData {
 	agentData: {
@@ -31,39 +35,41 @@ export interface ObjectFlagUpdateData {
 	}[]
 }
 
-export class ObjectFlagUpdate extends Packet<ObjectFlagUpdateData> {
-	public static override id = 94
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const objectFlagUpdateMetadata = {
+	id: 94,
+	name: "ObjectFlagUpdate",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["objectLocalId", U32],
+				["usePhysics", Bool],
+				["isTemporary", Bool],
+				["isPhantom", Bool],
+				["castsShadows", Bool],
+			],
+		},
+		{
+			name: "extraPhysics",
+			parameters: [
+				["physicsShapeType", U8],
+				["density", F32],
+				["friction", F32],
+				["restitution", F32],
+				["gravityMultiplier", F32],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["objectLocalId", Types.U32],
-					["usePhysics", Types.Bool],
-					["isTemporary", Types.Bool],
-					["isPhantom", Types.Bool],
-					["castsShadows", Types.Bool],
-				]),
-			},
-		],
-		[
-			"extraPhysics",
-			{
-				parameters: new Map<string, Types.Type>([
-					["physicsShapeType", Types.U8],
-					["density", Types.F32],
-					["friction", Types.F32],
-					["restitution", Types.F32],
-					["gravityMultiplier", Types.F32],
-				]),
-			},
-		],
-	])
-}
+export const objectFlagUpdate = createPacketSender<ObjectFlagUpdateData>(
+	objectFlagUpdateMetadata,
+)
+
+export const createObjectFlagUpdateDelegate =
+	createPacketDelegate<ObjectFlagUpdateData>(objectFlagUpdateMetadata)

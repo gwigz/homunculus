@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, UUID, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface TransferPacketData {
 	transferData?: {
@@ -22,25 +26,26 @@ export interface TransferPacketData {
 	}
 }
 
-export class TransferPacket extends Packet<TransferPacketData> {
-	public static override id = 17
-	public static override frequency = 2
-	public static override trusted = false
-	public static override compression = false
+export const transferPacketMetadata = {
+	id: 17,
+	name: "TransferPacket",
+	blocks: [
+		{
+			name: "transferData",
+			parameters: [
+				["transferId", UUID],
+				["channelType", S32],
+				["packet", S32],
+				["status", S32],
+				["data", Variable2],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"transferData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["transferId", Types.UUID],
-					["channelType", Types.S32],
-					["packet", Types.S32],
-					["status", Types.S32],
-					["data", Types.Variable2],
-				]),
-			},
-		],
-	])
-}
+export const transferPacket = createPacketSender<TransferPacketData>(
+	transferPacketMetadata,
+)
+
+export const createTransferPacketDelegate =
+	createPacketDelegate<TransferPacketData>(transferPacketMetadata)

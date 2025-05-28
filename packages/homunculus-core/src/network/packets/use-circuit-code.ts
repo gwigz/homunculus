@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface UseCircuitCodeData {
 	circuitCode?: {
@@ -20,23 +24,25 @@ export interface UseCircuitCodeData {
 	}
 }
 
-export class UseCircuitCode extends Packet<UseCircuitCodeData> {
-	public static override id = 3
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const useCircuitCodeMetadata = {
+	id: 3,
+	name: "UseCircuitCode",
+	frequency: 2,
+	blocks: [
+		{
+			name: "circuitCode",
+			parameters: [
+				["code", U32],
+				["sessionId", UUID],
+				["id", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"circuitCode",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["code", Types.U32],
-					["sessionId", Types.UUID],
-					["id", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const useCircuitCode = createPacketSender<UseCircuitCodeData>(
+	useCircuitCodeMetadata,
+)
+
+export const createUseCircuitCodeDelegate =
+	createPacketDelegate<UseCircuitCodeData>(useCircuitCodeMetadata)

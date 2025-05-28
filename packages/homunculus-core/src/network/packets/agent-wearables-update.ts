@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U8, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AgentWearablesUpdateData {
 	agentData: {
@@ -25,33 +29,35 @@ export interface AgentWearablesUpdateData {
 	}[]
 }
 
-export class AgentWearablesUpdate extends Packet<AgentWearablesUpdateData> {
-	public static override id = 382
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const agentWearablesUpdateMetadata = {
+	id: 382,
+	name: "AgentWearablesUpdate",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["serialNum", U32],
+			],
+		},
+		{
+			name: "wearableData",
+			parameters: [
+				["itemId", UUID],
+				["assetId", UUID],
+				["wearableType", U8],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["serialNum", Types.U32],
-				]),
-			},
-		],
-		[
-			"wearableData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["itemId", Types.UUID],
-					["assetId", Types.UUID],
-					["wearableType", Types.U8],
-				]),
-			},
-		],
-	])
-}
+export const agentWearablesUpdate =
+	createPacketSender<AgentWearablesUpdateData>(agentWearablesUpdateMetadata)
+
+export const createAgentWearablesUpdateDelegate =
+	createPacketDelegate<AgentWearablesUpdateData>(agentWearablesUpdateMetadata)

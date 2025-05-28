@@ -9,36 +9,43 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, IP, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface DataServerLogoutData {
 	userData?: {
 		agentId: string
-		viewerIp: Types.IP
+		viewerIp: IP
 		disconnect: boolean
 		sessionId: string
 	}
 }
 
-export class DataServerLogout extends Packet<DataServerLogoutData> {
-	public static override id = 251
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const dataServerLogoutMetadata = {
+	id: 251,
+	name: "DataServerLogout",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "userData",
+			parameters: [
+				["agentId", UUID],
+				["viewerIp", IP],
+				["disconnect", Bool],
+				["sessionId", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"userData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["viewerIp", Types.IP],
-					["disconnect", Types.Bool],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const dataServerLogout = createPacketSender<DataServerLogoutData>(
+	dataServerLogoutMetadata,
+)
+
+export const createDataServerLogoutDelegate =
+	createPacketDelegate<DataServerLogoutData>(dataServerLogoutMetadata)

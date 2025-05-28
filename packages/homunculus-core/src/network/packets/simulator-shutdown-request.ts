@@ -9,13 +9,27 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { Packet } from "./packet"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export type SimulatorShutdownRequestData = Record<string, never>
 
-export class SimulatorShutdownRequest extends Packet<SimulatorShutdownRequestData> {
-	public static override id = 13
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
-}
+export const simulatorShutdownRequestMetadata = {
+	id: 13,
+	name: "SimulatorShutdownRequest",
+	frequency: 2,
+	trusted: true,
+} satisfies PacketMetadata
+
+export const simulatorShutdownRequest =
+	createPacketSender<SimulatorShutdownRequestData>(
+		simulatorShutdownRequestMetadata,
+	)
+
+export const createSimulatorShutdownRequestDelegate =
+	createPacketDelegate<SimulatorShutdownRequestData>(
+		simulatorShutdownRequestMetadata,
+	)

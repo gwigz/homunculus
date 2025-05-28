@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ReportAutosaveCrashData {
 	autosaveData?: {
@@ -19,22 +23,24 @@ export interface ReportAutosaveCrashData {
 	}
 }
 
-export class ReportAutosaveCrash extends Packet<ReportAutosaveCrashData> {
-	public static override id = 128
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const reportAutosaveCrashMetadata = {
+	id: 128,
+	name: "ReportAutosaveCrash",
+	frequency: 2,
+	blocks: [
+		{
+			name: "autosaveData",
+			parameters: [
+				["pid", S32],
+				["status", S32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"autosaveData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["pid", Types.S32],
-					["status", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const reportAutosaveCrash = createPacketSender<ReportAutosaveCrashData>(
+	reportAutosaveCrashMetadata,
+)
+
+export const createReportAutosaveCrashDelegate =
+	createPacketDelegate<ReportAutosaveCrashData>(reportAutosaveCrashMetadata)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ParcelGodForceOwnerData {
 	agentData?: {
@@ -23,32 +27,32 @@ export interface ParcelGodForceOwnerData {
 	}
 }
 
-export class ParcelGodForceOwner extends Packet<ParcelGodForceOwnerData> {
-	public static override id = 214
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const parcelGodForceOwnerMetadata = {
+	id: 214,
+	name: "ParcelGodForceOwner",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "data",
+			parameters: [
+				["ownerId", UUID],
+				["localId", S32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["ownerId", Types.UUID],
-					["localId", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const parcelGodForceOwner = createPacketSender<ParcelGodForceOwnerData>(
+	parcelGodForceOwnerMetadata,
+)
+
+export const createParcelGodForceOwnerDelegate =
+	createPacketDelegate<ParcelGodForceOwnerData>(parcelGodForceOwnerMetadata)

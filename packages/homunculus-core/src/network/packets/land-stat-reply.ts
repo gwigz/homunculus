@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface LandStatReplyData {
 	requestData?: {
@@ -30,38 +34,40 @@ export interface LandStatReplyData {
 	}[]
 }
 
-export class LandStatReply extends Packet<LandStatReplyData> {
-	public static override id = 422
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const landStatReplyMetadata = {
+	id: 422,
+	name: "LandStatReply",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "requestData",
+			parameters: [
+				["reportType", U32],
+				["requestFlags", U32],
+				["totalObjectCount", U32],
+			],
+		},
+		{
+			name: "reportData",
+			parameters: [
+				["taskLocalId", U32],
+				["taskId", UUID],
+				["locationX", F32],
+				["locationY", F32],
+				["locationZ", F32],
+				["score", F32],
+				["taskName", Variable1],
+				["ownerName", Variable1],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"requestData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["reportType", Types.U32],
-					["requestFlags", Types.U32],
-					["totalObjectCount", Types.U32],
-				]),
-			},
-		],
-		[
-			"reportData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["taskLocalId", Types.U32],
-					["taskId", Types.UUID],
-					["locationX", Types.F32],
-					["locationY", Types.F32],
-					["locationZ", Types.F32],
-					["score", Types.F32],
-					["taskName", Types.Variable1],
-					["ownerName", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const landStatReply = createPacketSender<LandStatReplyData>(
+	landStatReplyMetadata,
+)
+
+export const createLandStatReplyDelegate =
+	createPacketDelegate<LandStatReplyData>(landStatReplyMetadata)

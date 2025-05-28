@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, S8, S32, U8, U32, UUID, Variable1, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RezObjectData {
 	agentData: {
@@ -21,8 +25,8 @@ export interface RezObjectData {
 	rezData?: {
 		fromTaskId: string
 		bypassRaycast: number
-		rayStart: Types.Vector3
-		rayEnd: Types.Vector3
+		rayStart: Vector3
+		rayEnd: Vector3
 		rayTargetId: string
 		rayEndIsIntersection: boolean
 		rezSelected: boolean
@@ -57,72 +61,67 @@ export interface RezObjectData {
 	}
 }
 
-export class RezObject extends Packet<RezObjectData> {
-	public static override id = 293
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const rezObjectMetadata = {
+	id: 293,
+	name: "RezObject",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["groupId", UUID],
+			],
+		},
+		{
+			name: "rezData",
+			parameters: [
+				["fromTaskId", UUID],
+				["bypassRaycast", U8],
+				["rayStart", Vector3],
+				["rayEnd", Vector3],
+				["rayTargetId", UUID],
+				["rayEndIsIntersection", Bool],
+				["rezSelected", Bool],
+				["removeItem", Bool],
+				["itemFlags", U32],
+				["groupMask", U32],
+				["everyoneMask", U32],
+				["nextOwnerMask", U32],
+			],
+		},
+		{
+			name: "inventoryData",
+			parameters: [
+				["itemId", UUID],
+				["folderId", UUID],
+				["creatorId", UUID],
+				["ownerId", UUID],
+				["groupId", UUID],
+				["baseMask", U32],
+				["ownerMask", U32],
+				["groupMask", U32],
+				["everyoneMask", U32],
+				["nextOwnerMask", U32],
+				["groupOwned", Bool],
+				["transactionId", UUID],
+				["type", S8],
+				["invType", S8],
+				["flags", U32],
+				["saleType", U8],
+				["salePrice", S32],
+				["name", Variable1],
+				["description", Variable1],
+				["creationDate", S32],
+				["crc", U32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["groupId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"rezData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["fromTaskId", Types.UUID],
-					["bypassRaycast", Types.U8],
-					["rayStart", Types.Vector3],
-					["rayEnd", Types.Vector3],
-					["rayTargetId", Types.UUID],
-					["rayEndIsIntersection", Types.Bool],
-					["rezSelected", Types.Bool],
-					["removeItem", Types.Bool],
-					["itemFlags", Types.U32],
-					["groupMask", Types.U32],
-					["everyoneMask", Types.U32],
-					["nextOwnerMask", Types.U32],
-				]),
-			},
-		],
-		[
-			"inventoryData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["itemId", Types.UUID],
-					["folderId", Types.UUID],
-					["creatorId", Types.UUID],
-					["ownerId", Types.UUID],
-					["groupId", Types.UUID],
-					["baseMask", Types.U32],
-					["ownerMask", Types.U32],
-					["groupMask", Types.U32],
-					["everyoneMask", Types.U32],
-					["nextOwnerMask", Types.U32],
-					["groupOwned", Types.Bool],
-					["transactionId", Types.UUID],
-					["type", Types.S8],
-					["invType", Types.S8],
-					["flags", Types.U32],
-					["saleType", Types.U8],
-					["salePrice", Types.S32],
-					["name", Types.Variable1],
-					["description", Types.Variable1],
-					["creationDate", Types.S32],
-					["crc", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const rezObject = createPacketSender<RezObjectData>(rezObjectMetadata)
+
+export const createRezObjectDelegate =
+	createPacketDelegate<RezObjectData>(rezObjectMetadata)

@@ -9,32 +9,37 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { IP, Port } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface OpenCircuitData {
 	circuitInfo?: {
-		ip: Types.IP
-		port: Types.Port
+		ip: IP
+		port: Port
 	}
 }
 
-export class OpenCircuit extends Packet<OpenCircuitData> {
-	public static override id = 4294967292
-	public static override frequency = 3
-	public static override trusted = false
-	public static override compression = false
+export const openCircuitMetadata = {
+	id: 4294967292,
+	name: "OpenCircuit",
+	frequency: 3,
+	blocks: [
+		{
+			name: "circuitInfo",
+			parameters: [
+				["ip", IP],
+				["port", Port],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"circuitInfo",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["ip", Types.IP],
-					["port", Types.Port],
-				]),
-			},
-		],
-	])
-}
+export const openCircuit =
+	createPacketSender<OpenCircuitData>(openCircuitMetadata)
+
+export const createOpenCircuitDelegate =
+	createPacketDelegate<OpenCircuitData>(openCircuitMetadata)

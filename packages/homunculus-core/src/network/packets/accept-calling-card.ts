@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AcceptCallingCardData {
 	agentData?: {
@@ -25,37 +29,33 @@ export interface AcceptCallingCardData {
 	}[]
 }
 
-export class AcceptCallingCard extends Packet<AcceptCallingCardData> {
-	public static override id = 302
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const acceptCallingCardMetadata = {
+	id: 302,
+	name: "AcceptCallingCard",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "transactionBlock",
+			parameters: [["transactionId", UUID]],
+		},
+		{
+			name: "folderData",
+			parameters: [["folderId", UUID]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"transactionBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["transactionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"folderData",
-			{
-				parameters: new Map<string, Types.Type>([["folderId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const acceptCallingCard = createPacketSender<AcceptCallingCardData>(
+	acceptCallingCardMetadata,
+)
+
+export const createAcceptCallingCardDelegate =
+	createPacketDelegate<AcceptCallingCardData>(acceptCallingCardMetadata)

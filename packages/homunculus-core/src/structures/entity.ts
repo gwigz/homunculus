@@ -1,5 +1,5 @@
-import { Color4, type Quaternion, UUID, Vector3 } from "~/network/types"
-import type { Client } from ".."
+import type { Client } from "~/client"
+import { Color4, type Quaternion, UUID, Vector3 } from "~/network"
 
 export interface EntityOptions {
 	id: number

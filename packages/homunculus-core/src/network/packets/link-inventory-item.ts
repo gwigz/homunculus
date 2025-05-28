@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S8, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface LinkInventoryItemData {
 	agentData?: {
@@ -29,38 +33,38 @@ export interface LinkInventoryItemData {
 	}
 }
 
-export class LinkInventoryItem extends Packet<LinkInventoryItemData> {
-	public static override id = 426
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const linkInventoryItemMetadata = {
+	id: 426,
+	name: "LinkInventoryItem",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "inventoryBlock",
+			parameters: [
+				["callbackId", U32],
+				["folderId", UUID],
+				["transactionId", UUID],
+				["oldItemId", UUID],
+				["type", S8],
+				["invType", S8],
+				["name", Variable1],
+				["description", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"inventoryBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["callbackId", Types.U32],
-					["folderId", Types.UUID],
-					["transactionId", Types.UUID],
-					["oldItemId", Types.UUID],
-					["type", Types.S8],
-					["invType", Types.S8],
-					["name", Types.Variable1],
-					["description", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const linkInventoryItem = createPacketSender<LinkInventoryItemData>(
+	linkInventoryItemMetadata,
+)
+
+export const createLinkInventoryItemDelegate =
+	createPacketDelegate<LinkInventoryItemData>(linkInventoryItemMetadata)

@@ -9,13 +9,23 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { Packet } from "./packet"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export type RequestTrustedCircuitData = Record<string, never>
 
-export class RequestTrustedCircuit extends Packet<RequestTrustedCircuitData> {
-	public static override id = 394
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
-}
+export const requestTrustedCircuitMetadata = {
+	id: 394,
+	name: "RequestTrustedCircuit",
+	frequency: 2,
+	trusted: true,
+} satisfies PacketMetadata
+
+export const requestTrustedCircuit =
+	createPacketSender<RequestTrustedCircuitData>(requestTrustedCircuitMetadata)
+
+export const createRequestTrustedCircuitDelegate =
+	createPacketDelegate<RequestTrustedCircuitData>(requestTrustedCircuitMetadata)

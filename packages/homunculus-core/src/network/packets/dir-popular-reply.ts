@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface DirPopularReplyData {
 	agentData?: {
@@ -26,36 +30,36 @@ export interface DirPopularReplyData {
 	}[]
 }
 
-export class DirPopularReply extends Packet<DirPopularReplyData> {
-	public static override id = 53
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const dirPopularReplyMetadata = {
+	id: 53,
+	name: "DirPopularReply",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "queryData",
+			parameters: [["queryId", UUID]],
+		},
+		{
+			name: "queryReplies",
+			parameters: [
+				["parcelId", UUID],
+				["name", Variable1],
+				["dwell", F32],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"queryData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["queryId", Types.UUID]]),
-			},
-		],
-		[
-			"queryReplies",
-			{
-				parameters: new Map<string, Types.Type>([
-					["parcelId", Types.UUID],
-					["name", Types.Variable1],
-					["dwell", Types.F32],
-				]),
-			},
-		],
-	])
-}
+export const dirPopularReply = createPacketSender<DirPopularReplyData>(
+	dirPopularReplyMetadata,
+)
+
+export const createDirPopularReplyDelegate =
+	createPacketDelegate<DirPopularReplyData>(dirPopularReplyMetadata)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, U8, UUID, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ChatFromViewerData {
 	agentData?: {
@@ -24,33 +28,33 @@ export interface ChatFromViewerData {
 	}
 }
 
-export class ChatFromViewer extends Packet<ChatFromViewerData> {
-	public static override id = 80
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const chatFromViewerMetadata = {
+	id: 80,
+	name: "ChatFromViewer",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "chatData",
+			parameters: [
+				["message", Variable2],
+				["type", U8],
+				["channel", S32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"chatData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["message", Types.Variable2],
-					["type", Types.U8],
-					["channel", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const chatFromViewer = createPacketSender<ChatFromViewerData>(
+	chatFromViewerMetadata,
+)
+
+export const createChatFromViewerDelegate =
+	createPacketDelegate<ChatFromViewerData>(chatFromViewerMetadata)

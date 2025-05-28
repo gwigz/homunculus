@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, S32, U64, UUID, Variable1, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface GroupProfileReplyData {
 	agentData?: {
@@ -36,43 +40,44 @@ export interface GroupProfileReplyData {
 	}
 }
 
-export class GroupProfileReply extends Packet<GroupProfileReplyData> {
-	public static override id = 352
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const groupProfileReplyMetadata = {
+	id: 352,
+	name: "GroupProfileReply",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "groupData",
+			parameters: [
+				["groupId", UUID],
+				["name", Variable1],
+				["charter", Variable2],
+				["showInList", Bool],
+				["memberTitle", Variable1],
+				["powersMask", U64],
+				["insigniaId", UUID],
+				["founderId", UUID],
+				["membershipFee", S32],
+				["openEnrollment", Bool],
+				["money", S32],
+				["groupMembershipCount", S32],
+				["groupRolesCount", S32],
+				["allowPublish", Bool],
+				["maturePublish", Bool],
+				["ownerRole", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"groupData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["groupId", Types.UUID],
-					["name", Types.Variable1],
-					["charter", Types.Variable2],
-					["showInList", Types.Bool],
-					["memberTitle", Types.Variable1],
-					["powersMask", Types.U64],
-					["insigniaId", Types.UUID],
-					["founderId", Types.UUID],
-					["membershipFee", Types.S32],
-					["openEnrollment", Types.Bool],
-					["money", Types.S32],
-					["groupMembershipCount", Types.S32],
-					["groupRolesCount", Types.S32],
-					["allowPublish", Types.Bool],
-					["maturePublish", Types.Bool],
-					["ownerRole", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const groupProfileReply = createPacketSender<GroupProfileReplyData>(
+	groupProfileReplyMetadata,
+)
+
+export const createGroupProfileReplyDelegate =
+	createPacketDelegate<GroupProfileReplyData>(groupProfileReplyMetadata)

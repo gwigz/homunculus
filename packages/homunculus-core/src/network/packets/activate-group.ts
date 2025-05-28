@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ActivateGroupData {
 	agentData: {
@@ -20,23 +24,26 @@ export interface ActivateGroupData {
 	}
 }
 
-export class ActivateGroup extends Packet<ActivateGroupData> {
-	public static override id = 368
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const activateGroupMetadata = {
+	id: 368,
+	name: "ActivateGroup",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["groupId", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["groupId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const activateGroup = createPacketSender<ActivateGroupData>(
+	activateGroupMetadata,
+)
+
+export const createActivateGroupDelegate =
+	createPacketDelegate<ActivateGroupData>(activateGroupMetadata)

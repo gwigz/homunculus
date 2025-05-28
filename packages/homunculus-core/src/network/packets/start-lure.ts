@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U8, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface StartLureData {
 	agentData?: {
@@ -26,38 +30,34 @@ export interface StartLureData {
 	}[]
 }
 
-export class StartLure extends Packet<StartLureData> {
-	public static override id = 70
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const startLureMetadata = {
+	id: 70,
+	name: "StartLure",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "info",
+			parameters: [
+				["lureType", U8],
+				["message", Variable1],
+			],
+		},
+		{
+			name: "targetData",
+			parameters: [["targetId", UUID]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"info",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["lureType", Types.U8],
-					["message", Types.Variable1],
-				]),
-			},
-		],
-		[
-			"targetData",
-			{
-				parameters: new Map<string, Types.Type>([["targetId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const startLure = createPacketSender<StartLureData>(startLureMetadata)
+
+export const createStartLureDelegate =
+	createPacketDelegate<StartLureData>(startLureMetadata)

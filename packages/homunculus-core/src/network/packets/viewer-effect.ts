@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Color4, F32, U8, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ViewerEffectData {
 	agentData?: {
@@ -22,40 +26,41 @@ export interface ViewerEffectData {
 		agentId: string
 		type: number
 		duration: number
-		color: Types.Color4
+		color: Color4
 		typeData: string | Buffer
 	}[]
 }
 
-export class ViewerEffect extends Packet<ViewerEffectData> {
-	public static override id = 17
-	public static override frequency = 1
-	public static override trusted = false
-	public static override compression = true
+export const viewerEffectMetadata = {
+	id: 17,
+	name: "ViewerEffect",
+	frequency: 1,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "effect",
+			parameters: [
+				["id", UUID],
+				["agentId", UUID],
+				["type", U8],
+				["duration", F32],
+				["color", Color4],
+				["typeData", Variable1],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"effect",
-			{
-				parameters: new Map<string, Types.Type>([
-					["id", Types.UUID],
-					["agentId", Types.UUID],
-					["type", Types.U8],
-					["duration", Types.F32],
-					["color", Types.Color4],
-					["typeData", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const viewerEffect =
+	createPacketSender<ViewerEffectData>(viewerEffectMetadata)
+
+export const createViewerEffectDelegate =
+	createPacketDelegate<ViewerEffectData>(viewerEffectMetadata)

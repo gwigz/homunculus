@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U8, U16, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface MapBlockReplyData {
 	agentData?: {
@@ -29,37 +33,39 @@ export interface MapBlockReplyData {
 	}[]
 }
 
-export class MapBlockReply extends Packet<MapBlockReplyData> {
-	public static override id = 409
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const mapBlockReplyMetadata = {
+	id: 409,
+	name: "MapBlockReply",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["flags", U32],
+			],
+		},
+		{
+			name: "data",
+			parameters: [
+				["x", U16],
+				["y", U16],
+				["name", Variable1],
+				["access", U8],
+				["regionFlags", U32],
+				["waterHeight", U8],
+				["agents", U8],
+				["mapImageId", UUID],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["flags", Types.U32],
-				]),
-			},
-		],
-		[
-			"data",
-			{
-				parameters: new Map<string, Types.Type>([
-					["x", Types.U16],
-					["y", Types.U16],
-					["name", Types.Variable1],
-					["access", Types.U8],
-					["regionFlags", Types.U32],
-					["waterHeight", Types.U8],
-					["agents", Types.U8],
-					["mapImageId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const mapBlockReply = createPacketSender<MapBlockReplyData>(
+	mapBlockReplyMetadata,
+)
+
+export const createMapBlockReplyDelegate =
+	createPacketDelegate<MapBlockReplyData>(mapBlockReplyMetadata)

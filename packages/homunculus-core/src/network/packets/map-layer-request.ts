@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface MapLayerRequestData {
 	agentData?: {
@@ -22,25 +26,27 @@ export interface MapLayerRequestData {
 	}
 }
 
-export class MapLayerRequest extends Packet<MapLayerRequestData> {
-	public static override id = 405
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const mapLayerRequestMetadata = {
+	id: 405,
+	name: "MapLayerRequest",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["flags", U32],
+				["estateId", U32],
+				["godlike", Bool],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["flags", Types.U32],
-					["estateId", Types.U32],
-					["godlike", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const mapLayerRequest = createPacketSender<MapLayerRequestData>(
+	mapLayerRequestMetadata,
+)
+
+export const createMapLayerRequestDelegate =
+	createPacketDelegate<MapLayerRequestData>(mapLayerRequestMetadata)

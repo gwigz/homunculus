@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface PurgeInventoryDescendentsData {
 	agentData?: {
@@ -22,29 +26,32 @@ export interface PurgeInventoryDescendentsData {
 	}
 }
 
-export class PurgeInventoryDescendents extends Packet<PurgeInventoryDescendentsData> {
-	public static override id = 285
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const purgeInventoryDescendentsMetadata = {
+	id: 285,
+	name: "PurgeInventoryDescendents",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "inventoryData",
+			parameters: [["folderId", UUID]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"inventoryData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["folderId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const purgeInventoryDescendents =
+	createPacketSender<PurgeInventoryDescendentsData>(
+		purgeInventoryDescendentsMetadata,
+	)
+
+export const createPurgeInventoryDescendentsDelegate =
+	createPacketDelegate<PurgeInventoryDescendentsData>(
+		purgeInventoryDescendentsMetadata,
+	)

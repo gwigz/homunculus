@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, S32, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface DirClassifiedQueryBackendData {
 	agentData?: {
@@ -27,34 +31,38 @@ export interface DirClassifiedQueryBackendData {
 	}
 }
 
-export class DirClassifiedQueryBackend extends Packet<DirClassifiedQueryBackendData> {
-	public static override id = 40
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const dirClassifiedQueryBackendMetadata = {
+	id: 40,
+	name: "DirClassifiedQueryBackend",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "queryData",
+			parameters: [
+				["queryId", UUID],
+				["queryText", Variable1],
+				["queryFlags", U32],
+				["category", U32],
+				["estateId", U32],
+				["godlike", Bool],
+				["queryStart", S32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"queryData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["queryId", Types.UUID],
-					["queryText", Types.Variable1],
-					["queryFlags", Types.U32],
-					["category", Types.U32],
-					["estateId", Types.U32],
-					["godlike", Types.Bool],
-					["queryStart", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const dirClassifiedQueryBackend =
+	createPacketSender<DirClassifiedQueryBackendData>(
+		dirClassifiedQueryBackendMetadata,
+	)
+
+export const createDirClassifiedQueryBackendDelegate =
+	createPacketDelegate<DirClassifiedQueryBackendData>(
+		dirClassifiedQueryBackendMetadata,
+	)

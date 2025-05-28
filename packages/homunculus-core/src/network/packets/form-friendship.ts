@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface FormFriendshipData {
 	agentBlock?: {
@@ -19,22 +23,25 @@ export interface FormFriendshipData {
 	}
 }
 
-export class FormFriendship extends Packet<FormFriendshipData> {
-	public static override id = 299
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const formFriendshipMetadata = {
+	id: 299,
+	name: "FormFriendship",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentBlock",
+			parameters: [
+				["sourceId", UUID],
+				["destId", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["sourceId", Types.UUID],
-					["destId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const formFriendship = createPacketSender<FormFriendshipData>(
+	formFriendshipMetadata,
+)
+
+export const createFormFriendshipDelegate =
+	createPacketDelegate<FormFriendshipData>(formFriendshipMetadata)

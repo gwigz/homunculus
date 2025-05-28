@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface GroupAccountDetailsRequestData {
 	agentData: {
@@ -25,34 +29,37 @@ export interface GroupAccountDetailsRequestData {
 	}
 }
 
-export class GroupAccountDetailsRequest extends Packet<GroupAccountDetailsRequestData> {
-	public static override id = 355
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const groupAccountDetailsRequestMetadata = {
+	id: 355,
+	name: "GroupAccountDetailsRequest",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["groupId", UUID],
+			],
+		},
+		{
+			name: "moneyData",
+			parameters: [
+				["requestId", UUID],
+				["intervalDays", S32],
+				["currentInterval", S32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["groupId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"moneyData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["requestId", Types.UUID],
-					["intervalDays", Types.S32],
-					["currentInterval", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const groupAccountDetailsRequest =
+	createPacketSender<GroupAccountDetailsRequestData>(
+		groupAccountDetailsRequestMetadata,
+	)
+
+export const createGroupAccountDetailsRequestDelegate =
+	createPacketDelegate<GroupAccountDetailsRequestData>(
+		groupAccountDetailsRequestMetadata,
+	)

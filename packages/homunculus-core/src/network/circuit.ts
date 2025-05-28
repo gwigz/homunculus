@@ -2,16 +2,15 @@ import assert from "node:assert"
 import type { Client } from "~/client"
 import {
 	Acknowledger,
-	CompleteAgentMovement,
 	type Core,
+	type DelegateContext,
+	type DeserializedPacket,
 	type Packet,
 	type PacketBuffer,
+	packets,
 	Serializer,
-	UseCircuitCode,
 } from "~/network"
-import type { Delegate, DelegateContext } from "~/network/delegates"
-import * as Delegates from "~/network/delegates"
-import { sharedServices } from "~/services"
+import { services } from "~/services"
 import { Constants } from "~/utilities"
 
 export interface CircuitOptions {
@@ -28,7 +27,6 @@ export class Circuit {
 	public readonly acknowledger = new Acknowledger(this)
 	public readonly serializer = new Serializer(this)
 
-	private delegates: Record<string, Delegate> = {}
 	private dead = true
 
 	constructor(
@@ -39,8 +37,6 @@ export class Circuit {
 		this.id = data.id
 		this.address = data.address
 		this.port = data.port
-
-		this.register(Delegates)
 	}
 
 	get self() {
@@ -50,11 +46,9 @@ export class Circuit {
 	public send(packets: Array<Packet<any>>) {
 		assert.notEqual(this.dead, true, Constants.Errors.INACTIVE_CIRCUIT)
 
-		const serialized = packets.map((packet) => this.serializer.convert(packet))
-
 		this.core.send(
 			this,
-			serialized.map(([buffer]) => buffer),
+			packets.map((packet) => this.serializer.convert(packet)),
 		)
 	}
 
@@ -62,27 +56,26 @@ export class Circuit {
 	 * @todo Add a retry mechanism, not just a timeout.
 	 */
 	public sendReliable(packets: Array<Packet<any>>, timeout = 10_000) {
+		assert.notEqual(this.dead, true, Constants.Errors.INACTIVE_CIRCUIT)
+
 		const serialized = packets.map((packet) =>
 			this.serializer.convert(packet, true),
 		)
 
-		const promises = serialized.map(([_, number], index) =>
+		const promises = serialized.map(([_, sequence], index) =>
 			this.acknowledger.awaitServerAcknowledgement(
-				packets[index]!.constructor.name,
-				number,
+				packets[index]!,
+				sequence,
 				timeout,
 			),
 		)
 
-		this.core.send(
-			this,
-			serialized.map(([buffer]) => buffer),
-		)
+		this.core.send(this, serialized)
 
 		return Promise.all(promises)
 	}
 
-	public receive(buffer: PacketBuffer) {
+	public async receive(buffer: PacketBuffer) {
 		if (buffer.reliable) {
 			// ignore packets that we've already seen
 			if (!this.acknowledger.isSequenceNew(buffer.sequence)) {
@@ -98,17 +91,13 @@ export class Circuit {
 			}
 		}
 
-		const packet = sharedServices.deserializer.lookup(buffer)
+		const packet = services.deserializer.lookup(buffer)
 
 		if (!packet) {
 			return
 		}
 
-		if (packet.name in this.delegates && this.delegates[packet.name]?.waiting) {
-			this.delegates[packet.name]?.handle(
-				sharedServices.deserializer.convert(packet, buffer),
-			)
-		}
+		await this.handlePacket(services.deserializer.convert(packet, buffer))
 	}
 
 	public async handshake() {
@@ -120,7 +109,7 @@ export class Circuit {
 		assert(this.self.sessionId, "Session is required")
 
 		await this.sendReliable([
-			new UseCircuitCode({
+			packets.useCircuitCode({
 				circuitCode: {
 					id: this.self.key,
 					code: this.id,
@@ -129,26 +118,19 @@ export class Circuit {
 			}),
 		])
 
-		await this.sendReliable([new CompleteAgentMovement({})])
+		await this.sendReliable([packets.completeAgentMovement({})])
 	}
 
 	/**
-	 * @todo Cannot currently register multiple delegates with the same name!
+	 * Handle an incoming packet by passing it to the delegate registry
 	 */
-	public register(delegates: Record<string, typeof Delegates.Delegate>) {
+	async handlePacket(packet: DeserializedPacket) {
 		const context: DelegateContext = {
 			client: this.client,
 			core: this.core,
 			circuit: this,
 		}
 
-		for (const Delegate of Object.values(delegates)) {
-			if (Delegate !== Delegates.Delegate) {
-				// TODO: don't use constructor names for values
-				this.delegates[Delegate.name.replace(/Delegate$/, "")] = new Delegate(
-					context,
-				)
-			}
-		}
+		await services.delegate.handle(packet, context)
 	}
 }

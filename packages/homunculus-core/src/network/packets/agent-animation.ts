@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AgentAnimationData {
 	agentData?: {
@@ -26,39 +30,36 @@ export interface AgentAnimationData {
 	}[]
 }
 
-export class AgentAnimation extends Packet<AgentAnimationData> {
-	public static override id = 5
-	public static override frequency = 2
-	public static override trusted = false
-	public static override compression = false
+export const agentAnimationMetadata = {
+	id: 5,
+	name: "AgentAnimation",
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "animationList",
+			parameters: [
+				["animId", UUID],
+				["startAnim", Bool],
+			],
+			multiple: true,
+		},
+		{
+			name: "physicalAvatarEventList",
+			parameters: [["typeData", Variable1]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"animationList",
-			{
-				parameters: new Map<string, Types.Type>([
-					["animId", Types.UUID],
-					["startAnim", Types.Bool],
-				]),
-			},
-		],
-		[
-			"physicalAvatarEventList",
-			{
-				parameters: new Map<string, Types.Type>([
-					["typeData", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const agentAnimation = createPacketSender<AgentAnimationData>(
+	agentAnimationMetadata,
+)
+
+export const createAgentAnimationDelegate =
+	createPacketDelegate<AgentAnimationData>(agentAnimationMetadata)

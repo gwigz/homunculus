@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AgentThrottleData {
 	agentData?: {
@@ -24,33 +28,33 @@ export interface AgentThrottleData {
 	}
 }
 
-export class AgentThrottle extends Packet<AgentThrottleData> {
-	public static override id = 81
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const agentThrottleMetadata = {
+	id: 81,
+	name: "AgentThrottle",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["circuitCode", U32],
+			],
+		},
+		{
+			name: "throttle",
+			parameters: [
+				["genCounter", U32],
+				["throttles", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["circuitCode", Types.U32],
-				]),
-			},
-		],
-		[
-			"throttle",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["genCounter", Types.U32],
-					["throttles", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const agentThrottle = createPacketSender<AgentThrottleData>(
+	agentThrottleMetadata,
+)
+
+export const createAgentThrottleDelegate =
+	createPacketDelegate<AgentThrottleData>(agentThrottleMetadata)

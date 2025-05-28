@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S8, U8, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface CreateInventoryItemData {
 	agentData?: {
@@ -30,39 +34,39 @@ export interface CreateInventoryItemData {
 	}
 }
 
-export class CreateInventoryItem extends Packet<CreateInventoryItemData> {
-	public static override id = 305
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const createInventoryItemMetadata = {
+	id: 305,
+	name: "CreateInventoryItem",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "inventoryBlock",
+			parameters: [
+				["callbackId", U32],
+				["folderId", UUID],
+				["transactionId", UUID],
+				["nextOwnerMask", U32],
+				["type", S8],
+				["invType", S8],
+				["wearableType", U8],
+				["name", Variable1],
+				["description", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"inventoryBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["callbackId", Types.U32],
-					["folderId", Types.UUID],
-					["transactionId", Types.UUID],
-					["nextOwnerMask", Types.U32],
-					["type", Types.S8],
-					["invType", Types.S8],
-					["wearableType", Types.U8],
-					["name", Types.Variable1],
-					["description", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const createInventoryItem = createPacketSender<CreateInventoryItemData>(
+	createInventoryItemMetadata,
+)
+
+export const createCreateInventoryItemDelegate =
+	createPacketDelegate<CreateInventoryItemData>(createInventoryItemMetadata)

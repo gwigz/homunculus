@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ParcelBuyPassData {
 	agentData?: {
@@ -22,29 +26,28 @@ export interface ParcelBuyPassData {
 	}
 }
 
-export class ParcelBuyPass extends Packet<ParcelBuyPassData> {
-	public static override id = 206
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const parcelBuyPassMetadata = {
+	id: 206,
+	name: "ParcelBuyPass",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "parcelData",
+			parameters: [["localId", S32]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"parcelData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["localId", Types.S32]]),
-			},
-		],
-	])
-}
+export const parcelBuyPass = createPacketSender<ParcelBuyPassData>(
+	parcelBuyPassMetadata,
+)
+
+export const createParcelBuyPassDelegate =
+	createPacketDelegate<ParcelBuyPassData>(parcelBuyPassMetadata)

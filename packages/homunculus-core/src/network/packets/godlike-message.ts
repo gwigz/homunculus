@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface GodlikeMessageData {
 	agentData: {
@@ -27,41 +31,38 @@ export interface GodlikeMessageData {
 	}[]
 }
 
-export class GodlikeMessage extends Packet<GodlikeMessageData> {
-	public static override id = 259
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const godlikeMessageMetadata = {
+	id: 259,
+	name: "GodlikeMessage",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["transactionId", UUID],
+			],
+		},
+		{
+			name: "methodData",
+			parameters: [
+				["method", Variable1],
+				["invoice", UUID],
+			],
+		},
+		{
+			name: "paramList",
+			parameters: [["parameter", Variable1]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["transactionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"methodData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["method", Types.Variable1],
-					["invoice", Types.UUID],
-				]),
-			},
-		],
-		[
-			"paramList",
-			{
-				parameters: new Map<string, Types.Type>([
-					["parameter", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const godlikeMessage = createPacketSender<GodlikeMessageData>(
+	godlikeMessageMetadata,
+)
+
+export const createGodlikeMessageDelegate =
+	createPacketDelegate<GodlikeMessageData>(godlikeMessageMetadata)

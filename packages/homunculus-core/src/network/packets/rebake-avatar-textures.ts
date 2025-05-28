@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RebakeAvatarTexturesData {
 	textureData?: {
@@ -18,19 +22,21 @@ export interface RebakeAvatarTexturesData {
 	}
 }
 
-export class RebakeAvatarTextures extends Packet<RebakeAvatarTexturesData> {
-	public static override id = 87
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const rebakeAvatarTexturesMetadata = {
+	id: 87,
+	name: "RebakeAvatarTextures",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "textureData",
+			parameters: [["textureId", UUID]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"textureData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["textureId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const rebakeAvatarTextures =
+	createPacketSender<RebakeAvatarTexturesData>(rebakeAvatarTexturesMetadata)
+
+export const createRebakeAvatarTexturesDelegate =
+	createPacketDelegate<RebakeAvatarTexturesData>(rebakeAvatarTexturesMetadata)

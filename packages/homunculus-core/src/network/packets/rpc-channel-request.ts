@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RpcChannelRequestData {
 	dataBlock?: {
@@ -21,24 +25,27 @@ export interface RpcChannelRequestData {
 	}
 }
 
-export class RpcChannelRequest extends Packet<RpcChannelRequestData> {
-	public static override id = 413
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const rpcChannelRequestMetadata = {
+	id: 413,
+	name: "RpcChannelRequest",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "dataBlock",
+			parameters: [
+				["gridX", U32],
+				["gridY", U32],
+				["taskId", UUID],
+				["itemId", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"dataBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["gridX", Types.U32],
-					["gridY", Types.U32],
-					["taskId", Types.UUID],
-					["itemId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const rpcChannelRequest = createPacketSender<RpcChannelRequestData>(
+	rpcChannelRequestMetadata,
+)
+
+export const createRpcChannelRequestDelegate =
+	createPacketDelegate<RpcChannelRequestData>(rpcChannelRequestMetadata)

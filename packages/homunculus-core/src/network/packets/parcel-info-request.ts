@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ParcelInfoRequestData {
 	agentData?: {
@@ -22,29 +26,28 @@ export interface ParcelInfoRequestData {
 	}
 }
 
-export class ParcelInfoRequest extends Packet<ParcelInfoRequestData> {
-	public static override id = 54
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const parcelInfoRequestMetadata = {
+	id: 54,
+	name: "ParcelInfoRequest",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "data",
+			parameters: [["parcelId", UUID]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["parcelId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const parcelInfoRequest = createPacketSender<ParcelInfoRequestData>(
+	parcelInfoRequestMetadata,
+)
+
+export const createParcelInfoRequestDelegate =
+	createPacketDelegate<ParcelInfoRequestData>(parcelInfoRequestMetadata)

@@ -1,17 +1,14 @@
-import { type RegionHandshake, RegionHandshakeReply } from "~/network/packets"
-import { Delegate } from "./delegate"
+import { packets } from "~/network"
 
-class RegionHandshakeDelegate extends Delegate {
-	public override handle(packet: RegionHandshake) {
-		this.client.emit("debug", "Region handshake complete...")
+packets.createRegionHandshakeDelegate({
+	handle: (packet, context) => {
+		context.client.emit("debug", "Region handshake complete...")
 
-		this.client.self.isEstateManager =
+		context.client.self.isEstateManager =
 			packet.data.regionInfo!.isEstateManager === true
 
-		this.circuit.send([
-			new RegionHandshakeReply({ regionInfo: { flags: 1 | 4 } }),
+		context.circuit.send([
+			packets.regionHandshakeReply({ regionInfo: { flags: 1 | 4 } }),
 		])
-	}
-}
-
-export default RegionHandshakeDelegate
+	},
+})

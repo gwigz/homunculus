@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F64, U32, UUID, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface LogTextMessageData {
 	dataBlock?: {
@@ -23,25 +27,31 @@ export interface LogTextMessageData {
 	}[]
 }
 
-export class LogTextMessage extends Packet<LogTextMessageData> {
-	public static override id = 391
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const logTextMessageMetadata = {
+	id: 391,
+	name: "LogTextMessage",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "dataBlock",
+			parameters: [
+				["fromAgentId", UUID],
+				["toAgentId", UUID],
+				["globalX", F64],
+				["globalY", F64],
+				["time", U32],
+				["message", Variable2],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"dataBlock",
-			{
-				parameters: new Map<string, Types.Type>([
-					["fromAgentId", Types.UUID],
-					["toAgentId", Types.UUID],
-					["globalX", Types.F64],
-					["globalY", Types.F64],
-					["time", Types.U32],
-					["message", Types.Variable2],
-				]),
-			},
-		],
-	])
-}
+export const logTextMessage = createPacketSender<LogTextMessageData>(
+	logTextMessageMetadata,
+)
+
+export const createLogTextMessageDelegate =
+	createPacketDelegate<LogTextMessageData>(logTextMessageMetadata)

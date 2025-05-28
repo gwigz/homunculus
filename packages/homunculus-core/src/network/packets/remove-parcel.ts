@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RemoveParcelData {
 	parcelData?: {
@@ -18,18 +22,22 @@ export interface RemoveParcelData {
 	}[]
 }
 
-export class RemoveParcel extends Packet<RemoveParcelData> {
-	public static override id = 222
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const removeParcelMetadata = {
+	id: 222,
+	name: "RemoveParcel",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "parcelData",
+			parameters: [["parcelId", UUID]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"parcelData",
-			{
-				parameters: new Map<string, Types.Type>([["parcelId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const removeParcel =
+	createPacketSender<RemoveParcelData>(removeParcelMetadata)
+
+export const createRemoveParcelDelegate =
+	createPacketDelegate<RemoveParcelData>(removeParcelMetadata)

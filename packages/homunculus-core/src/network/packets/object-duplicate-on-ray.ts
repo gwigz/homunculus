@@ -9,16 +9,20 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, U32, UUID, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectDuplicateOnRayData {
 	agentData: {
 		agentId?: string
 		sessionId?: string
 		groupId: string
-		rayStart: Types.Vector3
-		rayEnd: Types.Vector3
+		rayStart: Vector3
+		rayEnd: Vector3
 		bypassRaycast: boolean
 		rayEndIsIntersection: boolean
 		copyCenters: boolean
@@ -31,37 +35,38 @@ export interface ObjectDuplicateOnRayData {
 	}[]
 }
 
-export class ObjectDuplicateOnRay extends Packet<ObjectDuplicateOnRayData> {
-	public static override id = 91
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const objectDuplicateOnRayMetadata = {
+	id: 91,
+	name: "ObjectDuplicateOnRay",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["groupId", UUID],
+				["rayStart", Vector3],
+				["rayEnd", Vector3],
+				["bypassRaycast", Bool],
+				["rayEndIsIntersection", Bool],
+				["copyCenters", Bool],
+				["copyRotates", Bool],
+				["rayTargetId", UUID],
+				["duplicateFlags", U32],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [["objectLocalId", U32]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["groupId", Types.UUID],
-					["rayStart", Types.Vector3],
-					["rayEnd", Types.Vector3],
-					["bypassRaycast", Types.Bool],
-					["rayEndIsIntersection", Types.Bool],
-					["copyCenters", Types.Bool],
-					["copyRotates", Types.Bool],
-					["rayTargetId", Types.UUID],
-					["duplicateFlags", Types.U32],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([["objectLocalId", Types.U32]]),
-			},
-		],
-	])
-}
+export const objectDuplicateOnRay =
+	createPacketSender<ObjectDuplicateOnRayData>(objectDuplicateOnRayMetadata)
+
+export const createObjectDuplicateOnRayDelegate =
+	createPacketDelegate<ObjectDuplicateOnRayData>(objectDuplicateOnRayMetadata)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface SaveAssetIntoInventoryData {
 	agentData?: {
@@ -22,29 +26,30 @@ export interface SaveAssetIntoInventoryData {
 	}
 }
 
-export class SaveAssetIntoInventory extends Packet<SaveAssetIntoInventoryData> {
-	public static override id = 272
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const saveAssetIntoInventoryMetadata = {
+	id: 272,
+	name: "SaveAssetIntoInventory",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "inventoryData",
+			parameters: [
+				["itemId", UUID],
+				["newAssetId", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"inventoryData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["itemId", Types.UUID],
-					["newAssetId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const saveAssetIntoInventory =
+	createPacketSender<SaveAssetIntoInventoryData>(saveAssetIntoInventoryMetadata)
+
+export const createSaveAssetIntoInventoryDelegate =
+	createPacketDelegate<SaveAssetIntoInventoryData>(
+		saveAssetIntoInventoryMetadata,
+	)

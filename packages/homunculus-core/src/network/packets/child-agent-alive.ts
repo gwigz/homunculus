@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, U64, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ChildAgentAliveData {
 	agentData: {
@@ -21,24 +25,26 @@ export interface ChildAgentAliveData {
 	}
 }
 
-export class ChildAgentAlive extends Packet<ChildAgentAliveData> {
-	public static override id = 26
-	public static override frequency = 2
-	public static override trusted = true
-	public static override compression = false
+export const childAgentAliveMetadata = {
+	id: 26,
+	name: "ChildAgentAlive",
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["regionHandle", U64],
+				["viewerCircuitCode", U32],
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["regionHandle", Types.U64],
-					["viewerCircuitCode", Types.U32],
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const childAgentAlive = createPacketSender<ChildAgentAliveData>(
+	childAgentAliveMetadata,
+)
+
+export const createChildAgentAliveDelegate =
+	createPacketDelegate<ChildAgentAliveData>(childAgentAliveMetadata)

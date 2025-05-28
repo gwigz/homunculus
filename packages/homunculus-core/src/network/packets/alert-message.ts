@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AlertMessageData {
 	alertData?: {
@@ -22,28 +26,29 @@ export interface AlertMessageData {
 	}[]
 }
 
-export class AlertMessage extends Packet<AlertMessageData> {
-	public static override id = 134
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const alertMessageMetadata = {
+	id: 134,
+	name: "AlertMessage",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "alertData",
+			parameters: [["message", Variable1]],
+		},
+		{
+			name: "alertInfo",
+			parameters: [
+				["message", Variable1],
+				["extraParams", Variable1],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"alertData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["message", Types.Variable1]]),
-			},
-		],
-		[
-			"alertInfo",
-			{
-				parameters: new Map<string, Types.Type>([
-					["message", Types.Variable1],
-					["extraParams", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const alertMessage =
+	createPacketSender<AlertMessageData>(alertMessageMetadata)
+
+export const createAlertMessageDelegate =
+	createPacketDelegate<AlertMessageData>(alertMessageMetadata)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U8, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface UpdateSimulatorData {
 	simulatorInfo?: {
@@ -21,24 +25,27 @@ export interface UpdateSimulatorData {
 	}
 }
 
-export class UpdateSimulator extends Packet<UpdateSimulatorData> {
-	public static override id = 17
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const updateSimulatorMetadata = {
+	id: 17,
+	name: "UpdateSimulator",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "simulatorInfo",
+			parameters: [
+				["regionId", UUID],
+				["simName", Variable1],
+				["estateId", U32],
+				["simAccess", U8],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"simulatorInfo",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["regionId", Types.UUID],
-					["simName", Types.Variable1],
-					["estateId", Types.U32],
-					["simAccess", Types.U8],
-				]),
-			},
-		],
-	])
-}
+export const updateSimulator = createPacketSender<UpdateSimulatorData>(
+	updateSimulatorMetadata,
+)
+
+export const createUpdateSimulatorDelegate =
+	createPacketDelegate<UpdateSimulatorData>(updateSimulatorMetadata)

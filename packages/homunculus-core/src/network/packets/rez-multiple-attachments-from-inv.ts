@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, U8, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RezMultipleAttachmentsFromInvData {
 	agentData?: {
@@ -35,49 +39,51 @@ export interface RezMultipleAttachmentsFromInvData {
 	}[]
 }
 
-export class RezMultipleAttachmentsFromInv extends Packet<RezMultipleAttachmentsFromInvData> {
-	public static override id = 396
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const rezMultipleAttachmentsFromInvMetadata = {
+	id: 396,
+	name: "RezMultipleAttachmentsFromInv",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "headerData",
+			parameters: [
+				["compoundMsgId", UUID],
+				["totalObjects", U8],
+				["firstDetachAll", Bool],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [
+				["itemId", UUID],
+				["ownerId", UUID],
+				["attachmentPt", U8],
+				["itemFlags", U32],
+				["groupMask", U32],
+				["everyoneMask", U32],
+				["nextOwnerMask", U32],
+				["name", Variable1],
+				["description", Variable1],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"headerData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["compoundMsgId", Types.UUID],
-					["totalObjects", Types.U8],
-					["firstDetachAll", Types.Bool],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["itemId", Types.UUID],
-					["ownerId", Types.UUID],
-					["attachmentPt", Types.U8],
-					["itemFlags", Types.U32],
-					["groupMask", Types.U32],
-					["everyoneMask", Types.U32],
-					["nextOwnerMask", Types.U32],
-					["name", Types.Variable1],
-					["description", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const rezMultipleAttachmentsFromInv =
+	createPacketSender<RezMultipleAttachmentsFromInvData>(
+		rezMultipleAttachmentsFromInvMetadata,
+	)
+
+export const createRezMultipleAttachmentsFromInvDelegate =
+	createPacketDelegate<RezMultipleAttachmentsFromInvData>(
+		rezMultipleAttachmentsFromInvMetadata,
+	)

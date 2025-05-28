@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, S32 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface EconomyDataData {
 	info?: {
@@ -34,37 +38,40 @@ export interface EconomyDataData {
 	}
 }
 
-export class EconomyData extends Packet<EconomyDataData> {
-	public static override id = 25
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const economyDataMetadata = {
+	id: 25,
+	name: "EconomyData",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "info",
+			parameters: [
+				["objectCapacity", S32],
+				["objectCount", S32],
+				["priceEnergyUnit", S32],
+				["priceObjectClaim", S32],
+				["pricePublicObjectDecay", S32],
+				["pricePublicObjectDelete", S32],
+				["priceParcelClaim", S32],
+				["priceParcelClaimFactor", F32],
+				["priceUpload", S32],
+				["priceRentLight", S32],
+				["teleportMinPrice", S32],
+				["teleportPriceExponent", F32],
+				["energyEfficiency", F32],
+				["priceObjectRent", F32],
+				["priceObjectScaleFactor", F32],
+				["priceParcelRent", S32],
+				["priceGroupCreate", S32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"info",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["objectCapacity", Types.S32],
-					["objectCount", Types.S32],
-					["priceEnergyUnit", Types.S32],
-					["priceObjectClaim", Types.S32],
-					["pricePublicObjectDecay", Types.S32],
-					["pricePublicObjectDelete", Types.S32],
-					["priceParcelClaim", Types.S32],
-					["priceParcelClaimFactor", Types.F32],
-					["priceUpload", Types.S32],
-					["priceRentLight", Types.S32],
-					["teleportMinPrice", Types.S32],
-					["teleportPriceExponent", Types.F32],
-					["energyEfficiency", Types.F32],
-					["priceObjectRent", Types.F32],
-					["priceObjectScaleFactor", Types.F32],
-					["priceParcelRent", Types.S32],
-					["priceGroupCreate", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const economyData =
+	createPacketSender<EconomyDataData>(economyDataMetadata)
+
+export const createEconomyDataDelegate =
+	createPacketDelegate<EconomyDataData>(economyDataMetadata)

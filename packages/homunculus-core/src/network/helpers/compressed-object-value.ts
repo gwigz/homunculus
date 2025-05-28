@@ -1,10 +1,14 @@
-import type { PacketBuffer } from "~/network/helpers"
-import type { Type } from "~/network/types"
+import type { PacketBuffer, Type } from "~/network"
 
 export type CompressedObjectProperties = Array<
 	[key: string, type: Type | CompressedObjectValue]
 >
 
+/**
+ * Utility class for terse object updates.
+ *
+ * @todo Replace with a simple object instead.
+ */
 export class CompressedObjectValue {
 	private type: any
 	private flag: number

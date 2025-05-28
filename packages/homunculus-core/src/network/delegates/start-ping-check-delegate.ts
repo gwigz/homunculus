@@ -1,11 +1,6 @@
-import type { StartPingCheck } from "~/network/packets"
-import { CompletePingCheck } from "~/network/packets"
-import { Delegate } from "./delegate"
+import { packets } from "~/network"
 
-class StartPingCheckDelegate extends Delegate {
-	public override handle(packet: StartPingCheck) {
-		this.circuit.send([new CompletePingCheck(packet.data)])
-	}
-}
-
-export default StartPingCheckDelegate
+packets.createStartPingCheckDelegate({
+	handle: (packet, context) =>
+		context.circuit.send([packets.completePingCheck(packet.data)]),
+})

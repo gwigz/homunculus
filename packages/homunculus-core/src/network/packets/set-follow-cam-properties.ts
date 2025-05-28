@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, S32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface SetFollowCamPropertiesData {
 	objectData?: {
@@ -22,28 +26,31 @@ export interface SetFollowCamPropertiesData {
 	}[]
 }
 
-export class SetFollowCamProperties extends Packet<SetFollowCamPropertiesData> {
-	public static override id = 159
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const setFollowCamPropertiesMetadata = {
+	id: 159,
+	name: "SetFollowCamProperties",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "objectData",
+			parameters: [["objectId", UUID]],
+		},
+		{
+			name: "cameraProperty",
+			parameters: [
+				["type", S32],
+				["value", F32],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"objectData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["objectId", Types.UUID]]),
-			},
-		],
-		[
-			"cameraProperty",
-			{
-				parameters: new Map<string, Types.Type>([
-					["type", Types.S32],
-					["value", Types.F32],
-				]),
-			},
-		],
-	])
-}
+export const setFollowCamProperties =
+	createPacketSender<SetFollowCamPropertiesData>(setFollowCamPropertiesMetadata)
+
+export const createSetFollowCamPropertiesDelegate =
+	createPacketDelegate<SetFollowCamPropertiesData>(
+		setFollowCamPropertiesMetadata,
+	)

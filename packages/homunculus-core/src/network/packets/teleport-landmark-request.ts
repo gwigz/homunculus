@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface TeleportLandmarkRequestData {
 	info?: {
@@ -20,23 +24,29 @@ export interface TeleportLandmarkRequestData {
 	}
 }
 
-export class TeleportLandmarkRequest extends Packet<TeleportLandmarkRequestData> {
-	public static override id = 65
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const teleportLandmarkRequestMetadata = {
+	id: 65,
+	name: "TeleportLandmarkRequest",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "info",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["landmarkId", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"info",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["landmarkId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const teleportLandmarkRequest =
+	createPacketSender<TeleportLandmarkRequestData>(
+		teleportLandmarkRequestMetadata,
+	)
+
+export const createTeleportLandmarkRequestDelegate =
+	createPacketDelegate<TeleportLandmarkRequestData>(
+		teleportLandmarkRequestMetadata,
+	)

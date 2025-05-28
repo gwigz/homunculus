@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID, Variable1, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectImageData {
 	agentData?: {
@@ -24,32 +28,33 @@ export interface ObjectImageData {
 	}[]
 }
 
-export class ObjectImage extends Packet<ObjectImageData> {
-	public static override id = 96
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const objectImageMetadata = {
+	id: 96,
+	name: "ObjectImage",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [
+				["objectLocalId", U32],
+				["mediaUrl", Variable1],
+				["textureEntry", Variable2],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["objectLocalId", Types.U32],
-					["mediaUrl", Types.Variable1],
-					["textureEntry", Types.Variable2],
-				]),
-			},
-		],
-	])
-}
+export const objectImage =
+	createPacketSender<ObjectImageData>(objectImageMetadata)
+
+export const createObjectImageDelegate =
+	createPacketDelegate<ObjectImageData>(objectImageMetadata)

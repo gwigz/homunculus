@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U8, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface GrantGodlikePowersData {
 	agentData?: {
@@ -23,32 +27,32 @@ export interface GrantGodlikePowersData {
 	}
 }
 
-export class GrantGodlikePowers extends Packet<GrantGodlikePowersData> {
-	public static override id = 258
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const grantGodlikePowersMetadata = {
+	id: 258,
+	name: "GrantGodlikePowers",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "grantData",
+			parameters: [
+				["godLevel", U8],
+				["token", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"grantData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["godLevel", Types.U8],
-					["token", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const grantGodlikePowers = createPacketSender<GrantGodlikePowersData>(
+	grantGodlikePowersMetadata,
+)
+
+export const createGrantGodlikePowersDelegate =
+	createPacketDelegate<GrantGodlikePowersData>(grantGodlikePowersMetadata)

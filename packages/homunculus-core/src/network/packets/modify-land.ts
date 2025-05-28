@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, S32, U8, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ModifyLandData {
 	agentData?: {
@@ -35,52 +39,48 @@ export interface ModifyLandData {
 	}[]
 }
 
-export class ModifyLand extends Packet<ModifyLandData> {
-	public static override id = 124
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const modifyLandMetadata = {
+	id: 124,
+	name: "ModifyLand",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "modifyBlock",
+			parameters: [
+				["action", U8],
+				["brushSize", U8],
+				["seconds", F32],
+				["height", F32],
+			],
+		},
+		{
+			name: "parcelData",
+			parameters: [
+				["localId", S32],
+				["west", F32],
+				["south", F32],
+				["east", F32],
+				["north", F32],
+			],
+			multiple: true,
+		},
+		{
+			name: "modifyBlockExtended",
+			parameters: [["brushSize", F32]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"modifyBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["action", Types.U8],
-					["brushSize", Types.U8],
-					["seconds", Types.F32],
-					["height", Types.F32],
-				]),
-			},
-		],
-		[
-			"parcelData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["localId", Types.S32],
-					["west", Types.F32],
-					["south", Types.F32],
-					["east", Types.F32],
-					["north", Types.F32],
-				]),
-			},
-		],
-		[
-			"modifyBlockExtended",
-			{
-				parameters: new Map<string, Types.Type>([["brushSize", Types.F32]]),
-			},
-		],
-	])
-}
+export const modifyLand = createPacketSender<ModifyLandData>(modifyLandMetadata)
+
+export const createModifyLandDelegate =
+	createPacketDelegate<ModifyLandData>(modifyLandMetadata)

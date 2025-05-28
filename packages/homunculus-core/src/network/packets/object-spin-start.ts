@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectSpinStartData {
 	agentData?: {
@@ -22,29 +26,29 @@ export interface ObjectSpinStartData {
 	}
 }
 
-export class ObjectSpinStart extends Packet<ObjectSpinStartData> {
-	public static override id = 120
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const objectSpinStartMetadata = {
+	id: 120,
+	name: "ObjectSpinStart",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [["objectId", UUID]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["objectId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const objectSpinStart = createPacketSender<ObjectSpinStartData>(
+	objectSpinStartMetadata,
+)
+
+export const createObjectSpinStartDelegate =
+	createPacketDelegate<ObjectSpinStartData>(objectSpinStartMetadata)

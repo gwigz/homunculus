@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface UpdateMuteListEntryData {
 	agentData?: {
@@ -25,34 +29,33 @@ export interface UpdateMuteListEntryData {
 	}
 }
 
-export class UpdateMuteListEntry extends Packet<UpdateMuteListEntryData> {
-	public static override id = 263
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const updateMuteListEntryMetadata = {
+	id: 263,
+	name: "UpdateMuteListEntry",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "muteData",
+			parameters: [
+				["muteId", UUID],
+				["muteName", Variable1],
+				["muteType", S32],
+				["muteFlags", U32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"muteData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["muteId", Types.UUID],
-					["muteName", Types.Variable1],
-					["muteType", Types.S32],
-					["muteFlags", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const updateMuteListEntry = createPacketSender<UpdateMuteListEntryData>(
+	updateMuteListEntryMetadata,
+)
+
+export const createUpdateMuteListEntryDelegate =
+	createPacketDelegate<UpdateMuteListEntryData>(updateMuteListEntryMetadata)

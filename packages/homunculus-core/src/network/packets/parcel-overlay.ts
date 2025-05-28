@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ParcelOverlayData {
 	parcelData?: {
@@ -19,22 +23,26 @@ export interface ParcelOverlayData {
 	}
 }
 
-export class ParcelOverlay extends Packet<ParcelOverlayData> {
-	public static override id = 196
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const parcelOverlayMetadata = {
+	id: 196,
+	name: "ParcelOverlay",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "parcelData",
+			parameters: [
+				["sequenceId", S32],
+				["data", Variable2],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"parcelData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["sequenceId", Types.S32],
-					["data", Types.Variable2],
-				]),
-			},
-		],
-	])
-}
+export const parcelOverlay = createPacketSender<ParcelOverlayData>(
+	parcelOverlayMetadata,
+)
+
+export const createParcelOverlayDelegate =
+	createPacketDelegate<ParcelOverlayData>(parcelOverlayMetadata)

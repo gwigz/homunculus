@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface MoneyBalanceRequestData {
 	agentData?: {
@@ -22,31 +26,29 @@ export interface MoneyBalanceRequestData {
 	}
 }
 
-export class MoneyBalanceRequest extends Packet<MoneyBalanceRequestData> {
-	public static override id = 313
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const moneyBalanceRequestMetadata = {
+	id: 313,
+	name: "MoneyBalanceRequest",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "moneyData",
+			parameters: [["transactionId", UUID]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"moneyData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["transactionId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const moneyBalanceRequest = createPacketSender<MoneyBalanceRequestData>(
+	moneyBalanceRequestMetadata,
+)
+
+export const createMoneyBalanceRequestDelegate =
+	createPacketDelegate<MoneyBalanceRequestData>(moneyBalanceRequestMetadata)

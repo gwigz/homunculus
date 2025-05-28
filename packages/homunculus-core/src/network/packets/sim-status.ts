@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface SimStatusData {
 	simStatus?: {
@@ -19,22 +23,23 @@ export interface SimStatusData {
 	}
 }
 
-export class SimStatus extends Packet<SimStatusData> {
-	public static override id = 12
-	public static override frequency = 1
-	public static override trusted = true
-	public static override compression = false
+export const simStatusMetadata = {
+	id: 12,
+	name: "SimStatus",
+	frequency: 1,
+	trusted: true,
+	blocks: [
+		{
+			name: "simStatus",
+			parameters: [
+				["canAcceptAgents", Bool],
+				["canAcceptTasks", Bool],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"simStatus",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["canAcceptAgents", Types.Bool],
-					["canAcceptTasks", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const simStatus = createPacketSender<SimStatusData>(simStatusMetadata)
+
+export const createSimStatusDelegate =
+	createPacketDelegate<SimStatusData>(simStatusMetadata)

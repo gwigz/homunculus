@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RemoveInventoryItemData {
 	agentData?: {
@@ -22,28 +26,29 @@ export interface RemoveInventoryItemData {
 	}[]
 }
 
-export class RemoveInventoryItem extends Packet<RemoveInventoryItemData> {
-	public static override id = 270
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const removeInventoryItemMetadata = {
+	id: 270,
+	name: "RemoveInventoryItem",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "inventoryData",
+			parameters: [["itemId", UUID]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"inventoryData",
-			{
-				parameters: new Map<string, Types.Type>([["itemId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const removeInventoryItem = createPacketSender<RemoveInventoryItemData>(
+	removeInventoryItemMetadata,
+)
+
+export const createRemoveInventoryItemDelegate =
+	createPacketDelegate<RemoveInventoryItemData>(removeInventoryItemMetadata)

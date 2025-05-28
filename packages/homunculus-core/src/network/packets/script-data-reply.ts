@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U64, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ScriptDataReplyData {
 	dataBlock?: {
@@ -19,21 +23,26 @@ export interface ScriptDataReplyData {
 	}[]
 }
 
-export class ScriptDataReply extends Packet<ScriptDataReplyData> {
-	public static override id = 338
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const scriptDataReplyMetadata = {
+	id: 338,
+	name: "ScriptDataReply",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "dataBlock",
+			parameters: [
+				["hash", U64],
+				["reply", Variable2],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"dataBlock",
-			{
-				parameters: new Map<string, Types.Type>([
-					["hash", Types.U64],
-					["reply", Types.Variable2],
-				]),
-			},
-		],
-	])
-}
+export const scriptDataReply = createPacketSender<ScriptDataReplyData>(
+	scriptDataReplyMetadata,
+)
+
+export const createScriptDataReplyDelegate =
+	createPacketDelegate<ScriptDataReplyData>(scriptDataReplyMetadata)

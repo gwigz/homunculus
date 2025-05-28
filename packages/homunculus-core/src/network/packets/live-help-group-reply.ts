@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface LiveHelpGroupReplyData {
 	replyData?: {
@@ -20,23 +24,26 @@ export interface LiveHelpGroupReplyData {
 	}
 }
 
-export class LiveHelpGroupReply extends Packet<LiveHelpGroupReplyData> {
-	public static override id = 380
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const liveHelpGroupReplyMetadata = {
+	id: 380,
+	name: "LiveHelpGroupReply",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "replyData",
+			parameters: [
+				["requestId", UUID],
+				["groupId", UUID],
+				["selection", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"replyData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["requestId", Types.UUID],
-					["groupId", Types.UUID],
-					["selection", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const liveHelpGroupReply = createPacketSender<LiveHelpGroupReplyData>(
+	liveHelpGroupReplyMetadata,
+)
+
+export const createLiveHelpGroupReplyDelegate =
+	createPacketDelegate<LiveHelpGroupReplyData>(liveHelpGroupReplyMetadata)

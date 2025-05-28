@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, S8, S32, U64, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface LogParcelChangesData {
 	agentData?: {
@@ -29,39 +33,39 @@ export interface LogParcelChangesData {
 	}[]
 }
 
-export class LogParcelChanges extends Packet<LogParcelChangesData> {
-	public static override id = 224
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const logParcelChangesMetadata = {
+	id: 224,
+	name: "LogParcelChanges",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "regionData",
+			parameters: [["regionHandle", U64]],
+		},
+		{
+			name: "parcelData",
+			parameters: [
+				["parcelId", UUID],
+				["ownerId", UUID],
+				["isOwnerGroup", Bool],
+				["actualArea", S32],
+				["action", S8],
+				["transactionId", UUID],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"regionData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["regionHandle", Types.U64]]),
-			},
-		],
-		[
-			"parcelData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["parcelId", Types.UUID],
-					["ownerId", Types.UUID],
-					["isOwnerGroup", Types.Bool],
-					["actualArea", Types.S32],
-					["action", Types.S8],
-					["transactionId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const logParcelChanges = createPacketSender<LogParcelChangesData>(
+	logParcelChangesMetadata,
+)
+
+export const createLogParcelChangesDelegate =
+	createPacketDelegate<LogParcelChangesData>(logParcelChangesMetadata)

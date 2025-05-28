@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface BuyObjectInventoryData {
 	agentData?: {
@@ -24,33 +28,33 @@ export interface BuyObjectInventoryData {
 	}
 }
 
-export class BuyObjectInventory extends Packet<BuyObjectInventoryData> {
-	public static override id = 103
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const buyObjectInventoryMetadata = {
+	id: 103,
+	name: "BuyObjectInventory",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "data",
+			parameters: [
+				["objectId", UUID],
+				["itemId", UUID],
+				["folderId", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["objectId", Types.UUID],
-					["itemId", Types.UUID],
-					["folderId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const buyObjectInventory = createPacketSender<BuyObjectInventoryData>(
+	buyObjectInventoryMetadata,
+)
+
+export const createBuyObjectInventoryDelegate =
+	createPacketDelegate<BuyObjectInventoryData>(buyObjectInventoryMetadata)

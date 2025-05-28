@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, F32, S32, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface GroupActiveProposalItemReplyData {
 	agentData: {
@@ -35,49 +39,52 @@ export interface GroupActiveProposalItemReplyData {
 	}[]
 }
 
-export class GroupActiveProposalItemReply extends Packet<GroupActiveProposalItemReplyData> {
-	public static override id = 360
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const groupActiveProposalItemReplyMetadata = {
+	id: 360,
+	name: "GroupActiveProposalItemReply",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["groupId", UUID],
+			],
+		},
+		{
+			name: "transactionData",
+			parameters: [
+				["transactionId", UUID],
+				["totalNumItems", U32],
+			],
+		},
+		{
+			name: "proposalData",
+			parameters: [
+				["voteId", UUID],
+				["voteInitiator", UUID],
+				["terseDateId", Variable1],
+				["startDateTime", Variable1],
+				["endDateTime", Variable1],
+				["alreadyVoted", Bool],
+				["voteCast", Variable1],
+				["majority", F32],
+				["quorum", S32],
+				["proposalText", Variable1],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["groupId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"transactionData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["transactionId", Types.UUID],
-					["totalNumItems", Types.U32],
-				]),
-			},
-		],
-		[
-			"proposalData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["voteId", Types.UUID],
-					["voteInitiator", Types.UUID],
-					["terseDateId", Types.Variable1],
-					["startDateTime", Types.Variable1],
-					["endDateTime", Types.Variable1],
-					["alreadyVoted", Types.Bool],
-					["voteCast", Types.Variable1],
-					["majority", Types.F32],
-					["quorum", Types.S32],
-					["proposalText", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const groupActiveProposalItemReply =
+	createPacketSender<GroupActiveProposalItemReplyData>(
+		groupActiveProposalItemReplyMetadata,
+	)
+
+export const createGroupActiveProposalItemReplyDelegate =
+	createPacketDelegate<GroupActiveProposalItemReplyData>(
+		groupActiveProposalItemReplyMetadata,
+	)

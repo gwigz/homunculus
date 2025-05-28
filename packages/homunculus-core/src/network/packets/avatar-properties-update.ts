@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, UUID, Variable1, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AvatarPropertiesUpdateData {
 	agentData?: {
@@ -28,37 +32,38 @@ export interface AvatarPropertiesUpdateData {
 	}
 }
 
-export class AvatarPropertiesUpdate extends Packet<AvatarPropertiesUpdateData> {
-	public static override id = 174
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const avatarPropertiesUpdateMetadata = {
+	id: 174,
+	name: "AvatarPropertiesUpdate",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "propertiesData",
+			parameters: [
+				["imageId", UUID],
+				["fLImageId", UUID],
+				["aboutText", Variable2],
+				["fLAboutText", Variable1],
+				["allowPublish", Bool],
+				["maturePublish", Bool],
+				["profileUrl", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"propertiesData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["imageId", Types.UUID],
-					["fLImageId", Types.UUID],
-					["aboutText", Types.Variable2],
-					["fLAboutText", Types.Variable1],
-					["allowPublish", Types.Bool],
-					["maturePublish", Types.Bool],
-					["profileUrl", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const avatarPropertiesUpdate =
+	createPacketSender<AvatarPropertiesUpdateData>(avatarPropertiesUpdateMetadata)
+
+export const createAvatarPropertiesUpdateDelegate =
+	createPacketDelegate<AvatarPropertiesUpdateData>(
+		avatarPropertiesUpdateMetadata,
+	)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, U64, UUID, Variable2, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AgentMovementCompleteData {
 	agentData?: {
@@ -18,8 +22,8 @@ export interface AgentMovementCompleteData {
 		sessionId?: string
 	}
 	data?: {
-		position: Types.Vector3
-		lookAt: Types.Vector3
+		position: Vector3
+		lookAt: Vector3
 		regionHandle: number | bigint
 		timestamp: number
 	}
@@ -28,43 +32,36 @@ export interface AgentMovementCompleteData {
 	}
 }
 
-export class AgentMovementComplete extends Packet<AgentMovementCompleteData> {
-	public static override id = 250
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const agentMovementCompleteMetadata = {
+	id: 250,
+	name: "AgentMovementComplete",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "data",
+			parameters: [
+				["position", Vector3],
+				["lookAt", Vector3],
+				["regionHandle", U64],
+				["timestamp", U32],
+			],
+		},
+		{
+			name: "simData",
+			parameters: [["channelVersion", Variable2]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["position", Types.Vector3],
-					["lookAt", Types.Vector3],
-					["regionHandle", Types.U64],
-					["timestamp", Types.U32],
-				]),
-			},
-		],
-		[
-			"simData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["channelVersion", Types.Variable2],
-				]),
-			},
-		],
-	])
-}
+export const agentMovementComplete =
+	createPacketSender<AgentMovementCompleteData>(agentMovementCompleteMetadata)
+
+export const createAgentMovementCompleteDelegate =
+	createPacketDelegate<AgentMovementCompleteData>(agentMovementCompleteMetadata)

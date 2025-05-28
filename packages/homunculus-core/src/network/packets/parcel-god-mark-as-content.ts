@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ParcelGodMarkAsContentData {
 	agentData?: {
@@ -22,29 +26,29 @@ export interface ParcelGodMarkAsContentData {
 	}
 }
 
-export class ParcelGodMarkAsContent extends Packet<ParcelGodMarkAsContentData> {
-	public static override id = 227
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const parcelGodMarkAsContentMetadata = {
+	id: 227,
+	name: "ParcelGodMarkAsContent",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "parcelData",
+			parameters: [["localId", S32]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"parcelData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["localId", Types.S32]]),
-			},
-		],
-	])
-}
+export const parcelGodMarkAsContent =
+	createPacketSender<ParcelGodMarkAsContentData>(parcelGodMarkAsContentMetadata)
+
+export const createParcelGodMarkAsContentDelegate =
+	createPacketDelegate<ParcelGodMarkAsContentData>(
+		parcelGodMarkAsContentMetadata,
+	)

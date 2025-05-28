@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ConfirmEnableSimulatorData {
 	agentData?: {
@@ -19,22 +23,26 @@ export interface ConfirmEnableSimulatorData {
 	}
 }
 
-export class ConfirmEnableSimulator extends Packet<ConfirmEnableSimulatorData> {
-	public static override id = 8
-	public static override frequency = 1
-	public static override trusted = true
-	public static override compression = false
+export const confirmEnableSimulatorMetadata = {
+	id: 8,
+	name: "ConfirmEnableSimulator",
+	frequency: 1,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const confirmEnableSimulator =
+	createPacketSender<ConfirmEnableSimulatorData>(confirmEnableSimulatorMetadata)
+
+export const createConfirmEnableSimulatorDelegate =
+	createPacketDelegate<ConfirmEnableSimulatorData>(
+		confirmEnableSimulatorMetadata,
+	)

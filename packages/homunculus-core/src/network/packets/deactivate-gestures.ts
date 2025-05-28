@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface DeactivateGesturesData {
 	agentData?: {
@@ -24,32 +28,33 @@ export interface DeactivateGesturesData {
 	}[]
 }
 
-export class DeactivateGestures extends Packet<DeactivateGesturesData> {
-	public static override id = 317
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const deactivateGesturesMetadata = {
+	id: 317,
+	name: "DeactivateGestures",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["flags", U32],
+			],
+		},
+		{
+			name: "data",
+			parameters: [
+				["itemId", UUID],
+				["gestureFlags", U32],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["flags", Types.U32],
-				]),
-			},
-		],
-		[
-			"data",
-			{
-				parameters: new Map<string, Types.Type>([
-					["itemId", Types.UUID],
-					["gestureFlags", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const deactivateGestures = createPacketSender<DeactivateGesturesData>(
+	deactivateGesturesMetadata,
+)
+
+export const createDeactivateGesturesDelegate =
+	createPacketDelegate<DeactivateGesturesData>(deactivateGesturesMetadata)

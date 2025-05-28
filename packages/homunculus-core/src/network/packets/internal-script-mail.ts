@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID, Variable1, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface InternalScriptMailData {
 	dataBlock?: {
@@ -21,24 +25,27 @@ export interface InternalScriptMailData {
 	}
 }
 
-export class InternalScriptMail extends Packet<InternalScriptMailData> {
-	public static override id = 16
-	public static override frequency = 1
-	public static override trusted = true
-	public static override compression = false
+export const internalScriptMailMetadata = {
+	id: 16,
+	name: "InternalScriptMail",
+	frequency: 1,
+	trusted: true,
+	blocks: [
+		{
+			name: "dataBlock",
+			parameters: [
+				["from", Variable1],
+				["to", UUID],
+				["subject", Variable1],
+				["body", Variable2],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"dataBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["from", Types.Variable1],
-					["to", Types.UUID],
-					["subject", Types.Variable1],
-					["body", Types.Variable2],
-				]),
-			},
-		],
-	])
-}
+export const internalScriptMail = createPacketSender<InternalScriptMailData>(
+	internalScriptMailMetadata,
+)
+
+export const createInternalScriptMailDelegate =
+	createPacketDelegate<InternalScriptMailData>(internalScriptMailMetadata)

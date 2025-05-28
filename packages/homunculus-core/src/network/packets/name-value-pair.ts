@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface NameValuePairData {
 	taskData?: {
@@ -21,25 +25,27 @@ export interface NameValuePairData {
 	}[]
 }
 
-export class NameValuePair extends Packet<NameValuePairData> {
-	public static override id = 329
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const nameValuePairMetadata = {
+	id: 329,
+	name: "NameValuePair",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "taskData",
+			parameters: [["id", UUID]],
+		},
+		{
+			name: "nameValueData",
+			parameters: [["nVPair", Variable2]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"taskData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["id", Types.UUID]]),
-			},
-		],
-		[
-			"nameValueData",
-			{
-				parameters: new Map<string, Types.Type>([["nVPair", Types.Variable2]]),
-			},
-		],
-	])
-}
+export const nameValuePair = createPacketSender<NameValuePairData>(
+	nameValuePairMetadata,
+)
+
+export const createNameValuePairDelegate =
+	createPacketDelegate<NameValuePairData>(nameValuePairMetadata)

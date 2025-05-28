@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, U8, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface MoneyTransferBackendData {
 	moneyData?: {
@@ -30,33 +34,36 @@ export interface MoneyTransferBackendData {
 	}
 }
 
-export class MoneyTransferBackend extends Packet<MoneyTransferBackendData> {
-	public static override id = 312
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const moneyTransferBackendMetadata = {
+	id: 312,
+	name: "MoneyTransferBackend",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "moneyData",
+			parameters: [
+				["transactionId", UUID],
+				["transactionTime", U32],
+				["sourceId", UUID],
+				["destId", UUID],
+				["flags", U8],
+				["amount", S32],
+				["aggregatePermNextOwner", U8],
+				["aggregatePermInventory", U8],
+				["transactionType", S32],
+				["regionId", UUID],
+				["gridX", U32],
+				["gridY", U32],
+				["description", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"moneyData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["transactionId", Types.UUID],
-					["transactionTime", Types.U32],
-					["sourceId", Types.UUID],
-					["destId", Types.UUID],
-					["flags", Types.U8],
-					["amount", Types.S32],
-					["aggregatePermNextOwner", Types.U8],
-					["aggregatePermInventory", Types.U8],
-					["transactionType", Types.S32],
-					["regionId", Types.UUID],
-					["gridX", Types.U32],
-					["gridY", Types.U32],
-					["description", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const moneyTransferBackend =
+	createPacketSender<MoneyTransferBackendData>(moneyTransferBackendMetadata)
+
+export const createMoneyTransferBackendDelegate =
+	createPacketDelegate<MoneyTransferBackendData>(moneyTransferBackendMetadata)

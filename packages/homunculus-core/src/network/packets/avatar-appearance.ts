@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, S32, U8, U32, UUID, Variable2, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AvatarAppearanceData {
 	sender?: {
@@ -29,7 +33,7 @@ export interface AvatarAppearanceData {
 		flags: number
 	}[]
 	appearanceHover?: {
-		hoverHeight: Types.Vector3
+		hoverHeight: Vector3
 	}[]
 	attachmentBlock?: {
 		id: string
@@ -37,64 +41,57 @@ export interface AvatarAppearanceData {
 	}[]
 }
 
-export class AvatarAppearance extends Packet<AvatarAppearanceData> {
-	public static override id = 158
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const avatarAppearanceMetadata = {
+	id: 158,
+	name: "AvatarAppearance",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "sender",
+			parameters: [
+				["id", UUID],
+				["isTrial", Bool],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [["textureEntry", Variable2]],
+		},
+		{
+			name: "visualParam",
+			parameters: [["paramValue", U8]],
+			multiple: true,
+		},
+		{
+			name: "appearanceData",
+			parameters: [
+				["appearanceVersion", U8],
+				["cofVersion", S32],
+				["flags", U32],
+			],
+			multiple: true,
+		},
+		{
+			name: "appearanceHover",
+			parameters: [["hoverHeight", Vector3]],
+			multiple: true,
+		},
+		{
+			name: "attachmentBlock",
+			parameters: [
+				["id", UUID],
+				["attachmentPoint", U8],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"sender",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["id", Types.UUID],
-					["isTrial", Types.Bool],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["textureEntry", Types.Variable2],
-				]),
-			},
-		],
-		[
-			"visualParam",
-			{
-				parameters: new Map<string, Types.Type>([["paramValue", Types.U8]]),
-			},
-		],
-		[
-			"appearanceData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["appearanceVersion", Types.U8],
-					["cofVersion", Types.S32],
-					["flags", Types.U32],
-				]),
-			},
-		],
-		[
-			"appearanceHover",
-			{
-				parameters: new Map<string, Types.Type>([
-					["hoverHeight", Types.Vector3],
-				]),
-			},
-		],
-		[
-			"attachmentBlock",
-			{
-				parameters: new Map<string, Types.Type>([
-					["id", Types.UUID],
-					["attachmentPoint", Types.U8],
-				]),
-			},
-		],
-	])
-}
+export const avatarAppearance = createPacketSender<AvatarAppearanceData>(
+	avatarAppearanceMetadata,
+)
+
+export const createAvatarAppearanceDelegate =
+	createPacketDelegate<AvatarAppearanceData>(avatarAppearanceMetadata)

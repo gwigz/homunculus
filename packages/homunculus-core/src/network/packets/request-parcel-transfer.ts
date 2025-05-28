@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, S32, U8, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RequestParcelTransferData {
 	data?: {
@@ -33,42 +37,42 @@ export interface RequestParcelTransferData {
 	}
 }
 
-export class RequestParcelTransfer extends Packet<RequestParcelTransferData> {
-	public static override id = 220
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const requestParcelTransferMetadata = {
+	id: 220,
+	name: "RequestParcelTransfer",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "data",
+			parameters: [
+				["transactionId", UUID],
+				["transactionTime", U32],
+				["sourceId", UUID],
+				["destId", UUID],
+				["ownerId", UUID],
+				["flags", U8],
+				["transactionType", S32],
+				["amount", S32],
+				["billableArea", S32],
+				["actualArea", S32],
+				["final", Bool],
+			],
+		},
+		{
+			name: "regionData",
+			parameters: [
+				["regionId", UUID],
+				["gridX", U32],
+				["gridY", U32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["transactionId", Types.UUID],
-					["transactionTime", Types.U32],
-					["sourceId", Types.UUID],
-					["destId", Types.UUID],
-					["ownerId", Types.UUID],
-					["flags", Types.U8],
-					["transactionType", Types.S32],
-					["amount", Types.S32],
-					["billableArea", Types.S32],
-					["actualArea", Types.S32],
-					["final", Types.Bool],
-				]),
-			},
-		],
-		[
-			"regionData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["regionId", Types.UUID],
-					["gridX", Types.U32],
-					["gridY", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const requestParcelTransfer =
+	createPacketSender<RequestParcelTransferData>(requestParcelTransferMetadata)
+
+export const createRequestParcelTransferDelegate =
+	createPacketDelegate<RequestParcelTransferData>(requestParcelTransferMetadata)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S16, U8, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface CoarseLocationUpdateData {
 	location?: {
@@ -27,38 +31,38 @@ export interface CoarseLocationUpdateData {
 	}[]
 }
 
-export class CoarseLocationUpdate extends Packet<CoarseLocationUpdateData> {
-	public static override id = 6
-	public static override frequency = 1
-	public static override trusted = true
-	public static override compression = false
+export const coarseLocationUpdateMetadata = {
+	id: 6,
+	name: "CoarseLocationUpdate",
+	frequency: 1,
+	trusted: true,
+	blocks: [
+		{
+			name: "location",
+			parameters: [
+				["x", U8],
+				["y", U8],
+				["z", U8],
+			],
+			multiple: true,
+		},
+		{
+			name: "index",
+			parameters: [
+				["you", S16],
+				["prey", S16],
+			],
+		},
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"location",
-			{
-				parameters: new Map<string, Types.Type>([
-					["x", Types.U8],
-					["y", Types.U8],
-					["z", Types.U8],
-				]),
-			},
-		],
-		[
-			"index",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["you", Types.S16],
-					["prey", Types.S16],
-				]),
-			},
-		],
-		[
-			"agentData",
-			{
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const coarseLocationUpdate =
+	createPacketSender<CoarseLocationUpdateData>(coarseLocationUpdateMetadata)
+
+export const createCoarseLocationUpdateDelegate =
+	createPacketDelegate<CoarseLocationUpdateData>(coarseLocationUpdateMetadata)

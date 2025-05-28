@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, U8, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectPropertiesFamilyData {
 	objectData?: {
@@ -33,36 +37,41 @@ export interface ObjectPropertiesFamilyData {
 	}
 }
 
-export class ObjectPropertiesFamily extends Packet<ObjectPropertiesFamilyData> {
-	public static override id = 10
-	public static override frequency = 1
-	public static override trusted = true
-	public static override compression = true
+export const objectPropertiesFamilyMetadata = {
+	id: 10,
+	name: "ObjectPropertiesFamily",
+	frequency: 1,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "objectData",
+			parameters: [
+				["requestFlags", U32],
+				["objectId", UUID],
+				["ownerId", UUID],
+				["groupId", UUID],
+				["baseMask", U32],
+				["ownerMask", U32],
+				["groupMask", U32],
+				["everyoneMask", U32],
+				["nextOwnerMask", U32],
+				["ownershipCost", S32],
+				["saleType", U8],
+				["salePrice", S32],
+				["category", U32],
+				["lastOwnerId", UUID],
+				["name", Variable1],
+				["description", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"objectData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["requestFlags", Types.U32],
-					["objectId", Types.UUID],
-					["ownerId", Types.UUID],
-					["groupId", Types.UUID],
-					["baseMask", Types.U32],
-					["ownerMask", Types.U32],
-					["groupMask", Types.U32],
-					["everyoneMask", Types.U32],
-					["nextOwnerMask", Types.U32],
-					["ownershipCost", Types.S32],
-					["saleType", Types.U8],
-					["salePrice", Types.S32],
-					["category", Types.U32],
-					["lastOwnerId", Types.UUID],
-					["name", Types.Variable1],
-					["description", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const objectPropertiesFamily =
+	createPacketSender<ObjectPropertiesFamilyData>(objectPropertiesFamilyMetadata)
+
+export const createObjectPropertiesFamilyDelegate =
+	createPacketDelegate<ObjectPropertiesFamilyData>(
+		objectPropertiesFamilyMetadata,
+	)

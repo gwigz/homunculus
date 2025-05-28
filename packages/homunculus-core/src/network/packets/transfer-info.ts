@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, UUID, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface TransferInfoData {
 	transferInfo?: {
@@ -23,26 +27,28 @@ export interface TransferInfoData {
 	}
 }
 
-export class TransferInfo extends Packet<TransferInfoData> {
-	public static override id = 154
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const transferInfoMetadata = {
+	id: 154,
+	name: "TransferInfo",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "transferInfo",
+			parameters: [
+				["transferId", UUID],
+				["channelType", S32],
+				["targetType", S32],
+				["status", S32],
+				["size", S32],
+				["params", Variable2],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"transferInfo",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["transferId", Types.UUID],
-					["channelType", Types.S32],
-					["targetType", Types.S32],
-					["status", Types.S32],
-					["size", Types.S32],
-					["params", Types.Variable2],
-				]),
-			},
-		],
-	])
-}
+export const transferInfo =
+	createPacketSender<TransferInfoData>(transferInfoMetadata)
+
+export const createTransferInfoDelegate =
+	createPacketDelegate<TransferInfoData>(transferInfoMetadata)

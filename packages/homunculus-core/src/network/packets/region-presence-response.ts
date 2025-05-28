@@ -9,41 +9,52 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F64, IP, Port, U64, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RegionPresenceResponseData {
 	regionData?: {
 		regionId: string
 		regionHandle: number | bigint
-		internalRegionIp: Types.IP
-		externalRegionIp: Types.IP
-		regionPort: Types.Port
+		internalRegionIp: IP
+		externalRegionIp: IP
+		regionPort: Port
 		validUntil: number
 		message: string | Buffer
 	}[]
 }
 
-export class RegionPresenceResponse extends Packet<RegionPresenceResponseData> {
-	public static override id = 16
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const regionPresenceResponseMetadata = {
+	id: 16,
+	name: "RegionPresenceResponse",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "regionData",
+			parameters: [
+				["regionId", UUID],
+				["regionHandle", U64],
+				["internalRegionIp", IP],
+				["externalRegionIp", IP],
+				["regionPort", Port],
+				["validUntil", F64],
+				["message", Variable1],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"regionData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["regionId", Types.UUID],
-					["regionHandle", Types.U64],
-					["internalRegionIp", Types.IP],
-					["externalRegionIp", Types.IP],
-					["regionPort", Types.Port],
-					["validUntil", Types.F64],
-					["message", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const regionPresenceResponse =
+	createPacketSender<RegionPresenceResponseData>(regionPresenceResponseMetadata)
+
+export const createRegionPresenceResponseDelegate =
+	createPacketDelegate<RegionPresenceResponseData>(
+		regionPresenceResponseMetadata,
+	)

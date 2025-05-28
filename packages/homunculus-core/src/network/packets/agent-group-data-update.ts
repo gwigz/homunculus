@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, S32, U64, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AgentGroupDataUpdateData {
 	agentData?: {
@@ -26,32 +30,34 @@ export interface AgentGroupDataUpdateData {
 	}[]
 }
 
-export class AgentGroupDataUpdate extends Packet<AgentGroupDataUpdateData> {
-	public static override id = 389
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const agentGroupDataUpdateMetadata = {
+	id: 389,
+	name: "AgentGroupDataUpdate",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "groupData",
+			parameters: [
+				["groupId", UUID],
+				["groupPowers", U64],
+				["acceptNotices", Bool],
+				["groupInsigniaId", UUID],
+				["contribution", S32],
+				["groupName", Variable1],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"groupData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["groupId", Types.UUID],
-					["groupPowers", Types.U64],
-					["acceptNotices", Types.Bool],
-					["groupInsigniaId", Types.UUID],
-					["contribution", Types.S32],
-					["groupName", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const agentGroupDataUpdate =
+	createPacketSender<AgentGroupDataUpdateData>(agentGroupDataUpdateMetadata)
+
+export const createAgentGroupDataUpdateDelegate =
+	createPacketDelegate<AgentGroupDataUpdateData>(agentGroupDataUpdateMetadata)

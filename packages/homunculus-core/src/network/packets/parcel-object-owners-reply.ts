@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, S32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ParcelObjectOwnersReplyData {
 	data?: {
@@ -21,23 +25,32 @@ export interface ParcelObjectOwnersReplyData {
 	}[]
 }
 
-export class ParcelObjectOwnersReply extends Packet<ParcelObjectOwnersReplyData> {
-	public static override id = 57
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const parcelObjectOwnersReplyMetadata = {
+	id: 57,
+	name: "ParcelObjectOwnersReply",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "data",
+			parameters: [
+				["ownerId", UUID],
+				["isGroupOwned", Bool],
+				["count", S32],
+				["onlineStatus", Bool],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"data",
-			{
-				parameters: new Map<string, Types.Type>([
-					["ownerId", Types.UUID],
-					["isGroupOwned", Types.Bool],
-					["count", Types.S32],
-					["onlineStatus", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const parcelObjectOwnersReply =
+	createPacketSender<ParcelObjectOwnersReplyData>(
+		parcelObjectOwnersReplyMetadata,
+	)
+
+export const createParcelObjectOwnersReplyDelegate =
+	createPacketDelegate<ParcelObjectOwnersReplyData>(
+		parcelObjectOwnersReplyMetadata,
+	)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface LoadURLData {
 	data?: {
@@ -23,26 +27,27 @@ export interface LoadURLData {
 	}
 }
 
-export class LoadURL extends Packet<LoadURLData> {
-	public static override id = 194
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const loadUrlMetadata = {
+	id: 194,
+	name: "LoadURL",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "data",
+			parameters: [
+				["objectName", Variable1],
+				["objectId", UUID],
+				["ownerId", UUID],
+				["ownerIsGroup", Bool],
+				["message", Variable1],
+				["url", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["objectName", Types.Variable1],
-					["objectId", Types.UUID],
-					["ownerId", Types.UUID],
-					["ownerIsGroup", Types.Bool],
-					["message", Types.Variable1],
-					["url", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const loadUrl = createPacketSender<LoadURLData>(loadUrlMetadata)
+
+export const createLoadURLDelegate =
+	createPacketDelegate<LoadURLData>(loadUrlMetadata)

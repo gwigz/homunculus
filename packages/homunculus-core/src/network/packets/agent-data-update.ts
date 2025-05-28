@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U64, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AgentDataUpdateData {
 	agentData: {
@@ -24,27 +28,31 @@ export interface AgentDataUpdateData {
 	}
 }
 
-export class AgentDataUpdate extends Packet<AgentDataUpdateData> {
-	public static override id = 387
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const agentDataUpdateMetadata = {
+	id: 387,
+	name: "AgentDataUpdate",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["firstName", Variable1],
+				["lastName", Variable1],
+				["groupTitle", Variable1],
+				["activeGroupId", UUID],
+				["groupPowers", U64],
+				["groupName", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["firstName", Types.Variable1],
-					["lastName", Types.Variable1],
-					["groupTitle", Types.Variable1],
-					["activeGroupId", Types.UUID],
-					["groupPowers", Types.U64],
-					["groupName", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const agentDataUpdate = createPacketSender<AgentDataUpdateData>(
+	agentDataUpdateMetadata,
+)
+
+export const createAgentDataUpdateDelegate =
+	createPacketDelegate<AgentDataUpdateData>(agentDataUpdateMetadata)

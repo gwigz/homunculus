@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, F32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ParcelClaimData {
 	agentData?: {
@@ -30,44 +34,42 @@ export interface ParcelClaimData {
 	}[]
 }
 
-export class ParcelClaim extends Packet<ParcelClaimData> {
-	public static override id = 209
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const parcelClaimMetadata = {
+	id: 209,
+	name: "ParcelClaim",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "data",
+			parameters: [
+				["groupId", UUID],
+				["isGroupOwned", Bool],
+				["final", Bool],
+			],
+		},
+		{
+			name: "parcelData",
+			parameters: [
+				["west", F32],
+				["south", F32],
+				["east", F32],
+				["north", F32],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["groupId", Types.UUID],
-					["isGroupOwned", Types.Bool],
-					["final", Types.Bool],
-				]),
-			},
-		],
-		[
-			"parcelData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["west", Types.F32],
-					["south", Types.F32],
-					["east", Types.F32],
-					["north", Types.F32],
-				]),
-			},
-		],
-	])
-}
+export const parcelClaim =
+	createPacketSender<ParcelClaimData>(parcelClaimMetadata)
+
+export const createParcelClaimDelegate =
+	createPacketDelegate<ParcelClaimData>(parcelClaimMetadata)

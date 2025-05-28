@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface GroupAccountDetailsReplyData {
 	agentData: {
@@ -29,43 +33,46 @@ export interface GroupAccountDetailsReplyData {
 	}[]
 }
 
-export class GroupAccountDetailsReply extends Packet<GroupAccountDetailsReplyData> {
-	public static override id = 356
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const groupAccountDetailsReplyMetadata = {
+	id: 356,
+	name: "GroupAccountDetailsReply",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["groupId", UUID],
+			],
+		},
+		{
+			name: "moneyData",
+			parameters: [
+				["requestId", UUID],
+				["intervalDays", S32],
+				["currentInterval", S32],
+				["startDate", Variable1],
+			],
+		},
+		{
+			name: "historyData",
+			parameters: [
+				["description", Variable1],
+				["amount", S32],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["groupId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"moneyData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["requestId", Types.UUID],
-					["intervalDays", Types.S32],
-					["currentInterval", Types.S32],
-					["startDate", Types.Variable1],
-				]),
-			},
-		],
-		[
-			"historyData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["description", Types.Variable1],
-					["amount", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const groupAccountDetailsReply =
+	createPacketSender<GroupAccountDetailsReplyData>(
+		groupAccountDetailsReplyMetadata,
+	)
+
+export const createGroupAccountDetailsReplyDelegate =
+	createPacketDelegate<GroupAccountDetailsReplyData>(
+		groupAccountDetailsReplyMetadata,
+	)

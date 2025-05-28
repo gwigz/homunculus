@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RevokePermissionsData {
 	agentData?: {
@@ -23,32 +27,31 @@ export interface RevokePermissionsData {
 	}
 }
 
-export class RevokePermissions extends Packet<RevokePermissionsData> {
-	public static override id = 193
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const revokePermissionsMetadata = {
+	id: 193,
+	name: "RevokePermissions",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "data",
+			parameters: [
+				["objectId", UUID],
+				["objectPermissions", U32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["objectId", Types.UUID],
-					["objectPermissions", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const revokePermissions = createPacketSender<RevokePermissionsData>(
+	revokePermissionsMetadata,
+)
+
+export const createRevokePermissionsDelegate =
+	createPacketDelegate<RevokePermissionsData>(revokePermissionsMetadata)

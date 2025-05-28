@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AvatarPicksReplyData {
 	agentData: {
@@ -23,31 +27,33 @@ export interface AvatarPicksReplyData {
 	}[]
 }
 
-export class AvatarPicksReply extends Packet<AvatarPicksReplyData> {
-	public static override id = 178
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const avatarPicksReplyMetadata = {
+	id: 178,
+	name: "AvatarPicksReply",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["targetId", UUID],
+			],
+		},
+		{
+			name: "data",
+			parameters: [
+				["pickId", UUID],
+				["pickName", Variable1],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["targetId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"data",
-			{
-				parameters: new Map<string, Types.Type>([
-					["pickId", Types.UUID],
-					["pickName", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const avatarPicksReply = createPacketSender<AvatarPicksReplyData>(
+	avatarPicksReplyMetadata,
+)
+
+export const createAvatarPicksReplyDelegate =
+	createPacketDelegate<AvatarPicksReplyData>(avatarPicksReplyMetadata)

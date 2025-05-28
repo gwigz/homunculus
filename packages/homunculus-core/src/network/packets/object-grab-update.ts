@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, U32, UUID, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectGrabUpdateData {
 	agentData?: {
@@ -19,61 +23,60 @@ export interface ObjectGrabUpdateData {
 	}
 	objectData?: {
 		objectId: string
-		grabOffsetInitial: Types.Vector3
-		grabPosition: Types.Vector3
+		grabOffsetInitial: Vector3
+		grabPosition: Vector3
 		timeSinceLast: number
 	}
 	surfaceInfo?: {
-		uVCoord: Types.Vector3
-		sTCoord: Types.Vector3
+		uVCoord: Vector3
+		sTCoord: Vector3
 		faceIndex: number
-		position: Types.Vector3
-		normal: Types.Vector3
-		binormal: Types.Vector3
+		position: Vector3
+		normal: Vector3
+		binormal: Vector3
 	}[]
 }
 
-export class ObjectGrabUpdate extends Packet<ObjectGrabUpdateData> {
-	public static override id = 118
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const objectGrabUpdateMetadata = {
+	id: 118,
+	name: "ObjectGrabUpdate",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [
+				["objectId", UUID],
+				["grabOffsetInitial", Vector3],
+				["grabPosition", Vector3],
+				["timeSinceLast", U32],
+			],
+		},
+		{
+			name: "surfaceInfo",
+			parameters: [
+				["uVCoord", Vector3],
+				["sTCoord", Vector3],
+				["faceIndex", S32],
+				["position", Vector3],
+				["normal", Vector3],
+				["binormal", Vector3],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["objectId", Types.UUID],
-					["grabOffsetInitial", Types.Vector3],
-					["grabPosition", Types.Vector3],
-					["timeSinceLast", Types.U32],
-				]),
-			},
-		],
-		[
-			"surfaceInfo",
-			{
-				parameters: new Map<string, Types.Type>([
-					["uVCoord", Types.Vector3],
-					["sTCoord", Types.Vector3],
-					["faceIndex", Types.S32],
-					["position", Types.Vector3],
-					["normal", Types.Vector3],
-					["binormal", Types.Vector3],
-				]),
-			},
-		],
-	])
-}
+export const objectGrabUpdate = createPacketSender<ObjectGrabUpdateData>(
+	objectGrabUpdateMetadata,
+)
+
+export const createObjectGrabUpdateDelegate =
+	createPacketDelegate<ObjectGrabUpdateData>(objectGrabUpdateMetadata)

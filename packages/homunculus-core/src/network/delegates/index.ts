@@ -1,33 +1,14 @@
-import AgentDataUpdateDelegate from "./agent-data-update-delegate"
-import AgentMovementCompleteDelegate from "./agent-movement-complete-delegate"
-import ChatFromSimulatorDelegate from "./chat-from-simulator-delegate"
-import HealthMessageDelegate from "./health-message-delegate"
-import ImprovedTerseObjectUpdateDelegate from "./improved-terse-object-update-delegate"
-import KillObjectDelegate from "./kill-object-delegate"
-import MapBlockReplyDelegate from "./map-block-reply-delegate"
-import ObjectUpdateCachedDelegate from "./object-update-cached-delegate"
-import ObjectUpdateCompressedDelegate from "./object-update-compressed-delegate"
-import ObjectUpdateDelegate from "./object-update-delegate"
-import PacketAckDelegate from "./packet-ack-delegate"
-import RegionHandshakeDelegate from "./region-handshake-delegate"
-import StartPingCheckDelegate from "./start-ping-check-delegate"
-import UUIDNameReplyDelegate from "./uuid-name-reply-delegate"
-
-export * from "./delegate"
-
-export {
-	AgentDataUpdateDelegate,
-	AgentMovementCompleteDelegate,
-	ChatFromSimulatorDelegate,
-	HealthMessageDelegate,
-	ImprovedTerseObjectUpdateDelegate,
-	KillObjectDelegate,
-	MapBlockReplyDelegate,
-	ObjectUpdateDelegate,
-	ObjectUpdateCachedDelegate,
-	ObjectUpdateCompressedDelegate,
-	PacketAckDelegate,
-	RegionHandshakeDelegate,
-	StartPingCheckDelegate,
-	UUIDNameReplyDelegate,
-}
+import "./agent-data-update-delegate"
+import "./agent-movement-complete-delegate"
+import "./chat-from-simulator-delegate"
+import "./health-message-delegate"
+import "./improved-terse-object-update-delegate"
+import "./kill-object-delegate"
+import "./map-block-reply-delegate"
+import "./object-update-cached-delegate"
+import "./object-update-compressed-delegate"
+import "./object-update-delegate"
+import "./packet-ack-delegate"
+import "./region-handshake-delegate"
+import "./start-ping-check-delegate"
+import "./uuid-name-reply-delegate"

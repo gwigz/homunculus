@@ -9,52 +9,57 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, Quaternion, U8, U32, UUID, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AgentUpdateData {
 	agentData: {
 		agentId?: string
 		sessionId?: string
-		bodyRotation: Types.Quaternion
-		headRotation: Types.Quaternion
+		bodyRotation: Quaternion
+		headRotation: Quaternion
 		state: number
-		cameraCenter: Types.Vector3
-		cameraAtAxis: Types.Vector3
-		cameraLeftAxis: Types.Vector3
-		cameraUpAxis: Types.Vector3
+		cameraCenter: Vector3
+		cameraAtAxis: Vector3
+		cameraLeftAxis: Vector3
+		cameraUpAxis: Vector3
 		far: number
 		controlFlags: number
 		flags?: number
 	}
 }
 
-export class AgentUpdate extends Packet<AgentUpdateData> {
-	public static override id = 4
-	public static override frequency = 2
-	public static override trusted = false
-	public static override compression = true
+export const agentUpdateMetadata = {
+	id: 4,
+	name: "AgentUpdate",
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["bodyRotation", Quaternion],
+				["headRotation", Quaternion],
+				["state", U8],
+				["cameraCenter", Vector3],
+				["cameraAtAxis", Vector3],
+				["cameraLeftAxis", Vector3],
+				["cameraUpAxis", Vector3],
+				["far", F32],
+				["controlFlags", U32],
+				["flags", U8],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["bodyRotation", Types.Quaternion],
-					["headRotation", Types.Quaternion],
-					["state", Types.U8],
-					["cameraCenter", Types.Vector3],
-					["cameraAtAxis", Types.Vector3],
-					["cameraLeftAxis", Types.Vector3],
-					["cameraUpAxis", Types.Vector3],
-					["far", Types.F32],
-					["controlFlags", Types.U32],
-					["flags", Types.U8],
-				]),
-			},
-		],
-	])
-}
+export const agentUpdate =
+	createPacketSender<AgentUpdateData>(agentUpdateMetadata)
+
+export const createAgentUpdateDelegate =
+	createPacketDelegate<AgentUpdateData>(agentUpdateMetadata)

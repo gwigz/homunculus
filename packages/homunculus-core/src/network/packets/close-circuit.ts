@@ -9,13 +9,22 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { Packet } from "./packet"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export type CloseCircuitData = Record<string, never>
 
-export class CloseCircuit extends Packet<CloseCircuitData> {
-	public static override id = 4294967293
-	public static override frequency = 3
-	public static override trusted = false
-	public static override compression = false
-}
+export const closeCircuitMetadata = {
+	id: 4294967293,
+	name: "CloseCircuit",
+	frequency: 3,
+} satisfies PacketMetadata
+
+export const closeCircuit =
+	createPacketSender<CloseCircuitData>(closeCircuitMetadata)
+
+export const createCloseCircuitDelegate =
+	createPacketDelegate<CloseCircuitData>(closeCircuitMetadata)

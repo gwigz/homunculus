@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, Quaternion, S32, UUID, Variable1, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ScriptSensorReplyData {
 	requester?: {
@@ -20,44 +24,47 @@ export interface ScriptSensorReplyData {
 		objectId: string
 		ownerId: string
 		groupId: string
-		position: Types.Vector3
-		velocity: Types.Vector3
-		rotation: Types.Quaternion
+		position: Vector3
+		velocity: Vector3
+		rotation: Quaternion
 		name: string | Buffer
 		type: number
 		range: number
 	}[]
 }
 
-export class ScriptSensorReply extends Packet<ScriptSensorReplyData> {
-	public static override id = 248
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const scriptSensorReplyMetadata = {
+	id: 248,
+	name: "ScriptSensorReply",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "requester",
+			parameters: [["sourceId", UUID]],
+		},
+		{
+			name: "sensedData",
+			parameters: [
+				["objectId", UUID],
+				["ownerId", UUID],
+				["groupId", UUID],
+				["position", Vector3],
+				["velocity", Vector3],
+				["rotation", Quaternion],
+				["name", Variable1],
+				["type", S32],
+				["range", F32],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"requester",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["sourceId", Types.UUID]]),
-			},
-		],
-		[
-			"sensedData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["objectId", Types.UUID],
-					["ownerId", Types.UUID],
-					["groupId", Types.UUID],
-					["position", Types.Vector3],
-					["velocity", Types.Vector3],
-					["rotation", Types.Quaternion],
-					["name", Types.Variable1],
-					["type", Types.S32],
-					["range", Types.F32],
-				]),
-			},
-		],
-	])
-}
+export const scriptSensorReply = createPacketSender<ScriptSensorReplyData>(
+	scriptSensorReplyMetadata,
+)
+
+export const createScriptSensorReplyDelegate =
+	createPacketDelegate<ScriptSensorReplyData>(scriptSensorReplyMetadata)

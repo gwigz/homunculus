@@ -9,13 +9,23 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { Packet } from "./packet"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export type EconomyDataRequestData = Record<string, never>
 
-export class EconomyDataRequest extends Packet<EconomyDataRequestData> {
-	public static override id = 24
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
-}
+export const economyDataRequestMetadata = {
+	id: 24,
+	name: "EconomyDataRequest",
+	frequency: 2,
+} satisfies PacketMetadata
+
+export const economyDataRequest = createPacketSender<EconomyDataRequestData>(
+	economyDataRequestMetadata,
+)
+
+export const createEconomyDataRequestDelegate =
+	createPacketDelegate<EconomyDataRequestData>(economyDataRequestMetadata)

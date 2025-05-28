@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, F32, S32, U8, U32 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface SimulatorLoadData {
 	simulatorLoad?: {
@@ -25,33 +29,35 @@ export interface SimulatorLoadData {
 	}[]
 }
 
-export class SimulatorLoad extends Packet<SimulatorLoadData> {
-	public static override id = 12
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const simulatorLoadMetadata = {
+	id: 12,
+	name: "SimulatorLoad",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "simulatorLoad",
+			parameters: [
+				["timeDilation", F32],
+				["agentCount", S32],
+				["canAcceptAgents", Bool],
+			],
+		},
+		{
+			name: "agentList",
+			parameters: [
+				["circuitCode", U32],
+				["x", U8],
+				["y", U8],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"simulatorLoad",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["timeDilation", Types.F32],
-					["agentCount", Types.S32],
-					["canAcceptAgents", Types.Bool],
-				]),
-			},
-		],
-		[
-			"agentList",
-			{
-				parameters: new Map<string, Types.Type>([
-					["circuitCode", Types.U32],
-					["x", Types.U8],
-					["y", Types.U8],
-				]),
-			},
-		],
-	])
-}
+export const simulatorLoad = createPacketSender<SimulatorLoadData>(
+	simulatorLoadMetadata,
+)
+
+export const createSimulatorLoadDelegate =
+	createPacketDelegate<SimulatorLoadData>(simulatorLoadMetadata)

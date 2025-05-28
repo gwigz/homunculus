@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U16, U32, U64, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectUpdateCompressedData {
 	regionData?: {
@@ -23,31 +27,33 @@ export interface ObjectUpdateCompressedData {
 	}[]
 }
 
-export class ObjectUpdateCompressed extends Packet<ObjectUpdateCompressedData> {
-	public static override id = 13
-	public static override frequency = 2
-	public static override trusted = true
-	public static override compression = false
+export const objectUpdateCompressedMetadata = {
+	id: 13,
+	name: "ObjectUpdateCompressed",
+	trusted: true,
+	blocks: [
+		{
+			name: "regionData",
+			parameters: [
+				["regionHandle", U64],
+				["timeDilation", U16],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [
+				["updateFlags", U32],
+				["data", Variable2],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"regionData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["regionHandle", Types.U64],
-					["timeDilation", Types.U16],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["updateFlags", Types.U32],
-					["data", Types.Variable2],
-				]),
-			},
-		],
-	])
-}
+export const objectUpdateCompressed =
+	createPacketSender<ObjectUpdateCompressedData>(objectUpdateCompressedMetadata)
+
+export const createObjectUpdateCompressedDelegate =
+	createPacketDelegate<ObjectUpdateCompressedData>(
+		objectUpdateCompressedMetadata,
+	)

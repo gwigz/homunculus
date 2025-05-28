@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface InventoryAssetResponseData {
 	queryData?: {
@@ -20,23 +24,27 @@ export interface InventoryAssetResponseData {
 	}
 }
 
-export class InventoryAssetResponse extends Packet<InventoryAssetResponseData> {
-	public static override id = 283
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const inventoryAssetResponseMetadata = {
+	id: 283,
+	name: "InventoryAssetResponse",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "queryData",
+			parameters: [
+				["queryId", UUID],
+				["assetId", UUID],
+				["isReadable", Bool],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"queryData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["queryId", Types.UUID],
-					["assetId", Types.UUID],
-					["isReadable", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const inventoryAssetResponse =
+	createPacketSender<InventoryAssetResponseData>(inventoryAssetResponseMetadata)
+
+export const createInventoryAssetResponseDelegate =
+	createPacketDelegate<InventoryAssetResponseData>(
+		inventoryAssetResponseMetadata,
+	)

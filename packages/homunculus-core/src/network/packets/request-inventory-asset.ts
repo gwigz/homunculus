@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RequestInventoryAssetData {
 	queryData?: {
@@ -21,24 +25,26 @@ export interface RequestInventoryAssetData {
 	}
 }
 
-export class RequestInventoryAsset extends Packet<RequestInventoryAssetData> {
-	public static override id = 282
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const requestInventoryAssetMetadata = {
+	id: 282,
+	name: "RequestInventoryAsset",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "queryData",
+			parameters: [
+				["queryId", UUID],
+				["agentId", UUID],
+				["ownerId", UUID],
+				["itemId", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"queryData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["queryId", Types.UUID],
-					["agentId", Types.UUID],
-					["ownerId", Types.UUID],
-					["itemId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const requestInventoryAsset =
+	createPacketSender<RequestInventoryAssetData>(requestInventoryAssetMetadata)
+
+export const createRequestInventoryAssetDelegate =
+	createPacketDelegate<RequestInventoryAssetData>(requestInventoryAssetMetadata)

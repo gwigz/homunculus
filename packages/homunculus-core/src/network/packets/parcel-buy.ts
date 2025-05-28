@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, S32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ParcelBuyData {
 	agentData?: {
@@ -30,45 +34,40 @@ export interface ParcelBuyData {
 	}
 }
 
-export class ParcelBuy extends Packet<ParcelBuyData> {
-	public static override id = 213
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const parcelBuyMetadata = {
+	id: 213,
+	name: "ParcelBuy",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "data",
+			parameters: [
+				["groupId", UUID],
+				["isGroupOwned", Bool],
+				["removeContribution", Bool],
+				["localId", S32],
+				["final", Bool],
+			],
+		},
+		{
+			name: "parcelData",
+			parameters: [
+				["price", S32],
+				["area", S32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["groupId", Types.UUID],
-					["isGroupOwned", Types.Bool],
-					["removeContribution", Types.Bool],
-					["localId", Types.S32],
-					["final", Types.Bool],
-				]),
-			},
-		],
-		[
-			"parcelData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["price", Types.S32],
-					["area", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const parcelBuy = createPacketSender<ParcelBuyData>(parcelBuyMetadata)
+
+export const createParcelBuyDelegate =
+	createPacketDelegate<ParcelBuyData>(parcelBuyMetadata)

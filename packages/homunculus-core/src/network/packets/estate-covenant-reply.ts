@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface EstateCovenantReplyData {
 	data?: {
@@ -21,24 +25,27 @@ export interface EstateCovenantReplyData {
 	}
 }
 
-export class EstateCovenantReply extends Packet<EstateCovenantReplyData> {
-	public static override id = 204
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const estateCovenantReplyMetadata = {
+	id: 204,
+	name: "EstateCovenantReply",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "data",
+			parameters: [
+				["covenantId", UUID],
+				["covenantTimestamp", U32],
+				["estateName", Variable1],
+				["estateOwnerId", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["covenantId", Types.UUID],
-					["covenantTimestamp", Types.U32],
-					["estateName", Types.Variable1],
-					["estateOwnerId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const estateCovenantReply = createPacketSender<EstateCovenantReplyData>(
+	estateCovenantReplyMetadata,
+)
+
+export const createEstateCovenantReplyDelegate =
+	createPacketDelegate<EstateCovenantReplyData>(estateCovenantReplyMetadata)

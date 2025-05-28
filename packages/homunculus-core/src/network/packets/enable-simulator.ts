@@ -9,34 +9,41 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { IP, Port, U64 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface EnableSimulatorData {
 	simulatorInfo?: {
 		handle: number | bigint
-		ip: Types.IP
-		port: Types.Port
+		ip: IP
+		port: Port
 	}
 }
 
-export class EnableSimulator extends Packet<EnableSimulatorData> {
-	public static override id = 151
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const enableSimulatorMetadata = {
+	id: 151,
+	name: "EnableSimulator",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "simulatorInfo",
+			parameters: [
+				["handle", U64],
+				["ip", IP],
+				["port", Port],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"simulatorInfo",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["handle", Types.U64],
-					["ip", Types.IP],
-					["port", Types.Port],
-				]),
-			},
-		],
-	])
-}
+export const enableSimulator = createPacketSender<EnableSimulatorData>(
+	enableSimulatorMetadata,
+)
+
+export const createEnableSimulatorDelegate =
+	createPacketDelegate<EnableSimulatorData>(enableSimulatorMetadata)

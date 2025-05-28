@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface MuteListRequestData {
 	agentData?: {
@@ -22,29 +26,28 @@ export interface MuteListRequestData {
 	}
 }
 
-export class MuteListRequest extends Packet<MuteListRequestData> {
-	public static override id = 262
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const muteListRequestMetadata = {
+	id: 262,
+	name: "MuteListRequest",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "muteData",
+			parameters: [["muteCrc", U32]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"muteData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["muteCrc", Types.U32]]),
-			},
-		],
-	])
-}
+export const muteListRequest = createPacketSender<MuteListRequestData>(
+	muteListRequestMetadata,
+)
+
+export const createMuteListRequestDelegate =
+	createPacketDelegate<MuteListRequestData>(muteListRequestMetadata)

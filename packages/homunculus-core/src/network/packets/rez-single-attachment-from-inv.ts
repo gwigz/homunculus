@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U8, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RezSingleAttachmentFromInvData {
 	agentData?: {
@@ -30,39 +34,42 @@ export interface RezSingleAttachmentFromInvData {
 	}
 }
 
-export class RezSingleAttachmentFromInv extends Packet<RezSingleAttachmentFromInvData> {
-	public static override id = 395
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const rezSingleAttachmentFromInvMetadata = {
+	id: 395,
+	name: "RezSingleAttachmentFromInv",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [
+				["itemId", UUID],
+				["ownerId", UUID],
+				["attachmentPt", U8],
+				["itemFlags", U32],
+				["groupMask", U32],
+				["everyoneMask", U32],
+				["nextOwnerMask", U32],
+				["name", Variable1],
+				["description", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["itemId", Types.UUID],
-					["ownerId", Types.UUID],
-					["attachmentPt", Types.U8],
-					["itemFlags", Types.U32],
-					["groupMask", Types.U32],
-					["everyoneMask", Types.U32],
-					["nextOwnerMask", Types.U32],
-					["name", Types.Variable1],
-					["description", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const rezSingleAttachmentFromInv =
+	createPacketSender<RezSingleAttachmentFromInvData>(
+		rezSingleAttachmentFromInvMetadata,
+	)
+
+export const createRezSingleAttachmentFromInvDelegate =
+	createPacketDelegate<RezSingleAttachmentFromInvData>(
+		rezSingleAttachmentFromInvMetadata,
+	)

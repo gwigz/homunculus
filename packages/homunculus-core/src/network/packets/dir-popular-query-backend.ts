@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface DirPopularQueryBackendData {
 	agentData?: {
@@ -24,31 +28,33 @@ export interface DirPopularQueryBackendData {
 	}
 }
 
-export class DirPopularQueryBackend extends Packet<DirPopularQueryBackendData> {
-	public static override id = 52
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const dirPopularQueryBackendMetadata = {
+	id: 52,
+	name: "DirPopularQueryBackend",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "queryData",
+			parameters: [
+				["queryId", UUID],
+				["queryFlags", U32],
+				["estateId", U32],
+				["godlike", Bool],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"queryData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["queryId", Types.UUID],
-					["queryFlags", Types.U32],
-					["estateId", Types.U32],
-					["godlike", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const dirPopularQueryBackend =
+	createPacketSender<DirPopularQueryBackendData>(dirPopularQueryBackendMetadata)
+
+export const createDirPopularQueryBackendDelegate =
+	createPacketDelegate<DirPopularQueryBackendData>(
+		dirPopularQueryBackendMetadata,
+	)

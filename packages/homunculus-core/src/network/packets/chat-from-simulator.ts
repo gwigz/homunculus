@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U8, UUID, Variable1, Variable2, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ChatFromSimulatorData {
 	chatData?: {
@@ -20,33 +24,36 @@ export interface ChatFromSimulatorData {
 		sourceType: number
 		chatType: number
 		audible: number
-		position: Types.Vector3
+		position: Vector3
 		message: string | Buffer
 	}
 }
 
-export class ChatFromSimulator extends Packet<ChatFromSimulatorData> {
-	public static override id = 139
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const chatFromSimulatorMetadata = {
+	id: 139,
+	name: "ChatFromSimulator",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "chatData",
+			parameters: [
+				["fromName", Variable1],
+				["sourceId", UUID],
+				["ownerId", UUID],
+				["sourceType", U8],
+				["chatType", U8],
+				["audible", U8],
+				["position", Vector3],
+				["message", Variable2],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"chatData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["fromName", Types.Variable1],
-					["sourceId", Types.UUID],
-					["ownerId", Types.UUID],
-					["sourceType", Types.U8],
-					["chatType", Types.U8],
-					["audible", Types.U8],
-					["position", Types.Vector3],
-					["message", Types.Variable2],
-				]),
-			},
-		],
-	])
-}
+export const chatFromSimulator = createPacketSender<ChatFromSimulatorData>(
+	chatFromSimulatorMetadata,
+)
+
+export const createChatFromSimulatorDelegate =
+	createPacketDelegate<ChatFromSimulatorData>(chatFromSimulatorMetadata)

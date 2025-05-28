@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ChangeUserRightsData {
 	agentData?: {
@@ -22,28 +26,30 @@ export interface ChangeUserRightsData {
 	}[]
 }
 
-export class ChangeUserRights extends Packet<ChangeUserRightsData> {
-	public static override id = 321
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const changeUserRightsMetadata = {
+	id: 321,
+	name: "ChangeUserRights",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "rights",
+			parameters: [
+				["agentRelated", UUID],
+				["relatedRights", S32],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"rights",
-			{
-				parameters: new Map<string, Types.Type>([
-					["agentRelated", Types.UUID],
-					["relatedRights", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const changeUserRights = createPacketSender<ChangeUserRightsData>(
+	changeUserRightsMetadata,
+)
+
+export const createChangeUserRightsDelegate =
+	createPacketDelegate<ChangeUserRightsData>(changeUserRightsMetadata)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, U8, U32, UUID, Variable1, Variable2, Vector3D } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ClassifiedInfoReplyData {
 	agentData?: {
@@ -28,49 +32,49 @@ export interface ClassifiedInfoReplyData {
 		parentEstate: number
 		snapshotId: string
 		simName: string | Buffer
-		posGlobal: Types.Vector3D
+		posGlobal: Vector3D
 		parcelName: string | Buffer
 		classifiedFlags: number
 		priceForListing: number
 	}
 }
 
-export class ClassifiedInfoReply extends Packet<ClassifiedInfoReplyData> {
-	public static override id = 44
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const classifiedInfoReplyMetadata = {
+	id: 44,
+	name: "ClassifiedInfoReply",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "data",
+			parameters: [
+				["classifiedId", UUID],
+				["creatorId", UUID],
+				["creationDate", U32],
+				["expirationDate", U32],
+				["category", U32],
+				["name", Variable1],
+				["desc", Variable2],
+				["parcelId", UUID],
+				["parentEstate", U32],
+				["snapshotId", UUID],
+				["simName", Variable1],
+				["posGlobal", Vector3D],
+				["parcelName", Variable1],
+				["classifiedFlags", U8],
+				["priceForListing", S32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["classifiedId", Types.UUID],
-					["creatorId", Types.UUID],
-					["creationDate", Types.U32],
-					["expirationDate", Types.U32],
-					["category", Types.U32],
-					["name", Types.Variable1],
-					["desc", Types.Variable2],
-					["parcelId", Types.UUID],
-					["parentEstate", Types.U32],
-					["snapshotId", Types.UUID],
-					["simName", Types.Variable1],
-					["posGlobal", Types.Vector3D],
-					["parcelName", Types.Variable1],
-					["classifiedFlags", Types.U8],
-					["priceForListing", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const classifiedInfoReply = createPacketSender<ClassifiedInfoReplyData>(
+	classifiedInfoReplyMetadata,
+)
+
+export const createClassifiedInfoReplyDelegate =
+	createPacketDelegate<ClassifiedInfoReplyData>(classifiedInfoReplyMetadata)

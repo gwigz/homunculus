@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, UUID, Variable1, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ScriptDialogData {
 	data?: {
@@ -30,41 +34,40 @@ export interface ScriptDialogData {
 	}[]
 }
 
-export class ScriptDialog extends Packet<ScriptDialogData> {
-	public static override id = 190
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const scriptDialogMetadata = {
+	id: 190,
+	name: "ScriptDialog",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "data",
+			parameters: [
+				["objectId", UUID],
+				["firstName", Variable1],
+				["lastName", Variable1],
+				["objectName", Variable1],
+				["message", Variable2],
+				["chatChannel", S32],
+				["imageId", UUID],
+			],
+		},
+		{
+			name: "buttons",
+			parameters: [["buttonLabel", Variable1]],
+			multiple: true,
+		},
+		{
+			name: "ownerData",
+			parameters: [["ownerId", UUID]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["objectId", Types.UUID],
-					["firstName", Types.Variable1],
-					["lastName", Types.Variable1],
-					["objectName", Types.Variable1],
-					["message", Types.Variable2],
-					["chatChannel", Types.S32],
-					["imageId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"buttons",
-			{
-				parameters: new Map<string, Types.Type>([
-					["buttonLabel", Types.Variable1],
-				]),
-			},
-		],
-		[
-			"ownerData",
-			{
-				parameters: new Map<string, Types.Type>([["ownerId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const scriptDialog =
+	createPacketSender<ScriptDialogData>(scriptDialogMetadata)
+
+export const createScriptDialogDelegate =
+	createPacketDelegate<ScriptDialogData>(scriptDialogMetadata)

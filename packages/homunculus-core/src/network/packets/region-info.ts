@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, F32, S32, U8, U32, U64, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RegionInfoData {
 	agentData?: {
@@ -56,81 +60,72 @@ export interface RegionInfoData {
 	}[]
 }
 
-export class RegionInfo extends Packet<RegionInfoData> {
-	public static override id = 142
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const regionInfoMetadata = {
+	id: 142,
+	name: "RegionInfo",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "regionInfo",
+			parameters: [
+				["simName", Variable1],
+				["estateId", U32],
+				["parentEstateId", U32],
+				["regionFlags", U32],
+				["simAccess", U8],
+				["maxAgents", U8],
+				["billableFactor", F32],
+				["objectBonusFactor", F32],
+				["waterHeight", F32],
+				["terrainRaiseLimit", F32],
+				["terrainLowerLimit", F32],
+				["pricePerMeter", S32],
+				["redirectGridX", S32],
+				["redirectGridY", S32],
+				["useEstateSun", Bool],
+				["sunHour", F32],
+			],
+		},
+		{
+			name: "regionInfo2",
+			parameters: [
+				["productSku", Variable1],
+				["productName", Variable1],
+				["maxAgents32", U32],
+				["hardMaxAgents", U32],
+				["hardMaxObjects", U32],
+			],
+		},
+		{
+			name: "regionInfo3",
+			parameters: [["regionFlagsExtended", U64]],
+			multiple: true,
+		},
+		{
+			name: "regionInfo5",
+			parameters: [
+				["chatWhisperRange", F32],
+				["chatNormalRange", F32],
+				["chatShoutRange", F32],
+				["chatWhisperOffset", F32],
+				["chatNormalOffset", F32],
+				["chatShoutOffset", F32],
+				["chatFlags", U32],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"regionInfo",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["simName", Types.Variable1],
-					["estateId", Types.U32],
-					["parentEstateId", Types.U32],
-					["regionFlags", Types.U32],
-					["simAccess", Types.U8],
-					["maxAgents", Types.U8],
-					["billableFactor", Types.F32],
-					["objectBonusFactor", Types.F32],
-					["waterHeight", Types.F32],
-					["terrainRaiseLimit", Types.F32],
-					["terrainLowerLimit", Types.F32],
-					["pricePerMeter", Types.S32],
-					["redirectGridX", Types.S32],
-					["redirectGridY", Types.S32],
-					["useEstateSun", Types.Bool],
-					["sunHour", Types.F32],
-				]),
-			},
-		],
-		[
-			"regionInfo2",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["productSku", Types.Variable1],
-					["productName", Types.Variable1],
-					["maxAgents32", Types.U32],
-					["hardMaxAgents", Types.U32],
-					["hardMaxObjects", Types.U32],
-				]),
-			},
-		],
-		[
-			"regionInfo3",
-			{
-				parameters: new Map<string, Types.Type>([
-					["regionFlagsExtended", Types.U64],
-				]),
-			},
-		],
-		[
-			"regionInfo5",
-			{
-				parameters: new Map<string, Types.Type>([
-					["chatWhisperRange", Types.F32],
-					["chatNormalRange", Types.F32],
-					["chatShoutRange", Types.F32],
-					["chatWhisperOffset", Types.F32],
-					["chatNormalOffset", Types.F32],
-					["chatShoutOffset", Types.F32],
-					["chatFlags", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const regionInfo = createPacketSender<RegionInfoData>(regionInfoMetadata)
+
+export const createRegionInfoDelegate =
+	createPacketDelegate<RegionInfoData>(regionInfoMetadata)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface CreateNewOutfitAttachmentsData {
 	agentData?: {
@@ -26,38 +30,39 @@ export interface CreateNewOutfitAttachmentsData {
 	}[]
 }
 
-export class CreateNewOutfitAttachments extends Packet<CreateNewOutfitAttachmentsData> {
-	public static override id = 398
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const createNewOutfitAttachmentsMetadata = {
+	id: 398,
+	name: "CreateNewOutfitAttachments",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "headerData",
+			parameters: [["newFolderId", UUID]],
+		},
+		{
+			name: "objectData",
+			parameters: [
+				["oldItemId", UUID],
+				["oldFolderId", UUID],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"headerData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["newFolderId", Types.UUID]]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["oldItemId", Types.UUID],
-					["oldFolderId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const createNewOutfitAttachments =
+	createPacketSender<CreateNewOutfitAttachmentsData>(
+		createNewOutfitAttachmentsMetadata,
+	)
+
+export const createCreateNewOutfitAttachmentsDelegate =
+	createPacketDelegate<CreateNewOutfitAttachmentsData>(
+		createNewOutfitAttachmentsMetadata,
+	)

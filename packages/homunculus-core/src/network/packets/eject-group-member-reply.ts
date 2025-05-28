@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface EjectGroupMemberReplyData {
 	agentData?: {
@@ -24,33 +28,29 @@ export interface EjectGroupMemberReplyData {
 	}
 }
 
-export class EjectGroupMemberReply extends Packet<EjectGroupMemberReplyData> {
-	public static override id = 346
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const ejectGroupMemberReplyMetadata = {
+	id: 346,
+	name: "EjectGroupMemberReply",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "groupData",
+			parameters: [["groupId", UUID]],
+		},
+		{
+			name: "ejectData",
+			parameters: [["success", Bool]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"groupData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["groupId", Types.UUID]]),
-			},
-		],
-		[
-			"ejectData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["success", Types.Bool]]),
-			},
-		],
-	])
-}
+export const ejectGroupMemberReply =
+	createPacketSender<EjectGroupMemberReplyData>(ejectGroupMemberReplyMetadata)
+
+export const createEjectGroupMemberReplyDelegate =
+	createPacketDelegate<EjectGroupMemberReplyData>(ejectGroupMemberReplyMetadata)

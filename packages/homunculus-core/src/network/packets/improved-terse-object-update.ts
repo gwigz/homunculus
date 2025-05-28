@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U16, U64, Variable1, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ImprovedTerseObjectUpdateData {
 	regionData?: {
@@ -23,31 +27,35 @@ export interface ImprovedTerseObjectUpdateData {
 	}[]
 }
 
-export class ImprovedTerseObjectUpdate extends Packet<ImprovedTerseObjectUpdateData> {
-	public static override id = 15
-	public static override frequency = 2
-	public static override trusted = true
-	public static override compression = false
+export const improvedTerseObjectUpdateMetadata = {
+	id: 15,
+	name: "ImprovedTerseObjectUpdate",
+	trusted: true,
+	blocks: [
+		{
+			name: "regionData",
+			parameters: [
+				["regionHandle", U64],
+				["timeDilation", U16],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [
+				["data", Variable1],
+				["textureEntry", Variable2],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"regionData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["regionHandle", Types.U64],
-					["timeDilation", Types.U16],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["data", Types.Variable1],
-					["textureEntry", Types.Variable2],
-				]),
-			},
-		],
-	])
-}
+export const improvedTerseObjectUpdate =
+	createPacketSender<ImprovedTerseObjectUpdateData>(
+		improvedTerseObjectUpdateMetadata,
+	)
+
+export const createImprovedTerseObjectUpdateDelegate =
+	createPacketDelegate<ImprovedTerseObjectUpdateData>(
+		improvedTerseObjectUpdateMetadata,
+	)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface EventGodDeleteData {
 	agentData?: {
@@ -28,41 +32,37 @@ export interface EventGodDeleteData {
 	}
 }
 
-export class EventGodDelete extends Packet<EventGodDeleteData> {
-	public static override id = 183
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const eventGodDeleteMetadata = {
+	id: 183,
+	name: "EventGodDelete",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "eventData",
+			parameters: [["eventId", U32]],
+		},
+		{
+			name: "queryData",
+			parameters: [
+				["queryId", UUID],
+				["queryText", Variable1],
+				["queryFlags", U32],
+				["queryStart", S32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"eventData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["eventId", Types.U32]]),
-			},
-		],
-		[
-			"queryData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["queryId", Types.UUID],
-					["queryText", Types.Variable1],
-					["queryFlags", Types.U32],
-					["queryStart", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const eventGodDelete = createPacketSender<EventGodDeleteData>(
+	eventGodDeleteMetadata,
+)
+
+export const createEventGodDeleteDelegate =
+	createPacketDelegate<EventGodDeleteData>(eventGodDeleteMetadata)

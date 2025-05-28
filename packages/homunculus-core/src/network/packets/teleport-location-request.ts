@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U64, UUID, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface TeleportLocationRequestData {
 	agentData?: {
@@ -19,38 +23,40 @@ export interface TeleportLocationRequestData {
 	}
 	info?: {
 		regionHandle: number | bigint
-		position: Types.Vector3
-		lookAt: Types.Vector3
+		position: Vector3
+		lookAt: Vector3
 	}
 }
 
-export class TeleportLocationRequest extends Packet<TeleportLocationRequestData> {
-	public static override id = 63
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const teleportLocationRequestMetadata = {
+	id: 63,
+	name: "TeleportLocationRequest",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "info",
+			parameters: [
+				["regionHandle", U64],
+				["position", Vector3],
+				["lookAt", Vector3],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"info",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["regionHandle", Types.U64],
-					["position", Types.Vector3],
-					["lookAt", Types.Vector3],
-				]),
-			},
-		],
-	])
-}
+export const teleportLocationRequest =
+	createPacketSender<TeleportLocationRequestData>(
+		teleportLocationRequestMetadata,
+	)
+
+export const createTeleportLocationRequestDelegate =
+	createPacketDelegate<TeleportLocationRequestData>(
+		teleportLocationRequestMetadata,
+	)

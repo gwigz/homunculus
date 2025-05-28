@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID, Variable1, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AvatarPropertiesReplyData {
 	agentData: {
@@ -30,39 +34,39 @@ export interface AvatarPropertiesReplyData {
 	}
 }
 
-export class AvatarPropertiesReply extends Packet<AvatarPropertiesReplyData> {
-	public static override id = 171
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const avatarPropertiesReplyMetadata = {
+	id: 171,
+	name: "AvatarPropertiesReply",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["avatarId", UUID],
+			],
+		},
+		{
+			name: "propertiesData",
+			parameters: [
+				["imageId", UUID],
+				["fLImageId", UUID],
+				["partnerId", UUID],
+				["aboutText", Variable2],
+				["fLAboutText", Variable1],
+				["bornOn", Variable1],
+				["profileUrl", Variable1],
+				["charterMember", Variable1],
+				["flags", U32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["avatarId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"propertiesData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["imageId", Types.UUID],
-					["fLImageId", Types.UUID],
-					["partnerId", Types.UUID],
-					["aboutText", Types.Variable2],
-					["fLAboutText", Types.Variable1],
-					["bornOn", Types.Variable1],
-					["profileUrl", Types.Variable1],
-					["charterMember", Types.Variable1],
-					["flags", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const avatarPropertiesReply =
+	createPacketSender<AvatarPropertiesReplyData>(avatarPropertiesReplyMetadata)
+
+export const createAvatarPropertiesReplyDelegate =
+	createPacketDelegate<AvatarPropertiesReplyData>(avatarPropertiesReplyMetadata)

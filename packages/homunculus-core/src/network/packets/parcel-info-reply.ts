@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, S32, U8, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ParcelInfoReplyData {
 	agentData?: {
@@ -35,42 +39,43 @@ export interface ParcelInfoReplyData {
 	}
 }
 
-export class ParcelInfoReply extends Packet<ParcelInfoReplyData> {
-	public static override id = 55
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const parcelInfoReplyMetadata = {
+	id: 55,
+	name: "ParcelInfoReply",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "data",
+			parameters: [
+				["parcelId", UUID],
+				["ownerId", UUID],
+				["name", Variable1],
+				["desc", Variable1],
+				["actualArea", S32],
+				["billableArea", S32],
+				["flags", U8],
+				["globalX", F32],
+				["globalY", F32],
+				["globalZ", F32],
+				["simName", Variable1],
+				["snapshotId", UUID],
+				["dwell", F32],
+				["salePrice", S32],
+				["auctionId", S32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["parcelId", Types.UUID],
-					["ownerId", Types.UUID],
-					["name", Types.Variable1],
-					["desc", Types.Variable1],
-					["actualArea", Types.S32],
-					["billableArea", Types.S32],
-					["flags", Types.U8],
-					["globalX", Types.F32],
-					["globalY", Types.F32],
-					["globalZ", Types.F32],
-					["simName", Types.Variable1],
-					["snapshotId", Types.UUID],
-					["dwell", Types.F32],
-					["salePrice", Types.S32],
-					["auctionId", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const parcelInfoReply = createPacketSender<ParcelInfoReplyData>(
+	parcelInfoReplyMetadata,
+)
+
+export const createParcelInfoReplyDelegate =
+	createPacketDelegate<ParcelInfoReplyData>(parcelInfoReplyMetadata)

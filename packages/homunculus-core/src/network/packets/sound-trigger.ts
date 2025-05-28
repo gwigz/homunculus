@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, U64, UUID, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface SoundTriggerData {
 	soundData?: {
@@ -19,32 +23,32 @@ export interface SoundTriggerData {
 		objectId: string
 		parentId: string
 		handle: number | bigint
-		position: Types.Vector3
+		position: Vector3
 		gain: number
 	}
 }
 
-export class SoundTrigger extends Packet<SoundTriggerData> {
-	public static override id = 29
-	public static override frequency = 2
-	public static override trusted = false
-	public static override compression = false
+export const soundTriggerMetadata = {
+	id: 29,
+	name: "SoundTrigger",
+	blocks: [
+		{
+			name: "soundData",
+			parameters: [
+				["soundId", UUID],
+				["ownerId", UUID],
+				["objectId", UUID],
+				["parentId", UUID],
+				["handle", U64],
+				["position", Vector3],
+				["gain", F32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"soundData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["soundId", Types.UUID],
-					["ownerId", Types.UUID],
-					["objectId", Types.UUID],
-					["parentId", Types.UUID],
-					["handle", Types.U64],
-					["position", Types.Vector3],
-					["gain", Types.F32],
-				]),
-			},
-		],
-	])
-}
+export const soundTrigger =
+	createPacketSender<SoundTriggerData>(soundTriggerMetadata)
+
+export const createSoundTriggerDelegate =
+	createPacketDelegate<SoundTriggerData>(soundTriggerMetadata)

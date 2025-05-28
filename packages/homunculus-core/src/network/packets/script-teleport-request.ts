@@ -9,36 +9,42 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Variable1, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ScriptTeleportRequestData {
 	data?: {
 		objectName: string | Buffer
 		simName: string | Buffer
-		simPosition: Types.Vector3
-		lookAt: Types.Vector3
+		simPosition: Vector3
+		lookAt: Vector3
 	}
 }
 
-export class ScriptTeleportRequest extends Packet<ScriptTeleportRequestData> {
-	public static override id = 195
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const scriptTeleportRequestMetadata = {
+	id: 195,
+	name: "ScriptTeleportRequest",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "data",
+			parameters: [
+				["objectName", Variable1],
+				["simName", Variable1],
+				["simPosition", Vector3],
+				["lookAt", Vector3],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["objectName", Types.Variable1],
-					["simName", Types.Variable1],
-					["simPosition", Types.Vector3],
-					["lookAt", Types.Vector3],
-				]),
-			},
-		],
-	])
-}
+export const scriptTeleportRequest =
+	createPacketSender<ScriptTeleportRequestData>(scriptTeleportRequestMetadata)
+
+export const createScriptTeleportRequestDelegate =
+	createPacketDelegate<ScriptTeleportRequestData>(scriptTeleportRequestMetadata)

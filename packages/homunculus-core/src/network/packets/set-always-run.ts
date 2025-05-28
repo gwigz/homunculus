@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface SetAlwaysRunData {
 	agentData: {
@@ -20,23 +24,24 @@ export interface SetAlwaysRunData {
 	}
 }
 
-export class SetAlwaysRun extends Packet<SetAlwaysRunData> {
-	public static override id = 88
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const setAlwaysRunMetadata = {
+	id: 88,
+	name: "SetAlwaysRun",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["alwaysRun", Bool],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["alwaysRun", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const setAlwaysRun =
+	createPacketSender<SetAlwaysRunData>(setAlwaysRunMetadata)
+
+export const createSetAlwaysRunDelegate =
+	createPacketDelegate<SetAlwaysRunData>(setAlwaysRunMetadata)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectDescriptionData {
 	agentData?: {
@@ -23,31 +27,33 @@ export interface ObjectDescriptionData {
 	}[]
 }
 
-export class ObjectDescription extends Packet<ObjectDescriptionData> {
-	public static override id = 108
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const objectDescriptionMetadata = {
+	id: 108,
+	name: "ObjectDescription",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [
+				["localId", U32],
+				["description", Variable1],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["localId", Types.U32],
-					["description", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const objectDescription = createPacketSender<ObjectDescriptionData>(
+	objectDescriptionMetadata,
+)
+
+export const createObjectDescriptionDelegate =
+	createPacketDelegate<ObjectDescriptionData>(objectDescriptionMetadata)

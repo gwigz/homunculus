@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ClassifiedInfoRequestData {
 	agentData?: {
@@ -22,29 +26,28 @@ export interface ClassifiedInfoRequestData {
 	}
 }
 
-export class ClassifiedInfoRequest extends Packet<ClassifiedInfoRequestData> {
-	public static override id = 43
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const classifiedInfoRequestMetadata = {
+	id: 43,
+	name: "ClassifiedInfoRequest",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "data",
+			parameters: [["classifiedId", UUID]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["classifiedId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const classifiedInfoRequest =
+	createPacketSender<ClassifiedInfoRequestData>(classifiedInfoRequestMetadata)
+
+export const createClassifiedInfoRequestDelegate =
+	createPacketDelegate<ClassifiedInfoRequestData>(classifiedInfoRequestMetadata)

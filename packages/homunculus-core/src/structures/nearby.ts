@@ -1,13 +1,7 @@
 import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
-import {
-	ChatFromViewer,
-	EjectUser,
-	FreezeUser,
-	ScriptDialogReply,
-	SoundTrigger,
-} from "~/network/packets"
+import type { Client } from "~/client"
+import { packets, UUID, Vector3 } from "~/network"
 import { Constants } from "~/utilities"
-import { type Client, UUID, Vector3 } from ".."
 
 export interface NearbyChatMessage {
 	fromName: string
@@ -112,14 +106,14 @@ export class Nearby extends AsyncEventEmitter<NearbyEvents> {
 	) {
 		return this.client.send([
 			channel >= 0
-				? new ChatFromViewer({
+				? packets.chatFromViewer({
 						chatData: {
 							channel,
 							type,
 							message: Buffer.from(`${message}\0`, "utf8"),
 						},
 					})
-				: new ScriptDialogReply({
+				: packets.scriptDialogReply({
 						data: {
 							objectId: this.client.self.key,
 							chatChannel: channel,
@@ -138,7 +132,7 @@ export class Nearby extends AsyncEventEmitter<NearbyEvents> {
 	 */
 	public eject(key: string, ban = false) {
 		return this.client.send([
-			new EjectUser({ data: { targetId: key, flags: ban ? 1 : 0 } }),
+			packets.ejectUser({ data: { targetId: key, flags: ban ? 1 : 0 } }),
 		])
 	}
 
@@ -149,7 +143,7 @@ export class Nearby extends AsyncEventEmitter<NearbyEvents> {
 	 */
 	public freeze(key: string) {
 		return this.client.send([
-			new FreezeUser({ data: { targetId: key, flags: 0 } }),
+			packets.freezeUser({ data: { targetId: key, flags: 0 } }),
 		])
 	}
 
@@ -160,13 +154,13 @@ export class Nearby extends AsyncEventEmitter<NearbyEvents> {
 	 */
 	public unfreeze(key: string) {
 		return this.client.send([
-			new FreezeUser({ data: { targetId: key, flags: 1 } }),
+			packets.freezeUser({ data: { targetId: key, flags: 1 } }),
 		])
 	}
 
 	public async triggerSound(soundId: string, gain = 1) {
 		return this.client.send([
-			new SoundTrigger({
+			packets.soundTrigger({
 				soundData: {
 					soundId,
 					ownerId: UUID.zero,

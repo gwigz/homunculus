@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U64 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface NearestLandingRegionUpdatedData {
 	regionData?: {
@@ -18,19 +22,25 @@ export interface NearestLandingRegionUpdatedData {
 	}
 }
 
-export class NearestLandingRegionUpdated extends Packet<NearestLandingRegionUpdatedData> {
-	public static override id = 146
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const nearestLandingRegionUpdatedMetadata = {
+	id: 146,
+	name: "NearestLandingRegionUpdated",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "regionData",
+			parameters: [["regionHandle", U64]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"regionData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["regionHandle", Types.U64]]),
-			},
-		],
-	])
-}
+export const nearestLandingRegionUpdated =
+	createPacketSender<NearestLandingRegionUpdatedData>(
+		nearestLandingRegionUpdatedMetadata,
+	)
+
+export const createNearestLandingRegionUpdatedDelegate =
+	createPacketDelegate<NearestLandingRegionUpdatedData>(
+		nearestLandingRegionUpdatedMetadata,
+	)

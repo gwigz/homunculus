@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID, Variable1, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface SetStartLocationRequestData {
 	agentData?: {
@@ -20,39 +24,42 @@ export interface SetStartLocationRequestData {
 	startLocationData?: {
 		simName: string | Buffer
 		locationId: number
-		locationPos: Types.Vector3
-		locationLookAt: Types.Vector3
+		locationPos: Vector3
+		locationLookAt: Vector3
 	}
 }
 
-export class SetStartLocationRequest extends Packet<SetStartLocationRequestData> {
-	public static override id = 324
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const setStartLocationRequestMetadata = {
+	id: 324,
+	name: "SetStartLocationRequest",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "startLocationData",
+			parameters: [
+				["simName", Variable1],
+				["locationId", U32],
+				["locationPos", Vector3],
+				["locationLookAt", Vector3],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"startLocationData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["simName", Types.Variable1],
-					["locationId", Types.U32],
-					["locationPos", Types.Vector3],
-					["locationLookAt", Types.Vector3],
-				]),
-			},
-		],
-	])
-}
+export const setStartLocationRequest =
+	createPacketSender<SetStartLocationRequestData>(
+		setStartLocationRequestMetadata,
+	)
+
+export const createSetStartLocationRequestDelegate =
+	createPacketDelegate<SetStartLocationRequestData>(
+		setStartLocationRequestMetadata,
+	)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S16, S32, U8, U32, U64, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectPropertiesData {
 	objectData?: {
@@ -44,46 +48,52 @@ export interface ObjectPropertiesData {
 	}[]
 }
 
-export class ObjectProperties extends Packet<ObjectPropertiesData> {
-	public static override id = 9
-	public static override frequency = 1
-	public static override trusted = true
-	public static override compression = true
+export const objectPropertiesMetadata = {
+	id: 9,
+	name: "ObjectProperties",
+	frequency: 1,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "objectData",
+			parameters: [
+				["objectId", UUID],
+				["creatorId", UUID],
+				["ownerId", UUID],
+				["groupId", UUID],
+				["creationDate", U64],
+				["baseMask", U32],
+				["ownerMask", U32],
+				["groupMask", U32],
+				["everyoneMask", U32],
+				["nextOwnerMask", U32],
+				["ownershipCost", S32],
+				["saleType", U8],
+				["salePrice", S32],
+				["aggregatePerms", U8],
+				["aggregatePermTextures", U8],
+				["aggregatePermTexturesOwner", U8],
+				["category", U32],
+				["inventorySerial", S16],
+				["itemId", UUID],
+				["folderId", UUID],
+				["fromTaskId", UUID],
+				["lastOwnerId", UUID],
+				["name", Variable1],
+				["description", Variable1],
+				["touchName", Variable1],
+				["sitName", Variable1],
+				["textureId", Variable1],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["objectId", Types.UUID],
-					["creatorId", Types.UUID],
-					["ownerId", Types.UUID],
-					["groupId", Types.UUID],
-					["creationDate", Types.U64],
-					["baseMask", Types.U32],
-					["ownerMask", Types.U32],
-					["groupMask", Types.U32],
-					["everyoneMask", Types.U32],
-					["nextOwnerMask", Types.U32],
-					["ownershipCost", Types.S32],
-					["saleType", Types.U8],
-					["salePrice", Types.S32],
-					["aggregatePerms", Types.U8],
-					["aggregatePermTextures", Types.U8],
-					["aggregatePermTexturesOwner", Types.U8],
-					["category", Types.U32],
-					["inventorySerial", Types.S16],
-					["itemId", Types.UUID],
-					["folderId", Types.UUID],
-					["fromTaskId", Types.UUID],
-					["lastOwnerId", Types.UUID],
-					["name", Types.Variable1],
-					["description", Types.Variable1],
-					["touchName", Types.Variable1],
-					["sitName", Types.Variable1],
-					["textureId", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const objectProperties = createPacketSender<ObjectPropertiesData>(
+	objectPropertiesMetadata,
+)
+
+export const createObjectPropertiesDelegate =
+	createPacketDelegate<ObjectPropertiesData>(objectPropertiesMetadata)

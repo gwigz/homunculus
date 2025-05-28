@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface LandStatRequestData {
 	agentData?: {
@@ -25,34 +29,33 @@ export interface LandStatRequestData {
 	}
 }
 
-export class LandStatRequest extends Packet<LandStatRequestData> {
-	public static override id = 421
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const landStatRequestMetadata = {
+	id: 421,
+	name: "LandStatRequest",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "requestData",
+			parameters: [
+				["reportType", U32],
+				["requestFlags", U32],
+				["filter", Variable1],
+				["parcelLocalId", S32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"requestData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["reportType", Types.U32],
-					["requestFlags", Types.U32],
-					["filter", Types.Variable1],
-					["parcelLocalId", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const landStatRequest = createPacketSender<LandStatRequestData>(
+	landStatRequestMetadata,
+)
+
+export const createLandStatRequestDelegate =
+	createPacketDelegate<LandStatRequestData>(landStatRequestMetadata)

@@ -9,13 +9,17 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, IP, Port, S32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RoutedMoneyBalanceReplyData {
 	targetBlock?: {
-		targetIp: Types.IP
-		targetPort: Types.Port
+		targetIp: IP
+		targetPort: Port
 	}
 	moneyData?: {
 		agentId: string
@@ -37,52 +41,53 @@ export interface RoutedMoneyBalanceReplyData {
 	}
 }
 
-export class RoutedMoneyBalanceReply extends Packet<RoutedMoneyBalanceReplyData> {
-	public static override id = 315
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const routedMoneyBalanceReplyMetadata = {
+	id: 315,
+	name: "RoutedMoneyBalanceReply",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "targetBlock",
+			parameters: [
+				["targetIp", IP],
+				["targetPort", Port],
+			],
+		},
+		{
+			name: "moneyData",
+			parameters: [
+				["agentId", UUID],
+				["transactionId", UUID],
+				["transactionSuccess", Bool],
+				["moneyBalance", S32],
+				["squareMetersCredit", S32],
+				["squareMetersCommitted", S32],
+				["description", Variable1],
+			],
+		},
+		{
+			name: "transactionInfo",
+			parameters: [
+				["transactionType", S32],
+				["sourceId", UUID],
+				["isSourceGroup", Bool],
+				["destId", UUID],
+				["isDestGroup", Bool],
+				["amount", S32],
+				["itemDescription", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"targetBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["targetIp", Types.IP],
-					["targetPort", Types.Port],
-				]),
-			},
-		],
-		[
-			"moneyData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["transactionId", Types.UUID],
-					["transactionSuccess", Types.Bool],
-					["moneyBalance", Types.S32],
-					["squareMetersCredit", Types.S32],
-					["squareMetersCommitted", Types.S32],
-					["description", Types.Variable1],
-				]),
-			},
-		],
-		[
-			"transactionInfo",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["transactionType", Types.S32],
-					["sourceId", Types.UUID],
-					["isSourceGroup", Types.Bool],
-					["destId", Types.UUID],
-					["isDestGroup", Types.Bool],
-					["amount", Types.S32],
-					["itemDescription", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const routedMoneyBalanceReply =
+	createPacketSender<RoutedMoneyBalanceReplyData>(
+		routedMoneyBalanceReplyMetadata,
+	)
+
+export const createRoutedMoneyBalanceReplyDelegate =
+	createPacketDelegate<RoutedMoneyBalanceReplyData>(
+		routedMoneyBalanceReplyMetadata,
+	)

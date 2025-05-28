@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U8, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RequestMultipleObjectsData {
 	agentData?: {
@@ -23,31 +27,34 @@ export interface RequestMultipleObjectsData {
 	}[]
 }
 
-export class RequestMultipleObjects extends Packet<RequestMultipleObjectsData> {
-	public static override id = 3
-	public static override frequency = 1
-	public static override trusted = false
-	public static override compression = true
+export const requestMultipleObjectsMetadata = {
+	id: 3,
+	name: "RequestMultipleObjects",
+	frequency: 1,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [
+				["cacheMissType", U8],
+				["id", U32],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["cacheMissType", Types.U8],
-					["id", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const requestMultipleObjects =
+	createPacketSender<RequestMultipleObjectsData>(requestMultipleObjectsMetadata)
+
+export const createRequestMultipleObjectsDelegate =
+	createPacketDelegate<RequestMultipleObjectsData>(
+		requestMultipleObjectsMetadata,
+	)

@@ -9,36 +9,44 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Port, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ScriptMailRegistrationData {
 	dataBlock?: {
 		targetIp: string | Buffer
-		targetPort: Types.Port
+		targetPort: Port
 		taskId: string
 		flags: number
 	}
 }
 
-export class ScriptMailRegistration extends Packet<ScriptMailRegistrationData> {
-	public static override id = 418
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const scriptMailRegistrationMetadata = {
+	id: 418,
+	name: "ScriptMailRegistration",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "dataBlock",
+			parameters: [
+				["targetIp", Variable1],
+				["targetPort", Port],
+				["taskId", UUID],
+				["flags", U32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"dataBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["targetIp", Types.Variable1],
-					["targetPort", Types.Port],
-					["taskId", Types.UUID],
-					["flags", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const scriptMailRegistration =
+	createPacketSender<ScriptMailRegistrationData>(scriptMailRegistrationMetadata)
+
+export const createScriptMailRegistrationDelegate =
+	createPacketDelegate<ScriptMailRegistrationData>(
+		scriptMailRegistrationMetadata,
+	)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface FreezeUserData {
 	agentData?: {
@@ -23,32 +27,29 @@ export interface FreezeUserData {
 	}
 }
 
-export class FreezeUser extends Packet<FreezeUserData> {
-	public static override id = 168
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const freezeUserMetadata = {
+	id: 168,
+	name: "FreezeUser",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "data",
+			parameters: [
+				["targetId", UUID],
+				["flags", U32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["targetId", Types.UUID],
-					["flags", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const freezeUser = createPacketSender<FreezeUserData>(freezeUserMetadata)
+
+export const createFreezeUserDelegate =
+	createPacketDelegate<FreezeUserData>(freezeUserMetadata)

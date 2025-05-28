@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AgentQuitCopyData {
 	agentData?: {
@@ -22,31 +26,28 @@ export interface AgentQuitCopyData {
 	}
 }
 
-export class AgentQuitCopy extends Packet<AgentQuitCopyData> {
-	public static override id = 85
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const agentQuitCopyMetadata = {
+	id: 85,
+	name: "AgentQuitCopy",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "fuseBlock",
+			parameters: [["viewerCircuitCode", U32]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"fuseBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["viewerCircuitCode", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const agentQuitCopy = createPacketSender<AgentQuitCopyData>(
+	agentQuitCopyMetadata,
+)
+
+export const createAgentQuitCopyDelegate =
+	createPacketDelegate<AgentQuitCopyData>(agentQuitCopyMetadata)

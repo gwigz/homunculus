@@ -9,47 +9,50 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Quaternion, UUID, Variable1, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface TelehubInfoData {
 	telehubBlock?: {
 		objectId: string
 		objectName: string | Buffer
-		telehubPos: Types.Vector3
-		telehubRot: Types.Quaternion
+		telehubPos: Vector3
+		telehubRot: Quaternion
 	}
 	spawnPointBlock?: {
-		spawnPointPos: Types.Vector3
+		spawnPointPos: Vector3
 	}[]
 }
 
-export class TelehubInfo extends Packet<TelehubInfoData> {
-	public static override id = 10
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const telehubInfoMetadata = {
+	id: 10,
+	name: "TelehubInfo",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "telehubBlock",
+			parameters: [
+				["objectId", UUID],
+				["objectName", Variable1],
+				["telehubPos", Vector3],
+				["telehubRot", Quaternion],
+			],
+		},
+		{
+			name: "spawnPointBlock",
+			parameters: [["spawnPointPos", Vector3]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"telehubBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["objectId", Types.UUID],
-					["objectName", Types.Variable1],
-					["telehubPos", Types.Vector3],
-					["telehubRot", Types.Quaternion],
-				]),
-			},
-		],
-		[
-			"spawnPointBlock",
-			{
-				parameters: new Map<string, Types.Type>([
-					["spawnPointPos", Types.Vector3],
-				]),
-			},
-		],
-	])
-}
+export const telehubInfo =
+	createPacketSender<TelehubInfoData>(telehubInfoMetadata)
+
+export const createTelehubInfoDelegate =
+	createPacketDelegate<TelehubInfoData>(telehubInfoMetadata)

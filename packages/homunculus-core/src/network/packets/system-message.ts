@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Fixed32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface SystemMessageData {
 	methodData?: {
@@ -23,31 +27,32 @@ export interface SystemMessageData {
 	}[]
 }
 
-export class SystemMessage extends Packet<SystemMessageData> {
-	public static override id = 404
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const systemMessageMetadata = {
+	id: 404,
+	name: "SystemMessage",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "methodData",
+			parameters: [
+				["method", Variable1],
+				["invoice", UUID],
+				["digest", Fixed32],
+			],
+		},
+		{
+			name: "paramList",
+			parameters: [["parameter", Variable1]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"methodData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["method", Types.Variable1],
-					["invoice", Types.UUID],
-					["digest", Types.Fixed32],
-				]),
-			},
-		],
-		[
-			"paramList",
-			{
-				parameters: new Map<string, Types.Type>([
-					["parameter", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const systemMessage = createPacketSender<SystemMessageData>(
+	systemMessageMetadata,
+)
+
+export const createSystemMessageDelegate =
+	createPacketDelegate<SystemMessageData>(systemMessageMetadata)

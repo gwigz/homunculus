@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface EjectUserData {
 	agentData?: {
@@ -23,32 +27,29 @@ export interface EjectUserData {
 	}
 }
 
-export class EjectUser extends Packet<EjectUserData> {
-	public static override id = 167
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const ejectUserMetadata = {
+	id: 167,
+	name: "EjectUser",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "data",
+			parameters: [
+				["targetId", UUID],
+				["flags", U32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["targetId", Types.UUID],
-					["flags", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const ejectUser = createPacketSender<EjectUserData>(ejectUserMetadata)
+
+export const createEjectUserDelegate =
+	createPacketDelegate<EjectUserData>(ejectUserMetadata)

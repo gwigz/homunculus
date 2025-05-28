@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface TrackAgentData {
 	agentData?: {
@@ -22,29 +26,26 @@ export interface TrackAgentData {
 	}
 }
 
-export class TrackAgent extends Packet<TrackAgentData> {
-	public static override id = 130
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const trackAgentMetadata = {
+	id: 130,
+	name: "TrackAgent",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "targetData",
+			parameters: [["preyId", UUID]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"targetData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["preyId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const trackAgent = createPacketSender<TrackAgentData>(trackAgentMetadata)
+
+export const createTrackAgentDelegate =
+	createPacketDelegate<TrackAgentData>(trackAgentMetadata)

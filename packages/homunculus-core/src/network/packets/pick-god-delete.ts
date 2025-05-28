@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface PickGodDeleteData {
 	agentData?: {
@@ -23,32 +27,31 @@ export interface PickGodDeleteData {
 	}
 }
 
-export class PickGodDelete extends Packet<PickGodDeleteData> {
-	public static override id = 187
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const pickGodDeleteMetadata = {
+	id: 187,
+	name: "PickGodDelete",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "data",
+			parameters: [
+				["pickId", UUID],
+				["queryId", UUID],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["pickId", Types.UUID],
-					["queryId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const pickGodDelete = createPacketSender<PickGodDeleteData>(
+	pickGodDeleteMetadata,
+)
+
+export const createPickGodDeleteDelegate =
+	createPacketDelegate<PickGodDeleteData>(pickGodDeleteMetadata)

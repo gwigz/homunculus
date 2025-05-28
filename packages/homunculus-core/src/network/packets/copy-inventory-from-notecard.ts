@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface CopyInventoryFromNotecardData {
 	agentData?: {
@@ -27,41 +31,43 @@ export interface CopyInventoryFromNotecardData {
 	}[]
 }
 
-export class CopyInventoryFromNotecard extends Packet<CopyInventoryFromNotecardData> {
-	public static override id = 265
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const copyInventoryFromNotecardMetadata = {
+	id: 265,
+	name: "CopyInventoryFromNotecard",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "notecardData",
+			parameters: [
+				["notecardItemId", UUID],
+				["objectId", UUID],
+			],
+		},
+		{
+			name: "inventoryData",
+			parameters: [
+				["itemId", UUID],
+				["folderId", UUID],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"notecardData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["notecardItemId", Types.UUID],
-					["objectId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"inventoryData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["itemId", Types.UUID],
-					["folderId", Types.UUID],
-				]),
-			},
-		],
-	])
-}
+export const copyInventoryFromNotecard =
+	createPacketSender<CopyInventoryFromNotecardData>(
+		copyInventoryFromNotecardMetadata,
+	)
+
+export const createCopyInventoryFromNotecardDelegate =
+	createPacketDelegate<CopyInventoryFromNotecardData>(
+		copyInventoryFromNotecardMetadata,
+	)

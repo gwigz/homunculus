@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface CopyInventoryItemData {
 	agentData?: {
@@ -26,34 +30,36 @@ export interface CopyInventoryItemData {
 	}[]
 }
 
-export class CopyInventoryItem extends Packet<CopyInventoryItemData> {
-	public static override id = 269
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const copyInventoryItemMetadata = {
+	id: 269,
+	name: "CopyInventoryItem",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "inventoryData",
+			parameters: [
+				["callbackId", U32],
+				["oldAgentId", UUID],
+				["oldItemId", UUID],
+				["newFolderId", UUID],
+				["newName", Variable1],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"inventoryData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["callbackId", Types.U32],
-					["oldAgentId", Types.UUID],
-					["oldItemId", Types.UUID],
-					["newFolderId", Types.UUID],
-					["newName", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const copyInventoryItem = createPacketSender<CopyInventoryItemData>(
+	copyInventoryItemMetadata,
+)
+
+export const createCopyInventoryItemDelegate =
+	createPacketDelegate<CopyInventoryItemData>(copyInventoryItemMetadata)

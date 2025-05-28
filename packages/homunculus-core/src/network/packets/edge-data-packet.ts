@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U8, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface EdgeDataPacketData {
 	edgeData?: {
@@ -20,23 +24,26 @@ export interface EdgeDataPacketData {
 	}
 }
 
-export class EdgeDataPacket extends Packet<EdgeDataPacketData> {
-	public static override id = 24
-	public static override frequency = 2
-	public static override trusted = true
-	public static override compression = true
+export const edgeDataPacketMetadata = {
+	id: 24,
+	name: "EdgeDataPacket",
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "edgeData",
+			parameters: [
+				["layerType", U8],
+				["direction", U8],
+				["layerData", Variable2],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"edgeData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["layerType", Types.U8],
-					["direction", Types.U8],
-					["layerData", Types.Variable2],
-				]),
-			},
-		],
-	])
-}
+export const edgeDataPacket = createPacketSender<EdgeDataPacketData>(
+	edgeDataPacketMetadata,
+)
+
+export const createEdgeDataPacketDelegate =
+	createPacketDelegate<EdgeDataPacketData>(edgeDataPacketMetadata)

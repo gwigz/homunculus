@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, U8, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface MoneyTransferRequestData {
 	agentData?: {
@@ -29,38 +33,37 @@ export interface MoneyTransferRequestData {
 	}
 }
 
-export class MoneyTransferRequest extends Packet<MoneyTransferRequestData> {
-	public static override id = 311
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const moneyTransferRequestMetadata = {
+	id: 311,
+	name: "MoneyTransferRequest",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "moneyData",
+			parameters: [
+				["sourceId", UUID],
+				["destId", UUID],
+				["flags", U8],
+				["amount", S32],
+				["aggregatePermNextOwner", U8],
+				["aggregatePermInventory", U8],
+				["transactionType", S32],
+				["description", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"moneyData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["sourceId", Types.UUID],
-					["destId", Types.UUID],
-					["flags", Types.U8],
-					["amount", Types.S32],
-					["aggregatePermNextOwner", Types.U8],
-					["aggregatePermInventory", Types.U8],
-					["transactionType", Types.S32],
-					["description", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const moneyTransferRequest =
+	createPacketSender<MoneyTransferRequestData>(moneyTransferRequestMetadata)
+
+export const createMoneyTransferRequestDelegate =
+	createPacketDelegate<MoneyTransferRequestData>(moneyTransferRequestMetadata)

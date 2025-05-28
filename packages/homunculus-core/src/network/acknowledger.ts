@@ -1,5 +1,5 @@
-import type { Circuit } from "./circuit"
-import { PacketAck } from "./packets"
+import type { Circuit, Packet } from "~/network"
+import { packets } from "~/network"
 
 export class AcknowledgeTimeoutError extends Error {
 	constructor(label: string) {
@@ -11,7 +11,7 @@ export class AcknowledgeTimeoutError extends Error {
 }
 
 export class Acknowledger {
-	private acknowledge = new PacketAck({ packets: [] })
+	private acknowledge = packets.packetAck({ packets: [] })
 
 	private packets = {
 		seen: new Map<number, number>(),
@@ -54,7 +54,7 @@ export class Acknowledger {
 	}
 
 	public awaitServerAcknowledgement(
-		label: string,
+		packet: Packet<any>,
 		sequence: number,
 		timeout = 10_000,
 	) {
@@ -65,7 +65,10 @@ export class Acknowledger {
 		return new Promise<void>((resolve, reject) => {
 			this.awaiting.set(sequence, [
 				resolve,
-				setTimeout(() => reject(new AcknowledgeTimeoutError(label)), timeout),
+				setTimeout(
+					() => reject(new AcknowledgeTimeoutError(packet.metadata.name)),
+					timeout,
+				),
 			])
 		})
 	}

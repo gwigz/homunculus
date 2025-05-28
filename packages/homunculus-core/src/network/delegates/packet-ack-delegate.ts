@@ -1,12 +1,9 @@
-import type { PacketAck } from "~/network/packets"
-import { Delegate } from "./delegate"
+import { packets } from "~/network"
 
-class PacketAckDelegate extends Delegate {
-	public override handle(packet: PacketAck) {
+packets.createPacketAckDelegate({
+	handle: (packet, context) => {
 		for (const ack of packet.data.packets!) {
-			this.core.circuit?.acknowledger.handleReceivedAck(ack.id)
+			context.core.circuit?.acknowledger.handleReceivedAck(ack.id)
 		}
-	}
-}
-
-export default PacketAckDelegate
+	},
+})

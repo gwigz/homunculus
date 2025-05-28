@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S16, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ReplyTaskInventoryData {
 	inventoryData?: {
@@ -20,23 +24,27 @@ export interface ReplyTaskInventoryData {
 	}
 }
 
-export class ReplyTaskInventory extends Packet<ReplyTaskInventoryData> {
-	public static override id = 290
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const replyTaskInventoryMetadata = {
+	id: 290,
+	name: "ReplyTaskInventory",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "inventoryData",
+			parameters: [
+				["taskId", UUID],
+				["serial", S16],
+				["filename", Variable1],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"inventoryData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["taskId", Types.UUID],
-					["serial", Types.S16],
-					["filename", Types.Variable1],
-				]),
-			},
-		],
-	])
-}
+export const replyTaskInventory = createPacketSender<ReplyTaskInventoryData>(
+	replyTaskInventoryMetadata,
+)
+
+export const createReplyTaskInventoryDelegate =
+	createPacketDelegate<ReplyTaskInventoryData>(replyTaskInventoryMetadata)

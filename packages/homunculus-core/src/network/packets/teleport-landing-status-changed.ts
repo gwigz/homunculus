@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U64 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface TeleportLandingStatusChangedData {
 	regionData?: {
@@ -18,19 +22,25 @@ export interface TeleportLandingStatusChangedData {
 	}
 }
 
-export class TeleportLandingStatusChanged extends Packet<TeleportLandingStatusChangedData> {
-	public static override id = 147
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const teleportLandingStatusChangedMetadata = {
+	id: 147,
+	name: "TeleportLandingStatusChanged",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "regionData",
+			parameters: [["regionHandle", U64]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"regionData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["regionHandle", Types.U64]]),
-			},
-		],
-	])
-}
+export const teleportLandingStatusChanged =
+	createPacketSender<TeleportLandingStatusChangedData>(
+		teleportLandingStatusChangedMetadata,
+	)
+
+export const createTeleportLandingStatusChangedDelegate =
+	createPacketDelegate<TeleportLandingStatusChangedData>(
+		teleportLandingStatusChangedMetadata,
+	)

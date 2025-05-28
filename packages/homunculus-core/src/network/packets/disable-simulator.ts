@@ -9,13 +9,24 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { Packet } from "./packet"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export type DisableSimulatorData = Record<string, never>
 
-export class DisableSimulator extends Packet<DisableSimulatorData> {
-	public static override id = 152
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
-}
+export const disableSimulatorMetadata = {
+	id: 152,
+	name: "DisableSimulator",
+	frequency: 2,
+	trusted: true,
+} satisfies PacketMetadata
+
+export const disableSimulator = createPacketSender<DisableSimulatorData>(
+	disableSimulatorMetadata,
+)
+
+export const createDisableSimulatorDelegate =
+	createPacketDelegate<DisableSimulatorData>(disableSimulatorMetadata)

@@ -1,11 +1,9 @@
 import assert from "node:assert"
 import { randomUUID } from "node:crypto"
 import { cache, type RegionCache } from "~/cache"
-import { AcknowledgeTimeoutError } from "~/network/acknowledger"
-import { EstateOwnerMessage, MapBlockRequest } from "~/network/packets"
-import { type Client, UUID } from ".."
-import { Agents } from "./agents"
-import { Entities } from "./entities"
+import type { Client } from "~/client"
+import { AcknowledgeTimeoutError, packets, UUID } from "~/network"
+import { Agents, Entities } from "~/structures"
 
 const ONE_DAY = 1000 * 60 * 60 * 24
 
@@ -40,7 +38,7 @@ export class Region {
 				const y = Math.floor(Number(this.handle & 0xffffffffn) / 256)
 
 				this.client.sendReliable([
-					new MapBlockRequest({
+					packets.mapBlockRequest({
 						positionData: { minX: x, minY: y, maxX: x, maxY: y },
 					}),
 				])
@@ -82,7 +80,7 @@ export class Region {
 		)
 
 		await this.client.send([
-			new EstateOwnerMessage({
+			packets.estateOwnerMessage({
 				agentData: { transactionId: UUID.zero },
 				methodData: {
 					method: "simulatormessage",

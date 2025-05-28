@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface DeRezAckData {
 	transactionData?: {
@@ -19,22 +23,23 @@ export interface DeRezAckData {
 	}
 }
 
-export class DeRezAck extends Packet<DeRezAckData> {
-	public static override id = 292
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const deRezAckMetadata = {
+	id: 292,
+	name: "DeRezAck",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "transactionData",
+			parameters: [
+				["transactionId", UUID],
+				["success", Bool],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"transactionData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["transactionId", Types.UUID],
-					["success", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const deRezAck = createPacketSender<DeRezAckData>(deRezAckMetadata)
+
+export const createDeRezAckDelegate =
+	createPacketDelegate<DeRezAckData>(deRezAckMetadata)

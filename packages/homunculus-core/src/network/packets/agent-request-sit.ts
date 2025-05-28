@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { UUID, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AgentRequestSitData {
 	agentData?: {
@@ -19,36 +23,35 @@ export interface AgentRequestSitData {
 	}
 	targetObject?: {
 		targetId: string
-		offset: Types.Vector3
+		offset: Vector3
 	}
 }
 
-export class AgentRequestSit extends Packet<AgentRequestSitData> {
-	public static override id = 6
-	public static override frequency = 2
-	public static override trusted = false
-	public static override compression = true
+export const agentRequestSitMetadata = {
+	id: 6,
+	name: "AgentRequestSit",
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "targetObject",
+			parameters: [
+				["targetId", UUID],
+				["offset", Vector3],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"targetObject",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["targetId", Types.UUID],
-					["offset", Types.Vector3],
-				]),
-			},
-		],
-	])
-}
+export const agentRequestSit = createPacketSender<AgentRequestSitData>(
+	agentRequestSitMetadata,
+)
+
+export const createAgentRequestSitDelegate =
+	createPacketDelegate<AgentRequestSitData>(agentRequestSitMetadata)

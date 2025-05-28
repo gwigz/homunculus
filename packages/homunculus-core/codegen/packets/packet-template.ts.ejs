@@ -1,5 +1,5 @@
 /**
- * <%= packetName %> Packet
+ * <%= name %> Packet
  *
  * This file is used to help our packet serialization and deserialization
  * process, and to create new packets on the fly.
@@ -9,11 +9,41 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import {
+	Bool,
+	Color4,
+	F32,
+	F64,
+	Fixed32,
+	Fixed4,
+	IP,
+	ParticleSystem,
+	Port,
+	Quaternion,
+	S16,
+	S32,
+	S8,
+	Text,
+	Type,
+	U16,
+	U32,
+	U64,
+	U8,
+	UUID,
+	Variable1,
+	Variable2,
+	Vector3,
+	Vector3D,
+	Vector4,
+} from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 <% if (blocks.length > 0) { -%>
-export interface <%= packetName %>Data {
+export interface <%= name %>Data {
 <% blocks.forEach(block => { -%>
   <%= block.name %><%= block.name === 'agentData' && !shouldMakeAgentDataOptional(block) ? '' : '?' %>: {
 <% block.fields.forEach(field => { -%>
@@ -23,31 +53,43 @@ export interface <%= packetName %>Data {
 <% }) -%>
 }
 <% } else { -%>
-export type <%= packetName %>Data = Record<string, never>
+export type <%= name %>Data = Record<string, never>
 <% } -%>
 
-export class <%= packetName %> extends Packet<<%= packetName %>Data> {
-	public static override id = <%= packetId %>
-	public static override frequency = <%= frequency %>
-	public static override trusted = <%= trusted %>
-	public static override compression = <%= compression %>
-	<% if (blocks.length > 0) { %>
-	public static override format = new Map([
-<% blocks.forEach((block, index) => { -%>
-		[
-			"<%= block.name %>",
-			{
-<% if (!block.variable) { -%>
-				quantity: 1,
+export const <%= camelCaseName %>Metadata = {
+	id: <%= id %>,
+	name: "<%= name %>",
+<% if (frequency) { -%>
+	frequency: <%= frequency %>,
 <% } -%>
-				parameters: new Map<string, Types.Type>([
+<% if (trusted) { -%>
+	trusted: true,
+<% } -%>
+<% if (compression) { -%>
+	compression: true,
+<% } -%>
+<% if (blocks.length > 0) { -%>
+	blocks: [
+<% blocks.forEach((block, index) => { -%>
+		{
+			name: "<%= block.name %>",
+			parameters: [
 <% block.fields.forEach((field, fieldIndex) => { -%>
-					["<%= field.name %>", <%= 'Types.' + field.type %>],
+				["<%= field.name %>", <%= field.type %>],
 <% }) -%>
-				]),
-			},
-		],
+			],
+<% if (block.variable) { -%>
+			multiple: true,
+<% } -%>
+		},
 <% }) -%>
-	])
-	<% } -%>
-}
+	]
+<% } -%>
+} satisfies PacketMetadata
+
+export const <%= camelCaseName %> = createPacketSender<<%= name %>Data>(
+	<%= camelCaseName %>Metadata
+)
+
+export const create<%= name %>Delegate =
+	createPacketDelegate<<%= name %>Data>(<%= camelCaseName %>Metadata)

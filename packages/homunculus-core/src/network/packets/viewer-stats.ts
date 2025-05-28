@@ -9,14 +9,18 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, F64, IP, S32, U8, U32, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ViewerStatsData {
 	agentData: {
 		agentId?: string
 		sessionId?: string
-		ip: Types.IP
+		ip: IP
 		startTime: number
 		runTime: number
 		simFps: number
@@ -55,80 +59,74 @@ export interface ViewerStatsData {
 	}[]
 }
 
-export class ViewerStats extends Packet<ViewerStatsData> {
-	public static override id = 131
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const viewerStatsMetadata = {
+	id: 131,
+	name: "ViewerStats",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["ip", IP],
+				["startTime", U32],
+				["runTime", F32],
+				["simFps", F32],
+				["fps", F32],
+				["agentsInView", U8],
+				["ping", F32],
+				["metersTraveled", F64],
+				["regionsVisited", S32],
+				["sysRam", U32],
+				["sysOs", Variable1],
+				["sysCpu", Variable1],
+				["sysGpu", Variable1],
+			],
+		},
+		{
+			name: "downloadTotals",
+			parameters: [
+				["world", U32],
+				["objects", U32],
+				["textures", U32],
+			],
+		},
+		{
+			name: "netStats",
+			parameters: [
+				["bytes", U32],
+				["packets", U32],
+				["compressed", U32],
+				["savings", U32],
+			],
+			multiple: true,
+		},
+		{
+			name: "failStats",
+			parameters: [
+				["sendPacket", U32],
+				["dropped", U32],
+				["resent", U32],
+				["failedResends", U32],
+				["offCircuit", U32],
+				["invalid", U32],
+			],
+		},
+		{
+			name: "miscStats",
+			parameters: [
+				["type", U32],
+				["value", F64],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["ip", Types.IP],
-					["startTime", Types.U32],
-					["runTime", Types.F32],
-					["simFps", Types.F32],
-					["fps", Types.F32],
-					["agentsInView", Types.U8],
-					["ping", Types.F32],
-					["metersTraveled", Types.F64],
-					["regionsVisited", Types.S32],
-					["sysRam", Types.U32],
-					["sysOs", Types.Variable1],
-					["sysCpu", Types.Variable1],
-					["sysGpu", Types.Variable1],
-				]),
-			},
-		],
-		[
-			"downloadTotals",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["world", Types.U32],
-					["objects", Types.U32],
-					["textures", Types.U32],
-				]),
-			},
-		],
-		[
-			"netStats",
-			{
-				parameters: new Map<string, Types.Type>([
-					["bytes", Types.U32],
-					["packets", Types.U32],
-					["compressed", Types.U32],
-					["savings", Types.U32],
-				]),
-			},
-		],
-		[
-			"failStats",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["sendPacket", Types.U32],
-					["dropped", Types.U32],
-					["resent", Types.U32],
-					["failedResends", Types.U32],
-					["offCircuit", Types.U32],
-					["invalid", Types.U32],
-				]),
-			},
-		],
-		[
-			"miscStats",
-			{
-				parameters: new Map<string, Types.Type>([
-					["type", Types.U32],
-					["value", Types.F64],
-				]),
-			},
-		],
-	])
-}
+export const viewerStats =
+	createPacketSender<ViewerStatsData>(viewerStatsMetadata)
+
+export const createViewerStatsDelegate =
+	createPacketDelegate<ViewerStatsData>(viewerStatsMetadata)

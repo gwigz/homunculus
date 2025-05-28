@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, S32, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface DirLandQueryBackendData {
 	agentData?: {
@@ -28,35 +32,36 @@ export interface DirLandQueryBackendData {
 	}
 }
 
-export class DirLandQueryBackend extends Packet<DirLandQueryBackendData> {
-	public static override id = 49
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const dirLandQueryBackendMetadata = {
+	id: 49,
+	name: "DirLandQueryBackend",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "queryData",
+			parameters: [
+				["queryId", UUID],
+				["queryFlags", U32],
+				["searchType", U32],
+				["price", S32],
+				["area", S32],
+				["queryStart", S32],
+				["estateId", U32],
+				["godlike", Bool],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"queryData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["queryId", Types.UUID],
-					["queryFlags", Types.U32],
-					["searchType", Types.U32],
-					["price", Types.S32],
-					["area", Types.S32],
-					["queryStart", Types.S32],
-					["estateId", Types.U32],
-					["godlike", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const dirLandQueryBackend = createPacketSender<DirLandQueryBackendData>(
+	dirLandQueryBackendMetadata,
+)
+
+export const createDirLandQueryBackendDelegate =
+	createPacketDelegate<DirLandQueryBackendData>(dirLandQueryBackendMetadata)

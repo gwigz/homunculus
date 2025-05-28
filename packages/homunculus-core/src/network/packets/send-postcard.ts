@@ -9,15 +9,19 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, UUID, Variable1, Variable2, Vector3D } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface SendPostcardData {
 	agentData: {
 		agentId?: string
 		sessionId?: string
 		assetId: string
-		posGlobal: Types.Vector3D
+		posGlobal: Vector3D
 		to: string | Buffer
 		from: string | Buffer
 		name: string | Buffer
@@ -28,31 +32,32 @@ export interface SendPostcardData {
 	}
 }
 
-export class SendPostcard extends Packet<SendPostcardData> {
-	public static override id = 412
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const sendPostcardMetadata = {
+	id: 412,
+	name: "SendPostcard",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["assetId", UUID],
+				["posGlobal", Vector3D],
+				["to", Variable1],
+				["from", Variable1],
+				["name", Variable1],
+				["subject", Variable1],
+				["msg", Variable2],
+				["allowPublish", Bool],
+				["maturePublish", Bool],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["assetId", Types.UUID],
-					["posGlobal", Types.Vector3D],
-					["to", Types.Variable1],
-					["from", Types.Variable1],
-					["name", Types.Variable1],
-					["subject", Types.Variable1],
-					["msg", Types.Variable2],
-					["allowPublish", Types.Bool],
-					["maturePublish", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const sendPostcard =
+	createPacketSender<SendPostcardData>(sendPostcardMetadata)
+
+export const createSendPostcardDelegate =
+	createPacketDelegate<SendPostcardData>(sendPostcardMetadata)

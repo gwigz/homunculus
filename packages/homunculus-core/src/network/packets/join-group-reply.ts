@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface JoinGroupReplyData {
 	agentData?: {
@@ -22,29 +26,29 @@ export interface JoinGroupReplyData {
 	}
 }
 
-export class JoinGroupReply extends Packet<JoinGroupReplyData> {
-	public static override id = 344
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const joinGroupReplyMetadata = {
+	id: 344,
+	name: "JoinGroupReply",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "groupData",
+			parameters: [
+				["groupId", UUID],
+				["success", Bool],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"groupData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["groupId", Types.UUID],
-					["success", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const joinGroupReply = createPacketSender<JoinGroupReplyData>(
+	joinGroupReplyMetadata,
+)
+
+export const createJoinGroupReplyDelegate =
+	createPacketDelegate<JoinGroupReplyData>(joinGroupReplyMetadata)

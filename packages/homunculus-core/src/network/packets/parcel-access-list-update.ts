@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ParcelAccessListUpdateData {
 	agentData?: {
@@ -31,45 +35,45 @@ export interface ParcelAccessListUpdateData {
 	}[]
 }
 
-export class ParcelAccessListUpdate extends Packet<ParcelAccessListUpdateData> {
-	public static override id = 217
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const parcelAccessListUpdateMetadata = {
+	id: 217,
+	name: "ParcelAccessListUpdate",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "data",
+			parameters: [
+				["flags", U32],
+				["localId", S32],
+				["transactionId", UUID],
+				["sequenceId", S32],
+				["sections", S32],
+			],
+		},
+		{
+			name: "list",
+			parameters: [
+				["id", UUID],
+				["time", S32],
+				["flags", U32],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["flags", Types.U32],
-					["localId", Types.S32],
-					["transactionId", Types.UUID],
-					["sequenceId", Types.S32],
-					["sections", Types.S32],
-				]),
-			},
-		],
-		[
-			"list",
-			{
-				parameters: new Map<string, Types.Type>([
-					["id", Types.UUID],
-					["time", Types.S32],
-					["flags", Types.U32],
-				]),
-			},
-		],
-	])
-}
+export const parcelAccessListUpdate =
+	createPacketSender<ParcelAccessListUpdateData>(parcelAccessListUpdateMetadata)
+
+export const createParcelAccessListUpdateDelegate =
+	createPacketDelegate<ParcelAccessListUpdateData>(
+		parcelAccessListUpdateMetadata,
+	)

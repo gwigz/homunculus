@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { IP, Port, U64, UUID, Variable2, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface CrossedRegionData {
 	agentData?: {
@@ -18,55 +22,52 @@ export interface CrossedRegionData {
 		sessionId?: string
 	}
 	regionData?: {
-		simIp: Types.IP
-		simPort: Types.Port
+		simIp: IP
+		simPort: Port
 		regionHandle: number | bigint
 		seedCapability: string | Buffer
 	}
 	info?: {
-		position: Types.Vector3
-		lookAt: Types.Vector3
+		position: Vector3
+		lookAt: Vector3
 	}
 }
 
-export class CrossedRegion extends Packet<CrossedRegionData> {
-	public static override id = 7
-	public static override frequency = 1
-	public static override trusted = true
-	public static override compression = false
+export const crossedRegionMetadata = {
+	id: 7,
+	name: "CrossedRegion",
+	frequency: 1,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "regionData",
+			parameters: [
+				["simIp", IP],
+				["simPort", Port],
+				["regionHandle", U64],
+				["seedCapability", Variable2],
+			],
+		},
+		{
+			name: "info",
+			parameters: [
+				["position", Vector3],
+				["lookAt", Vector3],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"regionData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["simIp", Types.IP],
-					["simPort", Types.Port],
-					["regionHandle", Types.U64],
-					["seedCapability", Types.Variable2],
-				]),
-			},
-		],
-		[
-			"info",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["position", Types.Vector3],
-					["lookAt", Types.Vector3],
-				]),
-			},
-		],
-	])
-}
+export const crossedRegion = createPacketSender<CrossedRegionData>(
+	crossedRegionMetadata,
+)
+
+export const createCrossedRegionDelegate =
+	createPacketDelegate<CrossedRegionData>(crossedRegionMetadata)

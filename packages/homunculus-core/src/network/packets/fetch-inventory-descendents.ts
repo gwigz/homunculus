@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, S32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface FetchInventoryDescendentsData {
 	agentData?: {
@@ -26,35 +30,38 @@ export interface FetchInventoryDescendentsData {
 	}
 }
 
-export class FetchInventoryDescendents extends Packet<FetchInventoryDescendentsData> {
-	public static override id = 277
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const fetchInventoryDescendentsMetadata = {
+	id: 277,
+	name: "FetchInventoryDescendents",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "inventoryData",
+			parameters: [
+				["folderId", UUID],
+				["ownerId", UUID],
+				["sortOrder", S32],
+				["fetchFolders", Bool],
+				["fetchItems", Bool],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"inventoryData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["folderId", Types.UUID],
-					["ownerId", Types.UUID],
-					["sortOrder", Types.S32],
-					["fetchFolders", Types.Bool],
-					["fetchItems", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const fetchInventoryDescendents =
+	createPacketSender<FetchInventoryDescendentsData>(
+		fetchInventoryDescendentsMetadata,
+	)
+
+export const createFetchInventoryDescendentsDelegate =
+	createPacketDelegate<FetchInventoryDescendentsData>(
+		fetchInventoryDescendentsMetadata,
+	)

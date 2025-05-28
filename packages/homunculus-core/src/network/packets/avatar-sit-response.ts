@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, Quaternion, UUID, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AvatarSitResponseData {
 	sitObject?: {
@@ -18,41 +22,41 @@ export interface AvatarSitResponseData {
 	}
 	sitTransform?: {
 		autoPilot: boolean
-		sitPosition: Types.Vector3
-		sitRotation: Types.Quaternion
-		cameraEyeOffset: Types.Vector3
-		cameraAtOffset: Types.Vector3
+		sitPosition: Vector3
+		sitRotation: Quaternion
+		cameraEyeOffset: Vector3
+		cameraAtOffset: Vector3
 		forceMouselook: boolean
 	}
 }
 
-export class AvatarSitResponse extends Packet<AvatarSitResponseData> {
-	public static override id = 21
-	public static override frequency = 2
-	public static override trusted = true
-	public static override compression = true
+export const avatarSitResponseMetadata = {
+	id: 21,
+	name: "AvatarSitResponse",
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "sitObject",
+			parameters: [["id", UUID]],
+		},
+		{
+			name: "sitTransform",
+			parameters: [
+				["autoPilot", Bool],
+				["sitPosition", Vector3],
+				["sitRotation", Quaternion],
+				["cameraEyeOffset", Vector3],
+				["cameraAtOffset", Vector3],
+				["forceMouselook", Bool],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"sitObject",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["id", Types.UUID]]),
-			},
-		],
-		[
-			"sitTransform",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["autoPilot", Types.Bool],
-					["sitPosition", Types.Vector3],
-					["sitRotation", Types.Quaternion],
-					["cameraEyeOffset", Types.Vector3],
-					["cameraAtOffset", Types.Vector3],
-					["forceMouselook", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const avatarSitResponse = createPacketSender<AvatarSitResponseData>(
+	avatarSitResponseMetadata,
+)
+
+export const createAvatarSitResponseDelegate =
+	createPacketDelegate<AvatarSitResponseData>(avatarSitResponseMetadata)

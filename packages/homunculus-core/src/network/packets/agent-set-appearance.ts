@@ -9,15 +9,19 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U8, U32, UUID, Variable2, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface AgentSetAppearanceData {
 	agentData: {
 		agentId?: string
 		sessionId?: string
 		serialNum: number
-		size: Types.Vector3
+		size: Vector3
 	}
 	wearableData?: {
 		cacheId: string
@@ -31,48 +35,44 @@ export interface AgentSetAppearanceData {
 	}[]
 }
 
-export class AgentSetAppearance extends Packet<AgentSetAppearanceData> {
-	public static override id = 84
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const agentSetAppearanceMetadata = {
+	id: 84,
+	name: "AgentSetAppearance",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["serialNum", U32],
+				["size", Vector3],
+			],
+		},
+		{
+			name: "wearableData",
+			parameters: [
+				["cacheId", UUID],
+				["textureIndex", U8],
+			],
+			multiple: true,
+		},
+		{
+			name: "objectData",
+			parameters: [["textureEntry", Variable2]],
+		},
+		{
+			name: "visualParam",
+			parameters: [["paramValue", U8]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["serialNum", Types.U32],
-					["size", Types.Vector3],
-				]),
-			},
-		],
-		[
-			"wearableData",
-			{
-				parameters: new Map<string, Types.Type>([
-					["cacheId", Types.UUID],
-					["textureIndex", Types.U8],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["textureEntry", Types.Variable2],
-				]),
-			},
-		],
-		[
-			"visualParam",
-			{
-				parameters: new Map<string, Types.Type>([["paramValue", Types.U8]]),
-			},
-		],
-	])
-}
+export const agentSetAppearance = createPacketSender<AgentSetAppearanceData>(
+	agentSetAppearanceMetadata,
+)
+
+export const createAgentSetAppearanceDelegate =
+	createPacketDelegate<AgentSetAppearanceData>(agentSetAppearanceMetadata)

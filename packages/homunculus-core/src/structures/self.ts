@@ -1,6 +1,6 @@
-import { AgentRequestSit, AgentUpdate } from "~/network/packets"
-import { Quaternion, Vector3 } from "~/network/types"
-import { type Client, Constants } from ".."
+import type { Client } from "~/client"
+import { packets, Quaternion, Vector3 } from "~/network"
+import { Constants } from "~/utilities"
 
 export class Self {
 	public key: string
@@ -76,7 +76,7 @@ export class Self {
 		this.controlFlags = 0
 
 		return this.client.send([
-			new AgentUpdate({
+			packets.agentUpdate({
 				agentData: {
 					bodyRotation: this.rotation,
 					headRotation: this.rotation,
@@ -95,7 +95,7 @@ export class Self {
 
 	public sitOnObject(targetId: string) {
 		return this.client.send([
-			new AgentRequestSit({
+			packets.agentRequestSit({
 				targetObject: { targetId, offset: Vector3.zero },
 			}),
 		])

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, S32, U32, U64 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface SimStatsData {
 	region?: {
@@ -31,48 +35,42 @@ export interface SimStatsData {
 	}[]
 }
 
-export class SimStats extends Packet<SimStatsData> {
-	public static override id = 140
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const simStatsMetadata = {
+	id: 140,
+	name: "SimStats",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "region",
+			parameters: [
+				["regionX", U32],
+				["regionY", U32],
+				["regionFlags", U32],
+				["objectCapacity", U32],
+			],
+		},
+		{
+			name: "stat",
+			parameters: [
+				["statId", U32],
+				["statValue", F32],
+			],
+			multiple: true,
+		},
+		{
+			name: "pidStat",
+			parameters: [["pid", S32]],
+		},
+		{
+			name: "regionInfo",
+			parameters: [["regionFlagsExtended", U64]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"region",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["regionX", Types.U32],
-					["regionY", Types.U32],
-					["regionFlags", Types.U32],
-					["objectCapacity", Types.U32],
-				]),
-			},
-		],
-		[
-			"stat",
-			{
-				parameters: new Map<string, Types.Type>([
-					["statId", Types.U32],
-					["statValue", Types.F32],
-				]),
-			},
-		],
-		[
-			"pidStat",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["pid", Types.S32]]),
-			},
-		],
-		[
-			"regionInfo",
-			{
-				parameters: new Map<string, Types.Type>([
-					["regionFlagsExtended", Types.U64],
-				]),
-			},
-		],
-	])
-}
+export const simStats = createPacketSender<SimStatsData>(simStatsMetadata)
+
+export const createSimStatsDelegate =
+	createPacketDelegate<SimStatsData>(simStatsMetadata)

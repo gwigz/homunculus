@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, S16, U8, U64, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface RequestXferData {
 	xferId?: {
@@ -24,27 +28,29 @@ export interface RequestXferData {
 	}
 }
 
-export class RequestXfer extends Packet<RequestXferData> {
-	public static override id = 156
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = true
+export const requestXferMetadata = {
+	id: 156,
+	name: "RequestXfer",
+	frequency: 2,
+	compression: true,
+	blocks: [
+		{
+			name: "xferId",
+			parameters: [
+				["id", U64],
+				["filename", Variable1],
+				["filePath", U8],
+				["deleteOnCompletion", Bool],
+				["useBigPackets", Bool],
+				["vFileId", UUID],
+				["vFileType", S16],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"xferId",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["id", Types.U64],
-					["filename", Types.Variable1],
-					["filePath", Types.U8],
-					["deleteOnCompletion", Types.Bool],
-					["useBigPackets", Types.Bool],
-					["vFileId", Types.UUID],
-					["vFileType", Types.S16],
-				]),
-			},
-		],
-	])
-}
+export const requestXfer =
+	createPacketSender<RequestXferData>(requestXferMetadata)
+
+export const createRequestXferDelegate =
+	createPacketDelegate<RequestXferData>(requestXferMetadata)

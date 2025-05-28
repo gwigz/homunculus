@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, S32, U32, UUID, Variable1, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface GroupVoteHistoryItemReplyData {
 	agentData: {
@@ -40,60 +44,60 @@ export interface GroupVoteHistoryItemReplyData {
 	}[]
 }
 
-export class GroupVoteHistoryItemReply extends Packet<GroupVoteHistoryItemReplyData> {
-	public static override id = 362
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const groupVoteHistoryItemReplyMetadata = {
+	id: 362,
+	name: "GroupVoteHistoryItemReply",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["groupId", UUID],
+			],
+		},
+		{
+			name: "transactionData",
+			parameters: [
+				["transactionId", UUID],
+				["totalNumItems", U32],
+			],
+		},
+		{
+			name: "historyItemData",
+			parameters: [
+				["voteId", UUID],
+				["terseDateId", Variable1],
+				["startDateTime", Variable1],
+				["endDateTime", Variable1],
+				["voteInitiator", UUID],
+				["voteType", Variable1],
+				["voteResult", Variable1],
+				["majority", F32],
+				["quorum", S32],
+				["proposalText", Variable2],
+			],
+		},
+		{
+			name: "voteItem",
+			parameters: [
+				["candidateId", UUID],
+				["voteCast", Variable1],
+				["numVotes", S32],
+			],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["groupId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"transactionData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["transactionId", Types.UUID],
-					["totalNumItems", Types.U32],
-				]),
-			},
-		],
-		[
-			"historyItemData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["voteId", Types.UUID],
-					["terseDateId", Types.Variable1],
-					["startDateTime", Types.Variable1],
-					["endDateTime", Types.Variable1],
-					["voteInitiator", Types.UUID],
-					["voteType", Types.Variable1],
-					["voteResult", Types.Variable1],
-					["majority", Types.F32],
-					["quorum", Types.S32],
-					["proposalText", Types.Variable2],
-				]),
-			},
-		],
-		[
-			"voteItem",
-			{
-				parameters: new Map<string, Types.Type>([
-					["candidateId", Types.UUID],
-					["voteCast", Types.Variable1],
-					["numVotes", Types.S32],
-				]),
-			},
-		],
-	])
-}
+export const groupVoteHistoryItemReply =
+	createPacketSender<GroupVoteHistoryItemReplyData>(
+		groupVoteHistoryItemReplyMetadata,
+	)
+
+export const createGroupVoteHistoryItemReplyDelegate =
+	createPacketDelegate<GroupVoteHistoryItemReplyData>(
+		groupVoteHistoryItemReplyMetadata,
+	)

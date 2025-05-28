@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Bool, F32, S32, U8, U64, UUID, Variable1, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface UpdateParcelData {
 	parcelData?: {
@@ -30,7 +34,7 @@ export interface UpdateParcelData {
 		isForSale: boolean
 		category: number
 		snapshotId: string
-		userLocation: Types.Vector3
+		userLocation: Vector3
 		salePrice: number
 		authorizedBuyerId: string
 		allowPublish: boolean
@@ -38,41 +42,44 @@ export interface UpdateParcelData {
 	}
 }
 
-export class UpdateParcel extends Packet<UpdateParcelData> {
-	public static override id = 221
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const updateParcelMetadata = {
+	id: 221,
+	name: "UpdateParcel",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "parcelData",
+			parameters: [
+				["parcelId", UUID],
+				["regionHandle", U64],
+				["ownerId", UUID],
+				["groupOwned", Bool],
+				["status", U8],
+				["name", Variable1],
+				["description", Variable1],
+				["musicUrl", Variable1],
+				["regionX", F32],
+				["regionY", F32],
+				["actualArea", S32],
+				["billableArea", S32],
+				["showDir", Bool],
+				["isForSale", Bool],
+				["category", U8],
+				["snapshotId", UUID],
+				["userLocation", Vector3],
+				["salePrice", S32],
+				["authorizedBuyerId", UUID],
+				["allowPublish", Bool],
+				["maturePublish", Bool],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"parcelData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["parcelId", Types.UUID],
-					["regionHandle", Types.U64],
-					["ownerId", Types.UUID],
-					["groupOwned", Types.Bool],
-					["status", Types.U8],
-					["name", Types.Variable1],
-					["description", Types.Variable1],
-					["musicUrl", Types.Variable1],
-					["regionX", Types.F32],
-					["regionY", Types.F32],
-					["actualArea", Types.S32],
-					["billableArea", Types.S32],
-					["showDir", Types.Bool],
-					["isForSale", Types.Bool],
-					["category", Types.U8],
-					["snapshotId", Types.UUID],
-					["userLocation", Types.Vector3],
-					["salePrice", Types.S32],
-					["authorizedBuyerId", Types.UUID],
-					["allowPublish", Types.Bool],
-					["maturePublish", Types.Bool],
-				]),
-			},
-		],
-	])
-}
+export const updateParcel =
+	createPacketSender<UpdateParcelData>(updateParcelMetadata)
+
+export const createUpdateParcelDelegate =
+	createPacketDelegate<UpdateParcelData>(updateParcelMetadata)

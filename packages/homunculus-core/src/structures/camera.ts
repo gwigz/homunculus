@@ -1,4 +1,4 @@
-import type { Client } from ".."
+import type { Client } from "~/client"
 
 /**
  * Represents the agents camera, which contains and controls camera position

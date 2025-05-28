@@ -9,16 +9,29 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import {
+	F32,
+	Quaternion,
+	S32,
+	U8,
+	U64,
+	UUID,
+	Variable1,
+	Vector3,
+} from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ScriptSensorRequestData {
 	requester?: {
 		sourceId: string
 		requestId: string
 		searchId: string
-		searchPos: Types.Vector3
-		searchDir: Types.Quaternion
+		searchPos: Vector3
+		searchDir: Quaternion
 		searchName: string | Buffer
 		type: number
 		range: number
@@ -28,31 +41,35 @@ export interface ScriptSensorRequestData {
 	}
 }
 
-export class ScriptSensorRequest extends Packet<ScriptSensorRequestData> {
-	public static override id = 247
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = true
+export const scriptSensorRequestMetadata = {
+	id: 247,
+	name: "ScriptSensorRequest",
+	frequency: 2,
+	trusted: true,
+	compression: true,
+	blocks: [
+		{
+			name: "requester",
+			parameters: [
+				["sourceId", UUID],
+				["requestId", UUID],
+				["searchId", UUID],
+				["searchPos", Vector3],
+				["searchDir", Quaternion],
+				["searchName", Variable1],
+				["type", S32],
+				["range", F32],
+				["arc", F32],
+				["regionHandle", U64],
+				["searchRegions", U8],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"requester",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["sourceId", Types.UUID],
-					["requestId", Types.UUID],
-					["searchId", Types.UUID],
-					["searchPos", Types.Vector3],
-					["searchDir", Types.Quaternion],
-					["searchName", Types.Variable1],
-					["type", Types.S32],
-					["range", Types.F32],
-					["arc", Types.F32],
-					["regionHandle", Types.U64],
-					["searchRegions", Types.U8],
-				]),
-			},
-		],
-	])
-}
+export const scriptSensorRequest = createPacketSender<ScriptSensorRequestData>(
+	scriptSensorRequestMetadata,
+)
+
+export const createScriptSensorRequestDelegate =
+	createPacketDelegate<ScriptSensorRequestData>(scriptSensorRequestMetadata)

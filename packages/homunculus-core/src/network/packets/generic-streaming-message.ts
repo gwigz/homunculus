@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U16, Variable2 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface GenericStreamingMessageData {
 	methodData?: {
@@ -21,26 +25,28 @@ export interface GenericStreamingMessageData {
 	}
 }
 
-export class GenericStreamingMessage extends Packet<GenericStreamingMessageData> {
-	public static override id = 31
-	public static override frequency = 2
-	public static override trusted = true
-	public static override compression = false
+export const genericStreamingMessageMetadata = {
+	id: 31,
+	name: "GenericStreamingMessage",
+	trusted: true,
+	blocks: [
+		{
+			name: "methodData",
+			parameters: [["method", U16]],
+		},
+		{
+			name: "dataBlock",
+			parameters: [["data", Variable2]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"methodData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["method", Types.U16]]),
-			},
-		],
-		[
-			"dataBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["data", Types.Variable2]]),
-			},
-		],
-	])
-}
+export const genericStreamingMessage =
+	createPacketSender<GenericStreamingMessageData>(
+		genericStreamingMessageMetadata,
+	)
+
+export const createGenericStreamingMessageDelegate =
+	createPacketDelegate<GenericStreamingMessageData>(
+		genericStreamingMessageMetadata,
+	)

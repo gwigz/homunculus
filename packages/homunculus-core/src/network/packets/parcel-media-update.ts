@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, U8, UUID, Variable1 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ParcelMediaUpdateData {
 	dataBlock?: {
@@ -27,36 +31,36 @@ export interface ParcelMediaUpdateData {
 	}
 }
 
-export class ParcelMediaUpdate extends Packet<ParcelMediaUpdateData> {
-	public static override id = 420
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const parcelMediaUpdateMetadata = {
+	id: 420,
+	name: "ParcelMediaUpdate",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "dataBlock",
+			parameters: [
+				["mediaUrl", Variable1],
+				["mediaId", UUID],
+				["mediaAutoScale", U8],
+			],
+		},
+		{
+			name: "dataBlockExtended",
+			parameters: [
+				["mediaType", Variable1],
+				["mediaDesc", Variable1],
+				["mediaWidth", S32],
+				["mediaHeight", S32],
+				["mediaLoop", U8],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"dataBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["mediaUrl", Types.Variable1],
-					["mediaId", Types.UUID],
-					["mediaAutoScale", Types.U8],
-				]),
-			},
-		],
-		[
-			"dataBlockExtended",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["mediaType", Types.Variable1],
-					["mediaDesc", Types.Variable1],
-					["mediaWidth", Types.S32],
-					["mediaHeight", Types.S32],
-					["mediaLoop", Types.U8],
-				]),
-			},
-		],
-	])
-}
+export const parcelMediaUpdate = createPacketSender<ParcelMediaUpdateData>(
+	parcelMediaUpdateMetadata,
+)
+
+export const createParcelMediaUpdateDelegate =
+	createPacketDelegate<ParcelMediaUpdateData>(parcelMediaUpdateMetadata)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { Quaternion, S8, U8, U16, U32, UUID, Vector3 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ObjectAddData {
 	agentData: {
@@ -41,70 +45,68 @@ export interface ObjectAddData {
 		profileEnd: number
 		profileHollow: number
 		bypassRaycast: number
-		rayStart: Types.Vector3
-		rayEnd: Types.Vector3
+		rayStart: Vector3
+		rayEnd: Vector3
 		rayTargetId: string
 		rayEndIsIntersection: number
-		scale: Types.Vector3
-		rotation: Types.Quaternion
+		scale: Vector3
+		rotation: Quaternion
 		state: number
 	}
 }
 
-export class ObjectAdd extends Packet<ObjectAddData> {
-	public static override id = 1
-	public static override frequency = 1
-	public static override trusted = false
-	public static override compression = true
+export const objectAddMetadata = {
+	id: 1,
+	name: "ObjectAdd",
+	frequency: 1,
+	compression: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+				["groupId", UUID],
+			],
+		},
+		{
+			name: "objectData",
+			parameters: [
+				["pCode", U8],
+				["material", U8],
+				["addFlags", U32],
+				["pathCurve", U8],
+				["profileCurve", U8],
+				["pathBegin", U16],
+				["pathEnd", U16],
+				["pathScaleX", U8],
+				["pathScaleY", U8],
+				["pathShearX", U8],
+				["pathShearY", U8],
+				["pathTwist", S8],
+				["pathTwistBegin", S8],
+				["pathRadiusOffset", S8],
+				["pathTaperX", S8],
+				["pathTaperY", S8],
+				["pathRevolutions", U8],
+				["pathSkew", S8],
+				["profileBegin", U16],
+				["profileEnd", U16],
+				["profileHollow", U16],
+				["bypassRaycast", U8],
+				["rayStart", Vector3],
+				["rayEnd", Vector3],
+				["rayTargetId", UUID],
+				["rayEndIsIntersection", U8],
+				["scale", Vector3],
+				["rotation", Quaternion],
+				["state", U8],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-					["groupId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"objectData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["pCode", Types.U8],
-					["material", Types.U8],
-					["addFlags", Types.U32],
-					["pathCurve", Types.U8],
-					["profileCurve", Types.U8],
-					["pathBegin", Types.U16],
-					["pathEnd", Types.U16],
-					["pathScaleX", Types.U8],
-					["pathScaleY", Types.U8],
-					["pathShearX", Types.U8],
-					["pathShearY", Types.U8],
-					["pathTwist", Types.S8],
-					["pathTwistBegin", Types.S8],
-					["pathRadiusOffset", Types.S8],
-					["pathTaperX", Types.S8],
-					["pathTaperY", Types.S8],
-					["pathRevolutions", Types.U8],
-					["pathSkew", Types.S8],
-					["profileBegin", Types.U16],
-					["profileEnd", Types.U16],
-					["profileHollow", Types.U16],
-					["bypassRaycast", Types.U8],
-					["rayStart", Types.Vector3],
-					["rayEnd", Types.Vector3],
-					["rayTargetId", Types.UUID],
-					["rayEndIsIntersection", Types.U8],
-					["scale", Types.Vector3],
-					["rotation", Types.Quaternion],
-					["state", Types.U8],
-				]),
-			},
-		],
-	])
-}
+export const objectAdd = createPacketSender<ObjectAddData>(objectAddMetadata)
+
+export const createObjectAddDelegate =
+	createPacketDelegate<ObjectAddData>(objectAddMetadata)

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, S32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ParcelDwellReplyData {
 	agentData?: {
@@ -23,30 +27,30 @@ export interface ParcelDwellReplyData {
 	}
 }
 
-export class ParcelDwellReply extends Packet<ParcelDwellReplyData> {
-	public static override id = 219
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const parcelDwellReplyMetadata = {
+	id: 219,
+	name: "ParcelDwellReply",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [["agentId", UUID]],
+		},
+		{
+			name: "data",
+			parameters: [
+				["localId", S32],
+				["parcelId", UUID],
+				["dwell", F32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["localId", Types.S32],
-					["parcelId", Types.UUID],
-					["dwell", Types.F32],
-				]),
-			},
-		],
-	])
-}
+export const parcelDwellReply = createPacketSender<ParcelDwellReplyData>(
+	parcelDwellReplyMetadata,
+)
+
+export const createParcelDwellReplyDelegate =
+	createPacketDelegate<ParcelDwellReplyData>(parcelDwellReplyMetadata)

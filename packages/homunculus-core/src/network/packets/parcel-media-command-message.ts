@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { F32, U32 } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ParcelMediaCommandMessageData {
 	commandBlock?: {
@@ -20,23 +24,29 @@ export interface ParcelMediaCommandMessageData {
 	}
 }
 
-export class ParcelMediaCommandMessage extends Packet<ParcelMediaCommandMessageData> {
-	public static override id = 419
-	public static override frequency = 0
-	public static override trusted = true
-	public static override compression = false
+export const parcelMediaCommandMessageMetadata = {
+	id: 419,
+	name: "ParcelMediaCommandMessage",
+	frequency: 2,
+	trusted: true,
+	blocks: [
+		{
+			name: "commandBlock",
+			parameters: [
+				["flags", U32],
+				["command", U32],
+				["time", F32],
+			],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"commandBlock",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["flags", Types.U32],
-					["command", Types.U32],
-					["time", Types.F32],
-				]),
-			},
-		],
-	])
-}
+export const parcelMediaCommandMessage =
+	createPacketSender<ParcelMediaCommandMessageData>(
+		parcelMediaCommandMessageMetadata,
+	)
+
+export const createParcelMediaCommandMessageDelegate =
+	createPacketDelegate<ParcelMediaCommandMessageData>(
+		parcelMediaCommandMessageMetadata,
+	)

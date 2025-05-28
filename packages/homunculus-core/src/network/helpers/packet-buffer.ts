@@ -1,5 +1,14 @@
 import assert from "node:assert"
-import * as Types from "~/network/types"
+import {
+	Color4,
+	F32,
+	Quaternion,
+	Text,
+	type Type,
+	Variable1,
+	Variable2,
+	Vector3,
+} from "~/network"
 
 /**
  * @link http://wiki.secondlife.com/wiki/Packet_Layout
@@ -144,23 +153,23 @@ export class PacketBuffer {
 		this.buffer = Buffer.from(output)
 	}
 
-	public read(type: Types.Type, ...args: any[]) {
+	public read(type: Type, ...args: any[]) {
 		const output = this.fetch(type, ...args)
 
 		switch (type) {
-			case Types.Variable1:
+			case Variable1:
 				this.position += this.buffer.readUInt8(this.position) + 1
 				break
 
-			case Types.Variable2:
+			case Variable2:
 				this.position += this.buffer.readUInt16LE(this.position) + 2
 				break
 
-			case Types.Text:
+			case Text:
 				this.position += output.length + 1
 				break
 
-			case Types.Quaternion:
+			case Quaternion:
 				if (args.length > 1) {
 					this.position += args[1].size * 4
 
@@ -170,23 +179,23 @@ export class PacketBuffer {
 					}
 				} else if (args.length) {
 					// If normalized, default to standard size.
-					this.position += Types.Quaternion.size
+					this.position += Quaternion.size
 				} else {
 					// If not, add one to default size.
-					this.position += Types.Quaternion.size + Types.F32.size
+					this.position += Quaternion.size + F32.size
 				}
 				break
 
-			case Types.Vector3:
+			case Vector3:
 				if (args.length) {
 					this.position += args[0].size * 3
 				} else {
-					this.position += Types.Vector3.size
+					this.position += Vector3.size
 				}
 				break
 
-			case Types.Color4:
-				this.position += Types.Color4.size
+			case Color4:
+				this.position += Color4.size
 				break
 
 			default:
@@ -206,7 +215,7 @@ export class PacketBuffer {
 		this.position += bytes
 	}
 
-	public fetch(type: Types.Type, ...args: any[]) {
+	public fetch(type: Type, ...args: any[]) {
 		assert.ok(
 			type && "fromBuffer" in type && typeof type.fromBuffer === "function",
 			"Invalid type",

@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { S32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface ParcelReclaimData {
 	agentData?: {
@@ -22,29 +26,28 @@ export interface ParcelReclaimData {
 	}
 }
 
-export class ParcelReclaim extends Packet<ParcelReclaimData> {
-	public static override id = 208
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const parcelReclaimMetadata = {
+	id: 208,
+	name: "ParcelReclaim",
+	frequency: 2,
+	blocks: [
+		{
+			name: "agentData",
+			parameters: [
+				["agentId", UUID],
+				["sessionId", UUID],
+			],
+		},
+		{
+			name: "data",
+			parameters: [["localId", S32]],
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"agentData",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["agentId", Types.UUID],
-					["sessionId", Types.UUID],
-				]),
-			},
-		],
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([["localId", Types.S32]]),
-			},
-		],
-	])
-}
+export const parcelReclaim = createPacketSender<ParcelReclaimData>(
+	parcelReclaimMetadata,
+)
+
+export const createParcelReclaimDelegate =
+	createPacketDelegate<ParcelReclaimData>(parcelReclaimMetadata)

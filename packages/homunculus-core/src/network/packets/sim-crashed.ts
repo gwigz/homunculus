@@ -9,8 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import * as Types from "~/network/types"
-import { Packet } from "./packet"
+import { U32, UUID } from "../types"
+import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "./packet"
 
 export interface SimCrashedData {
 	data?: {
@@ -22,28 +26,27 @@ export interface SimCrashedData {
 	}[]
 }
 
-export class SimCrashed extends Packet<SimCrashedData> {
-	public static override id = 328
-	public static override frequency = 0
-	public static override trusted = false
-	public static override compression = false
+export const simCrashedMetadata = {
+	id: 328,
+	name: "SimCrashed",
+	frequency: 2,
+	blocks: [
+		{
+			name: "data",
+			parameters: [
+				["regionX", U32],
+				["regionY", U32],
+			],
+		},
+		{
+			name: "users",
+			parameters: [["agentId", UUID]],
+			multiple: true,
+		},
+	],
+} satisfies PacketMetadata
 
-	public static override format = new Map([
-		[
-			"data",
-			{
-				quantity: 1,
-				parameters: new Map<string, Types.Type>([
-					["regionX", Types.U32],
-					["regionY", Types.U32],
-				]),
-			},
-		],
-		[
-			"users",
-			{
-				parameters: new Map<string, Types.Type>([["agentId", Types.UUID]]),
-			},
-		],
-	])
-}
+export const simCrashed = createPacketSender<SimCrashedData>(simCrashedMetadata)
+
+export const createSimCrashedDelegate =
+	createPacketDelegate<SimCrashedData>(simCrashedMetadata)

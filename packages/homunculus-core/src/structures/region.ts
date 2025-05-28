@@ -16,7 +16,6 @@ export class Region {
 	public objects = new Entities()
 
 	constructor(
-		/** The Client that instantiated this Region. */
 		private readonly client: Client,
 		data: { handle: bigint },
 	) {

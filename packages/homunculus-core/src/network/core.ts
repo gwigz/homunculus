@@ -32,11 +32,8 @@ export class Core {
 	/**
 	 * @param client For emitting processed messages back to.
 	 */
-	constructor(
-		/** Client instance that instantiated this Core. */
-		public readonly client: Client,
-	) {
-		this.socket = new Socket(this)
+	constructor(private readonly client: Client) {
+		this.socket = new Socket(client, this)
 	}
 
 	/**

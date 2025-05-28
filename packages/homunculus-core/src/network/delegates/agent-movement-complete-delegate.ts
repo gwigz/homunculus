@@ -56,7 +56,7 @@ class AgentMovementCompleteDelegate extends Delegate {
 		])
 
 		// notify the core that we're connected, after a short delay
-		setTimeout(() => this.circuit.core.ready(), 1_000)
+		setTimeout(() => this.core.ready(), 1_000)
 	}
 }
 

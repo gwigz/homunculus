@@ -3,6 +3,7 @@ import {
 	type RemoteInfo,
 	type Socket as UdpSocket,
 } from "node:dgram"
+import type { Client } from "~/client"
 import { sharedServices } from "~/services"
 import { Constants } from "~/utilities"
 import type { Circuit } from "./circuit"
@@ -12,8 +13,8 @@ class Socket {
 	private socket: UdpSocket
 
 	constructor(
-		/** Core instance that instantiated this Socket. */
-		public readonly core: Core,
+		private readonly client: Client,
+		private readonly core: Core,
 	) {
 		this.socket = createSocket("udp4", this.receive.bind(this))
 	}
@@ -26,7 +27,7 @@ class Socket {
 		return new Promise<void>((resolve, reject) => {
 			this.socket.send(buffer, circuit.port, circuit.address, (error) => {
 				if (error) {
-					this.core.client.emit(Constants.ClientEvents.ERROR, error)
+					this.client.emit(Constants.ClientEvents.ERROR, error)
 
 					reject(error)
 				}

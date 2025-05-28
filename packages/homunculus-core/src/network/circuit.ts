@@ -33,7 +33,7 @@ export class Circuit {
 
 	constructor(
 		private readonly client: Client,
-		public readonly core: Core,
+		private readonly core: Core,
 		data: CircuitOptions,
 	) {
 		this.id = data.id

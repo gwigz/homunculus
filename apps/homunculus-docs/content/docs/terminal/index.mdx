@@ -4,7 +4,18 @@ description: Getting started with Homunculus Terminal
 icon: Terminal
 ---
 
+import { PersonStandingIcon } from "lucide-react"
 import { SiGithub } from "@icons-pack/react-simple-icons"
+
+<Callout type="warn">
+
+**This client is a work in progress!**
+
+It is not intended for use yet, it only features basic chat functionality. Teleporting, and other features are not yet implemented.
+
+Several steps need to be made before we apply to the [TPV Directory](https://wiki.secondlife.com/wiki/Third_Party_Viewer_Directory), think of that what you will.
+
+</Callout>
 
 ## Introduction
 
@@ -15,14 +26,6 @@ Node.js powered text client that allows basic interactions with the virtual worl
 Homunculus _is not affiliated with or sponsored by Linden Research, Linden Lab or
 Second Life._
 
-<Callout type="warn">
-
-**This client is a work in progress!**
-
-It is not intended for use yet, it only features basic chat functionality, teleporting, and other features are not yet implemented.
-
-</Callout>
-
 ### Features
 
 - Local chat interactions
@@ -31,6 +34,8 @@ It is not intended for use yet, it only features basic chat functionality, telep
 
 ### Basic Usage
 
+Install either [Node.js](https://nodejs.org) or [Bun](https://bun.sh).
+
 ```shell
 npx @gwigz/homunculus-terminal
 
@@ -38,16 +43,31 @@ npx @gwigz/homunculus-terminal
 npx @gwigz/homunculus-terminal --start "uri:Hippo Hollow&128&128&2"
 
 # also works with Bun (preferred method)
-bunx @gwigz/homunculus-terminal
+bunx --bun @gwigz/homunculus-terminal
 ```
 
-Use escape key, `/exit`, or `/quit` to disconnect.
+Downloadable binaries will be available later.
 
-Use [environment values](https://github.com/gwigz/homunculus/blob/main/.env.example) to persist credentials, built-in functionality is coming soon.
+### Tips
+
+- Use escape key, `/exit`, or `/quit` to disconnect
+- Use [environment values](https://github.com/gwigz/homunculus/blob/main/.env.example) to persist credentials, built-in functionality is coming soon
+- Using `bunx` or `npx` will keep the package up to date automatically
+
+### Screenshots
+
+<div className="flex justify-center [&_*]:m-0">
+
+![Screenshot of the terminal client](./terminal.png)
+
+</div>
 
 ## Resources
 
 <Cards>
+  <Card icon={<PersonStandingIcon />} title="Homunculus Core" href="/docs/core">
+    Check out our client framework
+  </Card>
   <Card
     icon={<SiGithub />}
     title="GitHub"

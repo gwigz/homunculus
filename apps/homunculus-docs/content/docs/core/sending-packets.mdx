@@ -3,19 +3,21 @@ title: Sending Packets
 description: Creating and sending packets
 ---
 
-## Sending Packets
-
 <Callout type="warn">
 
 **It's recommended you use the beta grid for testing**
 
-We're not responsible for any issues you may encounter, especially if you're touching anything inventory related.
+Please, do not use this feature without being aware of the risks.
+
+We're not responsible for any issues you may encounter, especially if you're touching anything inventory related, or anything that could be considered "abuse".
 
 </Callout>
 
+## Sending Packets
+
 Currently there aren't much in terms of "sugar" for features. For now if something is missing, you can use the `await client.send([packet])` method to send various packets.
 
-You can find packets in the `Packets` object.
+You can find packets in the `packets` export.
 
 ```ts twoslash
 // @noErrors
@@ -25,7 +27,9 @@ packets.ejec
 //          ^|
 ```
 
-Sending packets is very loosely validated, the serializer will only throw an error if it cannot serialize the packet. Packets that are assumed to be valid will be sent, if not the server will typically ignore it.
+### Validation
+
+Packets are sent with minimal validation. The serializer only throws an error if it cannot serialize the packet. Otherwise, packets are sent as-is, and the server will typically ignore any invalid packets.
 
 ```ts twoslash
 // @noErrorValidation
@@ -43,7 +47,7 @@ client.send([
 ])
 ```
 
-Once we get around to it, we'll add features to make this easier. Ejecting for example is already implemented in the `Nearby` class.
+Note that ejecting a user is already implemented in the `Nearby` class.
 
 ```ts twoslash
 // @noErrors
@@ -55,7 +59,18 @@ const client = new Client()
 client.nearby.eject("f09c1bae-df16-4413-93d7-251ed92c6d9a")
 ```
 
-### Sending a sound trigger
+### Reliable Packets
+
+To ensure a packet is acknowledged by the server, use `await client.sendReliable([packet])`. This method should resolve quickly if the network is stable. However, you do not need to use reliable sending for every packet—only when acknowledgment is required.
+
+Reliable packets will:
+
+- Retry up to 3 times if no acknowledgment is received, using the same sequence number to prevent duplicates
+- Timeout after 5 seconds, if the server does not respond in that time, the promise will reject
+
+## Examples
+
+Optional values such as `agentData.agentId` [which many packets require](https://github.com/search?q=repo:secondlife/viewer+_PREHASH_AgentID&type=code) can be omitted, and the serializer will fill them in with defaults.
 
 ```ts twoslash
 import { Client } from "@gwigz/homunculus-core"
@@ -81,4 +96,4 @@ client.send([
 ])
 ```
 
-Now, as for how you'd figure out what the fields actually are, or their defaults, you'll want to check the [official viewers source code.](https://github.com/secondlife/viewer)
+Now, as for how you'd figure out what the fields actually are, or their defaults, you'll want to check the [official viewers source code.](https://github.com/secondlife/viewer/blob/aeefc73129978f6f2c1ba8caaff2750eff2cfbb3/indra/newview/llviewermessage.cpp#L534)

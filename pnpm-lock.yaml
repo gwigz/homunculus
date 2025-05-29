@@ -78,6 +78,9 @@ importers:
       twoslash:
         specifier: ^0.3.1
         version: 0.3.1(typescript@5.8.3)
+      zod:
+        specifier: ^3.25.28
+        version: 3.25.36
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4.1.8
@@ -103,9 +106,6 @@ importers:
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
-      zod:
-        specifier: ^3.25.28
-        version: 3.25.36
 
   apps/homunculus-terminal:
     dependencies:
@@ -6059,6 +6059,7 @@ packages:
     resolution: {integrity: sha512-RF0Fw+rO5AMf9MAyaRXI4AV0Ulj5lMHqVxxdSgiVbixSCXoEmmX/jk0CuJw4+3SqroYO9VoUh+HcuJivvtJemA==}
     engines: {node: '>=10'}
     hasBin: true
+    requiresBuild: true
     dev: false
 
   /set-blocking@2.0.0:
@@ -6743,6 +6744,7 @@ packages:
 
   /zod@3.25.36:
     resolution: {integrity: sha512-eRFS3i8T0IrpGdL8HQyqFAugGOn7jOjyGgGdtv5NY4Wkhi7lJDk732bNZ609YMIGFbLoaj6J69O1Mura23gfIw==}
+    dev: false
 
   /zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}

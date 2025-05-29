@@ -30,6 +30,9 @@ importers:
       '@gwigz/homunculus-core':
         specifier: workspace:*
         version: link:../../packages/homunculus-core
+      '@icons-pack/react-simple-icons':
+        specifier: ^12.9.0
+        version: 12.9.0(react@19.1.0)
       fumadocs-core:
         specifier: 15.3.4
         version: 15.3.4(@types/react@19.1.6)(next@15.3.2)(react-dom@19.1.0)(react@19.1.0)
@@ -72,9 +75,6 @@ importers:
       remark-mdx:
         specifier: ^3.1.0
         version: 3.1.0
-      simple-icons:
-        specifier: ^14.15.0
-        version: 14.15.0
       twoslash:
         specifier: ^0.3.1
         version: 0.3.1(typescript@5.8.3)
@@ -882,6 +882,14 @@ packages:
       mlly: 1.7.4
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /@icons-pack/react-simple-icons@12.9.0(react@19.1.0):
+    resolution: {integrity: sha512-GLb2ayO78ZjjmI7GMpCDlXcELEr3DPO89nordI/JC8dMiJDMzuPb3qeOTt+SWcFOyJ+SAh9C/feUCpiBSM8ZLQ==}
+    peerDependencies:
+      react: ^16.13 || ^17 || ^18 || ^19
+    dependencies:
+      react: 19.1.0
     dev: false
 
   /@img/sharp-darwin-arm64@0.34.2:
@@ -6128,11 +6136,6 @@ packages:
       decompress-response: 6.0.0
       once: 1.4.0
       simple-concat: 1.0.1
-    dev: false
-
-  /simple-icons@14.15.0:
-    resolution: {integrity: sha512-yjlJ8skP4isCd4dQTDGFbv0hQgDIr57DbWaovEeHADPAZa5DBEAs+3ZnBb76ti+yz7/OzFI3SqTP1SKku1uhCw==}
-    engines: {node: '>=0.12.18'}
     dev: false
 
   /simple-swizzle@0.2.2:

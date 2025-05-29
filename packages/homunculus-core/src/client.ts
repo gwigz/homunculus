@@ -19,6 +19,10 @@ export interface ClientEvents {
 	[Constants.ClientEvents.DEBUG]: [message: string]
 	[Constants.ClientEvents.ERROR]: [error: Error]
 	[Constants.ClientEvents.WARNING]: [warning: string]
+	[Constants.ClientEvents.CONNECTING]: []
+	[Constants.ClientEvents.RECONNECTING]: []
+	[Constants.ClientEvents.DISCONNECTING]: []
+	[Constants.ClientEvents.DISCONNECTED]: []
 }
 
 /**
@@ -121,6 +125,8 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 			password: options?.password || process.env.SL_PASSWORD,
 			start: options?.start || process.env.SL_START,
 		})
+
+		this.emit(Constants.ClientEvents.CONNECTING)
 
 		this.emit(
 			Constants.ClientEvents.DEBUG,

@@ -1,8 +1,14 @@
+import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
 import type { Client } from "~/client"
 import { packets, Quaternion, Vector3 } from "~/network"
+import type { SelfCollision } from "~/network/delegates/mean-collision-alert-delegate"
 import { Constants } from "~/utilities"
 
-export class Self {
+export interface SelfEvents {
+	collision: [collision: SelfCollision]
+}
+
+export class Self extends AsyncEventEmitter<SelfEvents> {
 	public key: string
 
 	public sessionId: string
@@ -43,6 +49,8 @@ export class Self {
 			offset?: Vector3
 		},
 	) {
+		super()
+
 		this.key = data.key
 		this.sessionId = data.sessionId
 		this.circuitCode = data.circuitCode

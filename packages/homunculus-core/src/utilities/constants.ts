@@ -3,6 +3,8 @@ export const ClientEvents = {
 	WARNING: "warning",
 	ERROR: "error",
 	READY: "ready",
+	CONNECTING: "connecting",
+	RECONNECTING: "reconnecting",
 	DISCONNECTING: "disconnecting",
 	DISCONNECTED: "disconnected",
 } as const

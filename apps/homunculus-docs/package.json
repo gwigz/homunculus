@@ -23,16 +23,17 @@
 		"remark": "^15.0.1",
 		"remark-gfm": "^4.0.1",
 		"remark-mdx": "^3.1.0",
+		"simple-icons": "^14.15.0",
 		"twoslash": "^0.3.1"
 	},
 	"devDependencies": {
-		"@tailwindcss/postcss": "^4.1.7",
+		"@tailwindcss/postcss": "^4.1.8",
 		"@types/mdx": "^2.0.13",
-		"@types/node": "^22.15.21",
-		"@types/react": "^19.1.4",
+		"@types/node": "^22.15.24",
+		"@types/react": "^19.1.6",
 		"@types/react-dom": "^19.1.5",
-		"postcss": "^8.5.3",
-		"tailwindcss": "^4.1.7",
-		"typescript": "^5"
+		"postcss": "^8.5.4",
+		"tailwindcss": "^4.1.8",
+		"typescript": "^5.8.3"
 	}
 }

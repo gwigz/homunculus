@@ -15,6 +15,7 @@ export default async function Layout({
 	return (
 		<DocsLayout
 			{...baseOptions(lang)}
+			// @ts-expect-error
 			tree={source.pageTree[lang]}
 			sidebar={{
 				tabs: {

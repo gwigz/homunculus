@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer"
 import F32 from "./f32"
 import type U16 from "./u16"
 

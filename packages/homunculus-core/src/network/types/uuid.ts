@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer"
 import { randomUUID } from "node:crypto"
 
 class UUID {

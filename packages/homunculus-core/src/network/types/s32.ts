@@ -1,3 +1,5 @@
+import { Buffer } from "node:buffer"
+
 class S16 {
 	public static readonly size: number = 4
 

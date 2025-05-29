@@ -1,3 +1,5 @@
+import { Buffer } from "node:buffer"
+
 abstract class Fixed {
 	public static size: number
 

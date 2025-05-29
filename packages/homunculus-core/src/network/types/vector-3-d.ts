@@ -1,3 +1,5 @@
+import { Buffer } from "node:buffer"
+
 class Vector3D {
 	public static readonly size: number = 24
 	public static readonly zero = new Vector3D(0, 0, 0)

@@ -1,4 +1,5 @@
 import assert from "node:assert"
+import { Buffer } from "node:buffer"
 import {
 	Color4,
 	F32,

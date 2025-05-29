@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer"
 import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
 import type { Client } from "~/client"
 import { packets, UUID, Vector3 } from "~/network"

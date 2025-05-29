@@ -1,3 +1,5 @@
+import { Buffer } from "node:buffer"
+
 class Bool {
 	public static readonly size: number = 1
 

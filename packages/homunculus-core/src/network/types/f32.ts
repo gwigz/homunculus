@@ -1,3 +1,5 @@
+import { Buffer } from "node:buffer"
+
 class F32 {
 	public static readonly size: number = 4
 

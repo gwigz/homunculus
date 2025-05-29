@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer"
 import { packets } from "~/network"
 import { Region } from "~/structures"
 

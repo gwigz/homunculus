@@ -1,3 +1,5 @@
+import { Buffer } from "node:buffer"
+
 class IP {
 	public static readonly size: number = 1
 

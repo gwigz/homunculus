@@ -1,3 +1,5 @@
+import { Buffer } from "node:buffer"
+
 class Text {
 	/**
 	 * Converts buffer input into an a subsection of the buffer, from position

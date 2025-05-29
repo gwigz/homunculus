@@ -1,4 +1,5 @@
 import assert from "node:assert"
+import { Buffer } from "node:buffer"
 import { Constants } from "~/utilities"
 import type { Circuit } from "./circuit"
 import type { Packet, PacketBlock, PacketMetadata } from "./packets"

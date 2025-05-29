@@ -1,3 +1,5 @@
+import { Buffer } from "node:buffer"
+
 const ONE_OVER_U16_MAX = 1.0 / 65535
 
 class U16 {

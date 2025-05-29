@@ -1,3 +1,5 @@
+import { Buffer } from "node:buffer"
+
 class F64 {
 	public static size = 8
 

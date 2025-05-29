@@ -1,3 +1,6 @@
+import assert from "node:assert"
+import { Buffer } from "node:buffer"
+
 class Variable {
 	/**
 	 * Converts a string to a buffer prefixed by length.
@@ -14,14 +17,12 @@ class Variable {
 		const length = Math.min(max, buffer.length)
 		const prefix = Buffer.allocUnsafe(size)
 
-		switch (size) {
-			case 1:
-				prefix.writeUInt8(length, 0)
-				break
-
-			case 2:
-				prefix.writeUInt16LE(length, 0)
-				break
+		if (size === 1) {
+			prefix.writeUInt8(length, 0)
+		} else if (size === 2) {
+			prefix.writeUInt16LE(length, 0)
+		} else {
+			assert.ok(size === 1 || size === 2, "Invalid size")
 		}
 
 		return Buffer.concat([prefix, buffer.subarray(0, length)])

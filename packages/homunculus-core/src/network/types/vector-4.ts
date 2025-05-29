@@ -1,3 +1,5 @@
+import { Buffer } from "node:buffer"
+
 class Vector4 {
 	public static readonly size: number = 16
 	public static readonly zero = new Vector4(0, 0, 0, 0)

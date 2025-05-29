@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer"
 import { type AvatarCache, cache } from "~/cache"
 import type { Client } from "~/client"
 import { AcknowledgeTimeoutError, packets, UUID, Vector3 } from "~/network"

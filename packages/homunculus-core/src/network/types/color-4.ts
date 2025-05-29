@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer"
 import U8 from "./u8"
 
 class Color4 {

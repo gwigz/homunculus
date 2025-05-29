@@ -19,57 +19,55 @@ You can find packets in the `Packets` object.
 
 ```ts twoslash
 // @noErrors
-import { Packets } from "@gwigz/homunculus-core";
+import { packets } from "@gwigz/homunculus-core"
 
-new Packets.Ejec();
-//              ^|
+packets.ejec
+//          ^|
 ```
 
 Sending packets is very loosely validated, the serializer will only throw an error if it cannot serialize the packet. Packets that are assumed to be valid will be sent, if not the server will typically ignore it.
 
 ```ts twoslash
 // @noErrorValidation
-import { Client } from "@gwigz/homunculus-core";
+import { Client } from "@gwigz/homunculus-core"
 
-const client = new Client();
+const client = new Client()
 
 // ---cut---
-import { Packets } from "@gwigz/homunculus-core";
+import { packets } from "@gwigz/homunculus-core"
 
 client.send([
-  new Packets.EjectUser({
+  packets.ejectUser({
     data: { targetId: "f09c1bae-df16-4413-93d7-251ed92c6d9a" },
   }),
-]);
+])
 ```
 
 Once we get around to it, we'll add features to make this easier. Ejecting for example is already implemented in the `Nearby` class.
 
 ```ts twoslash
 // @noErrors
-import { Client } from "@gwigz/homunculus-core";
+import { Client } from "@gwigz/homunculus-core"
 
-const client = new Client();
+const client = new Client()
 
 // ---cut---
-import { Packets } from "@gwigz/homunculus-core";
-
-client.nearby.eject("f09c1bae-df16-4413-93d7-251ed92c6d9a");
+client.nearby.eject("f09c1bae-df16-4413-93d7-251ed92c6d9a")
 ```
 
 ### Sending a sound trigger
 
 ```ts twoslash
-import { Client } from "@gwigz/homunculus-core";
+import { Client } from "@gwigz/homunculus-core"
 
-const client = new Client();
+const client = new Client()
 
 // ---cut---
-import { Packets, UUID } from "@gwigz/homunculus-core";
-import assert from "node:assert";
+import { packets, UUID } from "@gwigz/homunculus-core"
+import assert from "node:assert"
 
 client.send([
-  new Packets.SoundTrigger({
+  packets.soundTrigger({
     soundData: {
       soundId: "884f50ac-9a0b-5667-334f-78ce08f9402e",
       ownerId: UUID.zero,
@@ -80,7 +78,7 @@ client.send([
       gain: 1,
     },
   }),
-]);
+])
 ```
 
 Now, as for how you'd figure out what the fields actually are, or their defaults, you'll want to check the [official viewers source code.](https://github.com/secondlife/viewer)

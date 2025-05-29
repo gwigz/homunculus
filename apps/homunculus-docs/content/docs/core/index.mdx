@@ -4,7 +4,7 @@ description: Getting started with Homunculus
 icon: Album
 ---
 
-import { GithubIcon, ScrollTextIcon } from "lucide-react";
+import { GithubIcon, ScrollTextIcon } from "lucide-react"
 
 ## Introduction
 
@@ -50,9 +50,9 @@ It's recommended that you create an `.env` file in the root of your project, see
 This is a simple example of how to use the `Client` class to connect to Second Life and listen for nearby chat messages.
 
 ```ts twoslash title="index.ts"
-import { Client, Constants } from "@gwigz/homunculus-core";
+import { Client, Constants } from "@gwigz/homunculus-core"
 
-const client = new Client();
+const client = new Client()
 
 client.nearby.on("chat", (chat) => {
   if (
@@ -60,30 +60,30 @@ client.nearby.on("chat", (chat) => {
     chat.sourceType === Constants.ChatSources.AGENT
   ) {
     if (chat.message.includes("ping")) {
-      client.nearby.message("pong");
+      client.nearby.message("pong")
     }
 
-    console.log(chat);
+    console.log(chat)
   }
-});
+})
 
-client.on("debug", console.debug);
-client.on("warning", console.warn);
-client.on("error", console.error);
+client.on("debug", console.debug)
+client.on("warning", console.warn)
+client.on("error", console.error)
 
 // by default, we connect using the SL_USERNAME, SL_PASSWORD, and SL_START
 // environment variables -- alternatively, you can just pass those values in
-client.connect();
+client.connect()
 
 async function exit() {
   // ensures we disconnect safely, otherwise login may get blocked for a period
-  await client.disconnect();
+  await client.disconnect()
 
-  process.exit(0);
+  process.exit(0)
 }
 
-process.on("SIGINT", exit);
-process.on("SIGTERM", exit);
+process.on("SIGINT", exit)
+process.on("SIGTERM", exit)
 ```
 
 To run the script, you can use the following command:

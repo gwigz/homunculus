@@ -14,7 +14,7 @@ export interface DelegateContext {
 }
 
 export interface DelegateConfig<T extends object> {
-	handle: (packet: Packet<T>, context: DelegateContext) => Promise<void> | void
+	handle: (packet: Packet<T>, context: DelegateContext) => Promise<any> | any
 	skip?: (packet: Packet<T>, context: DelegateContext) => boolean
 	priority?: number
 	metadata: PacketMetadata
@@ -46,13 +46,15 @@ export class Delegate {
 				continue
 			}
 
-			try {
-				await delegate.handle(packet, context)
-			} catch (error) {
-				context.client.emit(
-					"error",
-					error instanceof Error ? error : new Error(String(error)),
-				)
+			const promise = delegate.handle(packet, context)
+
+			if (promise instanceof Promise) {
+				promise.catch((error) => {
+					context.client.emit(
+						"error",
+						error instanceof Error ? error : new Error(String(error)),
+					)
+				})
 			}
 		}
 	}

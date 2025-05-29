@@ -44,9 +44,11 @@ export class Circuit {
 	public send(packets: Array<Packet<any>>) {
 		assert.notEqual(this.dead, true, Constants.Errors.INACTIVE_CIRCUIT)
 
-		return this.core.send(
-			this,
-			packets.map((packet) => this.serializer.convert(packet)),
+		return Promise.all(
+			this.core.send(
+				this,
+				packets.map((packet) => this.serializer.convert(packet)),
+			),
 		)
 	}
 

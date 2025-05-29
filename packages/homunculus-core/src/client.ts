@@ -1,12 +1,12 @@
 import assert from "node:assert"
 import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
-import { type AuthenticatorOptions, Core, Vector3 } from "~/network"
-import { loginOptionsSchema } from "~/schema/environment-schema"
-import { services } from "~/services"
-import { Nearby } from "~/structures"
-import { Regions } from "~/structures/regions"
-import { Self } from "~/structures/self"
-import { Constants } from "~/utilities"
+import { type AuthenticatorOptions, Core, Vector3 } from "./network"
+import { loginOptionsSchema } from "./schema/environment-schema"
+import { services } from "./services"
+import { Nearby } from "./structures"
+import { Regions } from "./structures/regions"
+import { Self } from "./structures/self"
+import { Constants } from "./utilities"
 
 export interface ClientEvents {
 	[Constants.ClientEvents.READY]: []

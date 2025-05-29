@@ -1,4 +1,4 @@
-import { Authenticator, Delegate, Deserializer } from "~/network"
+import { Authenticator, Delegate, Deserializer } from "./network"
 
 // shared stateless services that can be reused across multiple clients
 export const services = {

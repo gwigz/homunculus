@@ -12,6 +12,7 @@ import type { Core } from "./core"
 
 export class Socket {
 	private socket: UdpSocket
+	private active = true
 
 	constructor(
 		private readonly client: Client,
@@ -22,6 +23,10 @@ export class Socket {
 
 	public send(circuit: Circuit, buffer: Buffer) {
 		assert(buffer instanceof Buffer, "Invalid buffer")
+
+		if (!this.active) {
+			return
+		}
 
 		return new Promise<void>((resolve, reject) => {
 			this.socket.send(buffer, circuit.port, circuit.address, (error) => {
@@ -43,6 +48,7 @@ export class Socket {
 	}
 
 	public close() {
+		this.active = false
 		this.socket.close()
 	}
 }

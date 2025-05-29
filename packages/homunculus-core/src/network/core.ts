@@ -88,8 +88,14 @@ export class Core {
 	 * Disconnects the client from the current circuit.
 	 */
 	public async disconnect() {
+		this.status = Constants.Status.DISCONNECTING
+
+		this.client.emit(Constants.ClientEvents.DEBUG, "Disconnecting...")
+		this.client.emit(Constants.ClientEvents.DISCONNECTED)
+
 		await this.circuit?.send([packets.logoutRequest({})])
 
 		this.socket.close()
+		this.client.emit(Constants.ClientEvents.DISCONNECTED)
 	}
 }

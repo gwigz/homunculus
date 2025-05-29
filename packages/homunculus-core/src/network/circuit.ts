@@ -55,7 +55,7 @@ export class Circuit {
 	/**
 	 * @todo Add a retry mechanism, not just a timeout.
 	 */
-	public sendReliable(packets: Array<Packet<any>>, timeout = 10_000) {
+	public sendReliable(packets: Array<Packet<any>>, timeout = 5_000) {
 		assert.notEqual(this.dead, true, Constants.Errors.INACTIVE_CIRCUIT)
 
 		const serialized = packets.map((packet) =>

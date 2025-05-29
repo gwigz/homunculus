@@ -3,6 +3,8 @@ export const ClientEvents = {
 	WARNING: "warning",
 	ERROR: "error",
 	READY: "ready",
+	DISCONNECTING: "disconnecting",
+	DISCONNECTED: "disconnected",
 } as const
 
 export const Errors = {
@@ -30,8 +32,9 @@ export const Status = {
 	READY: 0,
 	CONNECTING: 1,
 	RECONNECTING: 2,
-	IDLE: 3,
-	DISCONNECTED: 4,
+	DISCONNECTING: 3,
+	IDLE: 4,
+	DISCONNECTED: 5,
 } as const
 
 export const Endpoints = {

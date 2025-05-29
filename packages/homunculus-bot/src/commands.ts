@@ -1,5 +1,9 @@
-import type { Client, NearbyChatMessage } from "@gwigz/homunculus-core"
-import type { ZodType, z } from "zod"
+import {
+	type Client,
+	Constants,
+	type NearbyChatMessage,
+} from "@gwigz/homunculus-core"
+import type { ZodType, z } from "zod/v4"
 import type { BotOptions } from "./bot"
 
 type Format = "json" | "string"
@@ -10,24 +14,24 @@ type InferTypeFromFormat<F extends Format> = F extends "string"
 
 type SchemaOutput<
 	F extends Format,
-	Schema extends ZodType<any, any, any> | undefined,
+	Schema extends ZodType<any, any> | undefined,
 > = Schema extends undefined
 	? InferTypeFromFormat<F>
 	: z.infer<NonNullable<Schema>>
 
 export interface CommandHandlerOptions<
-	F extends Format = "json",
-	Schema extends ZodType<any, any, any> | undefined = undefined,
+	F extends Format = "string",
+	Schema extends ZodType<any, any> | undefined = undefined,
 > {
 	action: string
 	process: (
 		client: Client,
 		data: SchemaOutput<F, Schema>,
 		message: NearbyChatMessage,
-	) => Promise<string | void> | string | void
+	) => Promise<string> | Promise<void> | string | void
 	format?: Schema extends undefined
 		? F
-		: Schema extends ZodType<any, any, string>
+		: Schema extends ZodType<any, string>
 			? "string"
 			: F
 	schema?: Schema
@@ -43,20 +47,29 @@ export class CommandHandler {
 	constructor(client: Client, options: BotOptions) {
 		this.client = client
 		this.prefix = options.commandPrefix
-		this.commands
 		this.onError = options.onError
 	}
 
 	public registerCommand<
-		F extends Format = "json",
-		Schema extends ZodType<any, any, any> | undefined = undefined,
+		F extends Format = "string",
+		Schema extends ZodType<any, any> | undefined = undefined,
 	>(command: CommandHandlerOptions<F, Schema>) {
 		this.commands.set(command.action, command)
 	}
 
-	public async handleMessage(message: NearbyChatMessage) {
+	public async handleChatMessage(chat: NearbyChatMessage) {
 		try {
-			const [action, parameters] = message.message
+			if (
+				!chat.message ||
+				chat.sourceType !== Constants.ChatSources.AGENT ||
+				chat.chatType === Constants.ChatTypes.TYPING ||
+				chat.chatType === Constants.ChatTypes.STOPPED ||
+				!chat.message.startsWith(this.prefix)
+			) {
+				return
+			}
+
+			const [action, parameters] = chat.message
 				.slice(this.prefix.length)
 				.split(" ", 1)
 
@@ -70,7 +83,7 @@ export class CommandHandler {
 				const response = await command.process(
 					this.client,
 					this.parseData(command, (parameters ?? "").trim()),
-					message,
+					chat,
 				)
 
 				if (typeof response === "string" && response.length > 0) {
@@ -78,18 +91,23 @@ export class CommandHandler {
 				}
 			}
 		} catch (error) {
-			this.onError?.(error)
+			if (this.onError) {
+				this.onError(error)
+			} else if (this.onError !== false) {
+				console.error(error)
+			}
 		}
 	}
 
 	private parseData<
 		F extends Format,
-		Schema extends ZodType<any, any, any> | undefined,
+		Schema extends ZodType<any, any> | undefined,
 	>(
 		handler: CommandHandlerOptions<F, Schema>,
 		data: string,
 	): SchemaOutput<F, Schema> {
-		const parsed = handler.format === "string" ? data : JSON.parse(data)
+		const parsed =
+			!handler.format || handler.format === "string" ? data : JSON.parse(data)
 
 		if (handler.schema) {
 			return handler.schema.parse(parsed) as SchemaOutput<F, Schema>

@@ -1,37 +1,43 @@
 import type { Client } from "@gwigz/homunculus-core"
-import { ApiHandler } from "./api"
-import { CommandHandler } from "./commands"
+import type { ZodType } from "zod/v4"
+import { ApiHandler, type ApiHandlerOptions } from "./api"
+import { CommandHandler, type CommandHandlerOptions } from "./commands"
+
+type Format = "json" | "string"
 
 export interface BotOptions {
 	commandPrefix: string
 	apiPrefix?: string
 	apiSeparator?: string
 	apiChannel?: number
-	onError?: (error: unknown) => void
+	onError?: ((error: unknown) => void) | false
 }
 
 export class Bot {
-	private client: Client
 	private commandHandler: CommandHandler
 	private apiHandler: ApiHandler
 
 	constructor(client: Client, options: BotOptions) {
-		this.client = client
-
 		this.commandHandler = new CommandHandler(client, options)
 		this.apiHandler = new ApiHandler(client, options)
 
-		this.client.nearby.on("chat", (message) => {
-			this.commandHandler.handleMessage(message)
-			this.apiHandler.handleMessage(message)
+		client.nearby.on("chat", (chat) => {
+			this.commandHandler.handleChatMessage(chat)
+			this.apiHandler.handleChatMessage(chat)
 		})
 	}
 
-	get registerCommand() {
-		return this.commandHandler.registerCommand
+	public registerCommand<
+		F extends Format = "string",
+		Schema extends ZodType<any, any> | undefined = undefined,
+	>(command: CommandHandlerOptions<F, Schema>) {
+		return this.commandHandler.registerCommand(command)
 	}
 
-	get registerApiHandler() {
-		return this.apiHandler.registerHandler
+	public registerApiHandler<
+		F extends Format = "string",
+		Schema extends ZodType<any, any> | undefined = undefined,
+	>(handler: ApiHandlerOptions<F, Schema>) {
+		return this.apiHandler.registerHandler(handler)
 	}
 }

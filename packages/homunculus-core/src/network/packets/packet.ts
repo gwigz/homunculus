@@ -70,19 +70,12 @@ export interface Packet<T extends object> {
 
 export function createPacketSender<T extends object>(metadata: PacketMetadata) {
 	return (data: T, reliable?: boolean) =>
-		({
-			data,
-			reliable,
-			metadata,
-		}) satisfies Packet<T>
+		({ data, reliable, metadata }) satisfies Packet<T>
 }
 
 export function createPacketDelegate<T extends object>(
 	metadata: PacketMetadata,
 ) {
 	return (config: Omit<DelegateConfig<T>, "metadata">) =>
-		services.delegate.register<T>({
-			...config,
-			metadata,
-		})
+		services.delegate.register<T>({ ...config, metadata })
 }

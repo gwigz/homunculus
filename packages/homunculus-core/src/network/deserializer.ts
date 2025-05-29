@@ -28,7 +28,7 @@ export class Deserializer {
 	public lookup(buffer: PacketBuffer) {
 		assert(buffer.id, "Invalid packet buffer")
 
-		return PacketLookup.find(buffer.id)
+		return PacketLookup.find(Number(`${buffer.id}${buffer.frequency}`))
 	}
 
 	public convert(metadata: PacketMetadata, buffer: PacketBuffer) {

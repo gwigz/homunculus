@@ -14,6 +14,7 @@ export class Acknowledger {
 	private acknowledge = packets.packetAck({ packets: [] })
 
 	private packets = {
+		// TODO: consider an array that only stores last n packets
 		seen: new Map<number, number>(),
 		queued: new Set<number>(),
 	}
@@ -33,8 +34,8 @@ export class Acknowledger {
 		/** Circuit instance that instantiated this Acknowledger. */
 		public readonly circuit: Circuit,
 	) {
-		this.tickInterval = setInterval(this.tick.bind(this), 50)
-		this.pruneInterval = setInterval(this.prune.bind(this), 1000)
+		this.tickInterval = setInterval(this.processAckQueue.bind(this), 50)
+		this.pruneInterval = setInterval(this.removeOldPackets.bind(this), 1000)
 	}
 
 	public destroy() {
@@ -86,7 +87,7 @@ export class Acknowledger {
 		}
 	}
 
-	private tick() {
+	private async processAckQueue() {
 		if (!this.packets.queued.size) {
 			return
 		}
@@ -101,28 +102,27 @@ export class Acknowledger {
 
 			// max 255 packets per message
 			if (this.acknowledge.data.packets!.length >= 255) {
-				this.circuit.send([this.acknowledge])
+				await this.circuit.send([this.acknowledge])
+
 				this.acknowledge.data.packets = []
 			}
 		}
 
 		if (this.acknowledge.data.packets!.length) {
-			this.circuit.send([this.acknowledge])
+			await this.circuit.send([this.acknowledge])
+
 			this.acknowledge.data.packets = []
 		}
 	}
 
-	private prune() {
-		if (!this.packets.seen.size) {
-			return
-		}
-
+	private removeOldPackets() {
 		const uptime = process.uptime()
 
 		for (const [sequence, timestamp] of this.packets.seen) {
-			if (uptime - timestamp > 10) {
+			if (uptime - timestamp > 5) {
 				this.packets.seen.delete(sequence)
 			} else {
+				// rest of the packets are probably still valid
 				break
 			}
 		}

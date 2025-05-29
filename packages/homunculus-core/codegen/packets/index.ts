@@ -40,7 +40,7 @@ enum BlockType {
 }
 
 const PACKET_HEADER_REGEX =
-	/(\w+)\s+(High|Medium|Low|Fixed)\s+(0x[0-9A-Fa-f]+|\d+)\s+(Trusted|NotTrusted)\s+(Zerocoded|Unencoded)/
+	/^\s*(\w+)\s+(High|Medium|Low|Fixed)\s+(0x[0-9A-Fa-f]+|\d+)\s+(Trusted|NotTrusted)\s+(Zerocoded|Unencoded)(?:\s+\w+)*\s*$/
 
 const BLOCK_HEADER_REGEX =
 	/^\s*(\w+)\s+(Single|Variable|Multiple)(?:\s+(\d+))?\s*(?:\/\/.*)?$/
@@ -232,22 +232,15 @@ function parseBlock(
 	}
 
 	const line = lines[i].trim()
-
-	console.log(`Parsing block header: '${line}'`)
-
 	const blockHeaderMatch = line.match(BLOCK_HEADER_REGEX)
 
 	if (!blockHeaderMatch) {
-		console.log(`Failed to match block header regex: ${BLOCK_HEADER_REGEX}`)
+		console.log(`Failed to match block header regex: ${line}`)
 
 		throw new Error(`Invalid block header at line ${i + 1}: "${line}"`)
 	}
 
-	const [, name, type, count] = blockHeaderMatch
-
-	console.log(
-		`Matched block header: name=${name}, type=${type}, count=${count}`,
-	)
+	const [, name, type] = blockHeaderMatch
 
 	const block: Block = {
 		name: toLowerCamel(name),
@@ -293,17 +286,18 @@ function parseMessageTemplate(content: string): Packet[] {
 		}
 
 		if (line.startsWith("{")) {
-			const packetMatch = lines[i + 1]?.trim().match(PACKET_HEADER_REGEX)
+			const nextLine = lines[i + 1]?.trim()
+			const packetMatch = nextLine?.match(PACKET_HEADER_REGEX)
 
 			if (!packetMatch) {
+				console.log(
+					`Failed to match packet header regex on line ${i + 1}: ${nextLine}`,
+				)
 				i++
 				continue
 			}
 
 			const [, name, frequency, id, trusted, compression] = packetMatch
-
-			console.log(`Found packet: ${name}`)
-			console.log(`Raw ID: ${id}`)
 
 			const packet: Packet = {
 				name,
@@ -316,8 +310,6 @@ function parseMessageTemplate(content: string): Packet[] {
 				compression: compression === "Zerocoded",
 				blocks: [],
 			}
-
-			console.log(`Parsed ID: ${packet.id}`)
 
 			// skip header and opening brace
 			i += 2

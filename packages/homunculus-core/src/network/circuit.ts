@@ -3,8 +3,6 @@ import type { Client } from "~/client"
 import {
 	Acknowledger,
 	type Core,
-	type DelegateContext,
-	type DeserializedPacket,
 	type Packet,
 	type PacketBuffer,
 	packets,
@@ -46,7 +44,7 @@ export class Circuit {
 	public send(packets: Array<Packet<any>>) {
 		assert.notEqual(this.dead, true, Constants.Errors.INACTIVE_CIRCUIT)
 
-		this.core.send(
+		return this.core.send(
 			this,
 			packets.map((packet) => this.serializer.convert(packet)),
 		)
@@ -97,7 +95,11 @@ export class Circuit {
 			return
 		}
 
-		await this.handlePacket(services.deserializer.convert(packet, buffer))
+		// TODO: allow for partial deserialization if we don't have any delegates
+		await services.delegate.handle(
+			services.deserializer.convert(packet, buffer),
+			{ client: this.client, core: this.core, circuit: this },
+		)
 	}
 
 	public async handshake() {
@@ -107,6 +109,8 @@ export class Circuit {
 
 		assert(this.self.key, "Avatar key is required")
 		assert(this.self.sessionId, "Session is required")
+
+		this.client.emit("debug", "Initializing circuit...")
 
 		await this.sendReliable([
 			packets.useCircuitCode({
@@ -118,19 +122,10 @@ export class Circuit {
 			}),
 		])
 
+		this.client.emit("debug", "Completing avatar movement...")
+
 		await this.sendReliable([packets.completeAgentMovement({})])
-	}
 
-	/**
-	 * Handle an incoming packet by passing it to the delegate registry
-	 */
-	async handlePacket(packet: DeserializedPacket) {
-		const context: DelegateContext = {
-			client: this.client,
-			core: this.core,
-			circuit: this,
-		}
-
-		await services.delegate.handle(packet, context)
+		this.client.emit("debug", "Avatar movement acknowledged...")
 	}
 }

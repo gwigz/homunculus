@@ -44,6 +44,7 @@ export class PacketBuffer {
 		if (Array.isArray(header)) {
 			for (let i = 6; i < offset; i++) {
 				if (this.buffer[i] === 0x00) {
+					// handle zero-coding: expand the next byte as a run-length count of zeros
 					header.push(...new Uint8Array(this.buffer.readUInt8(++i)))
 				} else {
 					header.push(this.buffer[i] ?? 0)
@@ -51,24 +52,26 @@ export class PacketBuffer {
 			}
 		}
 
+		// Determine the frequency and message ID based on the header
 		if (header[0] !== 0xff) {
-			this.id = Number(`${header[0]}2`)
-			this.frequency = 2
+			// high frequency (frequency = 0)
+			this.id = header[0]
+			this.frequency = 0
 		} else if (header[1] !== 0xff) {
-			this.id = Number(`${header[1]}1`)
+			// medium frequency (frequency = 1)
+			this.id = header[1]
 			this.frequency = 1
 		} else if (header[2] !== 0xff) {
-			this.id = Number(`${(header[2]! << 8) + (header[3] ?? 0)}0`)
-			this.frequency = 0
+			// low frequency (frequency = 2)
+			this.id = (header[2]! << 8) | (header[3] ?? 0)
+			this.frequency = 2
 		} else {
-			this.id = Number(
-				`${
-					((header[0] << 24) >>> 0) +
-					((header[1] << 16) >>> 0) +
-					((header[2] << 8) >>> 0) +
-					header[3]!
-				}3`,
-			)
+			// fixed frequency (frequency = 3)
+			this.id =
+				((header[0] << 24) >>> 0) +
+				((header[1] << 16) >>> 0) +
+				((header[2] << 8) >>> 0) +
+				(header[3] ?? 0)
 
 			this.frequency = 3
 		}
@@ -79,19 +82,16 @@ export class PacketBuffer {
 			this.dezerocode()
 		}
 
-		switch (this.frequency) {
-			case 3:
-			case 0:
-				this.position = this.buffer.readUInt8(5) + 10
-				break
-
-			case 1:
-				this.position = this.buffer.readUInt8(5) + 8
-				break
-
-			case 2:
-				this.position = this.buffer.readUInt8(5) + 7
-				break
+		if (!this.frequency) {
+			// high frequency
+			this.position = this.buffer.readUInt8(5) + 7
+		} else if (this.frequency === 1) {
+			// low frequency
+			// medium frequency
+			this.position = this.buffer.readUInt8(5) + 8
+		} else {
+			// low and fixed frequency
+			this.position = this.buffer.readUInt8(5) + 10
 		}
 
 		return this

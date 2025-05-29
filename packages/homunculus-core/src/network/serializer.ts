@@ -22,37 +22,35 @@ export class Serializer {
 		const sequence = this.sequence
 		const array = [this.header(packet.metadata, packet.reliable || reliable)]
 
-		if (packet.metadata.blocks) {
-			for (const block of packet.metadata.blocks) {
-				if (!(block.name in packet.data)) {
-					if (block.name === "agentData") {
-						packet.data[block.name] = [{}]
-					} else {
-						throw new Error(
-							Constants.Errors.MISSING_BLOCK.replace("%s", block.name),
-						)
-					}
+		for (const block of packet.metadata.blocks ?? []) {
+			if (!(block.name in packet.data)) {
+				if (block.name === "agentData") {
+					packet.data[block.name] = [{}]
+				} else {
+					throw new Error(
+						Constants.Errors.MISSING_BLOCK.replace("%s", block.name),
+					)
 				}
+			}
 
-				if (!Array.isArray(packet.data[block.name])) {
-					packet.data[block.name] = [packet.data[block.name]]
-				}
+			if (!Array.isArray(packet.data[block.name])) {
+				packet.data[block.name] = [packet.data[block.name]]
+			}
 
-				const length = packet.data[block.name].length
+			const length = packet.data[block.name].length
 
-				assert.ok(
-					length <= 255 && (block.multiple || length === 1),
-					Constants.Errors.INVALID_BLOCK_QUANTITY,
-				)
+			assert.ok(
+				length <= 255 && (block.multiple || length === 1),
+				Constants.Errors.INVALID_BLOCK_QUANTITY,
+			)
 
-				if (block.multiple) {
-					// prefix with variable block quantity
-					array.push(U8.toBuffer(length || 1))
-				}
+			if (block.multiple) {
+				// prefix with variable block quantity
+				array.push(U8.toBuffer(length || 1))
+			}
 
-				for (const data of packet.data[block.name]) {
-					array.push(this.parse(block, data))
-				}
+			for (const data of packet.data[block.name]) {
+				array.push(this.parse(block, data))
 			}
 		}
 

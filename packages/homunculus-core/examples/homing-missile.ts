@@ -1,15 +1,17 @@
-// NOTE: you would normally import from "@gwigz/homunculus-core"
-import { type Agent, Client, Constants, Quaternion } from "../src"
+import {
+	type Agent,
+	Client,
+	Constants,
+	Quaternion,
+} from "@gwigz/homunculus-core"
 
 const client = new Client()
 
-let scanInterval: NodeJS.Timeout
-let controlInterval: NodeJS.Timeout
 let closestAgent: Agent | undefined
 let closestDistance: number | undefined
 
 client.on("ready", () => {
-	controlInterval = setInterval(() => {
+	setInterval(() => {
 		const self = client.self!
 		const homing = closestDistance && closestDistance < 5
 
@@ -35,7 +37,7 @@ client.on("ready", () => {
 		self.sendAgentUpdate()
 	}, 50)
 
-	scanInterval = setInterval(() => {
+	setInterval(() => {
 		const self = client.self!
 		const agents = client.nearby.agents
 
@@ -68,23 +70,4 @@ client.on("ready", () => {
 	}, 500)
 })
 
-client.on("debug", console.debug)
-client.on("warning", console.warn)
-client.on("error", console.error)
-
-// by default, we connect using the SL_USERNAME, SL_PASSWORD, and SL_START
-// environment variables -- alternatively, you can just pass those values in
 client.connect()
-
-async function exit() {
-	clearInterval(scanInterval)
-	clearInterval(controlInterval)
-
-	// ensures we disconnect safely, otherwise login may get blocked for a period
-	await client.disconnect()
-
-	process.exit(0)
-}
-
-process.on("SIGINT", exit)
-process.on("SIGTERM", exit)

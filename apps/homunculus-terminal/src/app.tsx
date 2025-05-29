@@ -13,9 +13,7 @@ export function App({ client, start }: { client: Client; start?: string }) {
 	async function handleLogin(username: string, password: string) {
 		setState("loading")
 
-		await client.connect(username, password, {
-			login: { start },
-		})
+		await client.connect({ username, password, start })
 	}
 
 	function handleReady(initialMessages: Message[]) {

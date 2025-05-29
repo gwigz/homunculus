@@ -22,9 +22,9 @@ bun add @gwigz/homunculus-core
 ## Usage
 
 ```ts
-import { Client, Constants } from "@gwigz/homunculus-core";
+import { Client, Constants } from "@gwigz/homunculus-core"
 
-const client = new Client();
+const client = new Client()
 
 client.nearby.on("chat", (chat) => {
   if (
@@ -32,16 +32,16 @@ client.nearby.on("chat", (chat) => {
     chat.sourceType === Constants.ChatSources.AGENT
   ) {
     if (chat.message.includes("ping")) {
-      client.nearby.message("pong");
+      client.nearby.message("pong")
     }
 
-    console.log(chat);
+    console.log(chat)
   }
-});
+})
 
 // by default, we connect using the SL_USERNAME, SL_PASSWORD, and SL_START
 // environment variables -- alternatively, you can just pass those values in
-client.connect();
+client.connect()
 ```
 
 More complete examples can be found in the [`examples`](https://github.com/gwigz/homunculus/tree/main/packages/homunculus-core/examples) folder.

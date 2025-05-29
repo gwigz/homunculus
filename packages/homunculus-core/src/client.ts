@@ -8,6 +8,12 @@ import { Regions } from "./structures/regions"
 import { Self } from "./structures/self"
 import { Constants } from "./utilities"
 
+interface DebugHandlers {
+	debug?: (message: string) => void
+	warn?: (warn: string) => void
+	error?: (error: Error) => void
+}
+
 export interface ClientEvents {
 	[Constants.ClientEvents.READY]: []
 	[Constants.ClientEvents.DEBUG]: [message: string]
@@ -57,7 +63,7 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 	private readonly _core: Core
 	private _self?: Self
 
-	constructor() {
+	constructor(options?: { logger?: DebugHandlers | false } | undefined) {
 		super()
 
 		this._core = new Core(this)
@@ -68,6 +74,27 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 		// inventory
 
 		this.nearby = new Nearby(this)
+
+		if (options?.logger !== false) {
+			const logger = {
+				...options?.logger,
+				debug: console.debug,
+				warn: console.warn,
+				error: console.error,
+			}
+
+			if (logger?.debug) {
+				this.on(Constants.ClientEvents.DEBUG, logger.debug)
+			}
+
+			if (logger?.warn) {
+				this.on(Constants.ClientEvents.WARNING, logger.warn)
+			}
+
+			if (logger?.error) {
+				this.on(Constants.ClientEvents.ERROR, logger.error)
+			}
+		}
 
 		// https://gist.github.com/gwigz/0c13179591a3d005eb4765a3bfe9fc3d
 	}
@@ -125,6 +152,16 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 			address: response.simIp,
 			port: response.simPort,
 		})
+
+		// TODO: do we want this to be configurable?
+		const exit = async () => {
+			await this._core.disconnect()
+
+			process.exit(0)
+		}
+
+		process.on("SIGINT", exit)
+		process.on("SIGTERM", exit)
 
 		return response
 	}

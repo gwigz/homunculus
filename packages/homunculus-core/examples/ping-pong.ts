@@ -1,5 +1,4 @@
-// NOTE: you would normally import from "@gwigz/homunculus-core"
-import { Client, Constants } from "../src"
+import { Client, Constants } from "@gwigz/homunculus-core"
 
 const client = new Client()
 
@@ -16,20 +15,4 @@ client.nearby.on("chat", (chat) => {
 	}
 })
 
-client.on("debug", console.debug)
-client.on("warning", console.warn)
-client.on("error", console.error)
-
-// by default, we connect using the SL_USERNAME, SL_PASSWORD, and SL_START
-// environment variables -- alternatively, you can just pass those values in
 client.connect()
-
-async function exit() {
-	// ensures we disconnect safely, otherwise login may get blocked for a period
-	await client.disconnect()
-
-	process.exit(0)
-}
-
-process.on("SIGINT", exit)
-process.on("SIGTERM", exit)

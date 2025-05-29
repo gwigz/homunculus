@@ -29,7 +29,8 @@ const cli = meow(
 )
 
 const start = cli.flags.start || process.env.SL_START
-const client = new Client()
+
+const client = new Client({ logger: false })
 
 process.on("uncaughtException", async (error) => {
 	logError(error)

@@ -1,6 +1,4 @@
 import "./global.css"
-
-import { Banner } from "fumadocs-ui/components/banner"
 // import type { Translations } from "fumadocs-ui/i18n"
 import { RootProvider } from "fumadocs-ui/provider"
 import { Inter, Oswald } from "next/font/google"
@@ -60,12 +58,6 @@ export default async function RootLayout({
 						// translations: { cn }[lang],
 					}}
 				>
-					<Banner id="wip" className="border-b">
-						<span className="font-normal">
-							Be careful, this project is still in <strong>very early</strong>{" "}
-							development!
-						</span>
-					</Banner>
 					{children}
 				</RootProvider>
 			</body>

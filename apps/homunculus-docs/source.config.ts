@@ -39,6 +39,7 @@ export default defineConfig({
 								"@gwigz/homunculus-core": [
 									"../../packages/homunculus-core/src",
 								],
+								"@gwigz/homunculus-bot": ["../../packages/homunculus-bot/src"],
 							},
 						},
 					},

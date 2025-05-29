@@ -1,0 +1,202 @@
+---
+title: Quick Start
+description: Getting started with Homunculus
+icon: Album
+---
+
+import { ScrollTextIcon } from "lucide-react"
+import { SiGithub } from "@icons-pack/react-simple-icons"
+
+<Callout type="info" title="This library is a work in progress!">
+
+It is not intended for use yet, large changes are due to happen. This library is primarily intended for chat functionality in Second Life. Other features may not work as intended or may be incomplete. Use at your own risk.
+
+</Callout>
+
+## Introduction
+
+Homunculus Bot is a minimal Node.js package that allows basic interactions with the virtual world
+[Second Life](https://www.secondlife.com), utilizing the official
+[Second Life UDP protocol](http://wiki.secondlife.com/wiki/Protocol).
+
+Homunculus Bot _is not affiliated with or sponsored by Linden Research, Linden Lab or
+Second Life._
+
+## Installation
+
+<Tabs groupId='package-manager' persist items={['npm', 'bun']} label="From a new empty project folder">
+
+```bash tab="npm"
+npm init -y
+npm install @gwigz/homunculus-core @gwigz/homunculus-bot
+npm install --save-dev @types/node
+```
+
+```bash tab="bun"
+bun init -y
+bun add @gwigz/homunculus-core @gwigz/homunculus-bot
+bun add --dev @types/node
+```
+
+</Tabs>
+
+### Authentication
+
+It's recommended that you create an `.env` file in the root of your project, see the [example file](https://github.com/gwigz/homunculus/blob/main/.env.example).
+
+### Basic Usage
+
+This is a simple example of how to connect to Second Life and listen for nearby chat messages.
+
+```ts twoslash title="index.ts" lineNumbers
+import { Client } from "@gwigz/homunculus-core"
+import { Bot } from "@gwigz/homunculus-bot"
+
+const client = new Client()
+
+const bot = new Bot(client, {
+  commandPrefix: "!",
+  onError: console.error,
+})
+
+// register a command that responds to `!ping`
+bot.registerCommand({
+  action: "ping",
+  process: (client, data, message) => {
+    // return a message (to local chat)
+    return `Pong ${message.fromName}!`
+  },
+})
+
+// by default, we connect using the SL_USERNAME, SL_PASSWORD, and SL_START
+// environment variables -- alternatively, you can just pass those values in
+client.connect()
+```
+
+To run the script, you can use the following command:
+
+```bash tab="npm"
+npx dotenv-cli npx tsx index.ts
+```
+
+```bash tab="bun"
+bun run index.ts
+```
+
+### Chat Commands
+
+Register commands that respond to local chat messages. Currently, commands only work from local chat, restriction options will be added in future updates.
+
+Responses can be guarded using `message.source`, which is the `UUID` which sent the message.
+
+```ts twoslash
+import { Client } from "@gwigz/homunculus-core"
+import { Bot } from "@gwigz/homunculus-bot"
+
+const client = new Client()
+const bot = new Bot(client, { commandPrefix: "!" })
+
+// ---cut---
+bot.registerCommand({
+  action: "ping",
+  process(client, data, { source, fromName }) {
+    if (source !== "a2e76fcd-9360-4f6d-a924-000000000003") {
+      return
+    }
+
+    // return a message (to local chat)
+    return `Pong ${fromName}!`
+  },
+})
+```
+
+## API Handlers
+
+<Callout type="error" title="Unfinished feature">
+
+This feature is not tested yet, and may not work as intended.
+
+</Callout>
+
+LSL/SLua handlers are registered using the `registerApiHandler` method.
+
+```ts twoslash
+import { Client } from "@gwigz/homunculus-core"
+import { Bot } from "@gwigz/homunculus-bot"
+
+const client = new Client()
+
+// ---cut---
+const bot = new Bot(client, {
+  commandPrefix: "!",
+  apiPrefix: "#api",
+  apiSeparator: ",",
+  apiChannel: 81513312, // channel returned strings are sent to
+})
+
+// handles i.e. `llOwnerSay("#api,status")`
+bot.registerApiHandler({
+  action: "status",
+  process(client, data, message) {
+    // optionally respond over `apiChannel`
+    return "OK!"
+  },
+})
+```
+
+This registers a function that responds to `llOwnerSay` messages. These currently work on both rezzed objects and attachments, restriction options are planned for future updates.
+
+### Parameter Validation
+
+We also support [Zod](https://zod.dev) validation for API handlers. Here's an example of handling JSON parameters.
+
+```ts twoslash
+import { Client } from "@gwigz/homunculus-core"
+import { Bot } from "@gwigz/homunculus-bot"
+
+const client = new Client()
+
+const bot = new Bot(client, {
+  commandPrefix: "!",
+  apiPrefix: "#api",
+  apiSeparator: ",",
+  apiChannel: 81513312, // channel returned strings are sent to
+})
+
+// ---cut---
+import { z } from "zod/v4"
+
+// handles i.e. `llOwnerSay("#api,sound," + json)`
+bot.registerApiHandler({
+  action: "sound",
+  async process(client, { key, gain }) {
+    await client.nearby.triggerSound(key, gain)
+  },
+  schema: z.object({
+    key: z.string().uuid(),
+    gain: z.number().min(0).max(1).default(1),
+  }),
+  format: "json",
+})
+```
+
+This provides a type-safe way to handle parameters, and also provides default values — for example, here the `gain` parameter is set to `1` by default.
+
+## Resources
+
+<Cards>
+  <Card
+    icon={<SiGithub />}
+    title="GitHub"
+    href="https://github.com/gwigz/homunculus"
+  >
+    Check out the source code
+  </Card>
+  <Card
+    icon={<ScrollTextIcon />}
+    title="Example Scripts"
+    href="https://github.com/gwigz/homunculus/tree/main/packages/homunculus-bot/examples"
+  >
+    View some example scripts to get you started
+  </Card>
+</Cards>

@@ -6,10 +6,9 @@ icon: Album
 
 import { ScrollTextIcon } from "lucide-react"
 import { SiGithub } from "@icons-pack/react-simple-icons"
+import { DynamicLink } from "fumadocs-core/dynamic-link"
 
-<Callout type="warn">
-
-**This library is a work in progress!**
+<Callout type="info" title="This library is a work in progress!">
 
 It is not intended for use yet, large changes are due to happen. This library is primarily intended for chat functionality in Second Life. Other features may not work as intended or may be incomplete. Use at your own risk.
 
@@ -48,9 +47,15 @@ It's recommended that you create an `.env` file in the root of your project, see
 
 ### Basic Usage
 
-This is a simple example of how to use the `Client` class to connect to Second Life and listen for nearby chat messages.
+This is a simple example of how to connect to Second Life and listen for nearby chat messages.
 
-```ts twoslash title="index.ts"
+<Callout type="info">
+
+If you're planning on primarily adding chat commands or LSL/SLua bindings, consider using the <DynamicLink href="/[lang]/docs/bot">`@gwigz/homunculus-bot`</DynamicLink> package for a more "abstracted" experience.
+
+</Callout>
+
+```ts twoslash title="index.ts" lineNumbers
 import { Client, Constants } from "@gwigz/homunculus-core"
 
 const client = new Client()
@@ -68,23 +73,9 @@ client.nearby.on("chat", (chat) => {
   }
 })
 
-client.on("debug", console.debug)
-client.on("warning", console.warn)
-client.on("error", console.error)
-
 // by default, we connect using the SL_USERNAME, SL_PASSWORD, and SL_START
 // environment variables -- alternatively, you can just pass those values in
 client.connect()
-
-async function exit() {
-  // ensures we disconnect safely, otherwise login may get blocked for a period
-  await client.disconnect()
-
-  process.exit(0)
-}
-
-process.on("SIGINT", exit)
-process.on("SIGTERM", exit)
 ```
 
 To run the script, you can use the following command:

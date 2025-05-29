@@ -1,0 +1,7 @@
+{
+	"title": "homunulus-bot",
+	"description": "Bot framework",
+	"icon": "Bot",
+	"root": true,
+	"pages": ["---Introduction---", "index"]
+}

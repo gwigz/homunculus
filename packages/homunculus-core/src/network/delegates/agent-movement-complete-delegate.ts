@@ -20,7 +20,14 @@ packets.createAgentMovementCompleteDelegate({
 
 		const handle = data.regionHandle as bigint
 
-		context.client.regions.set(handle, new Region(context.client, { handle }))
+		const region = context.client.regions.get(handle)
+
+		if (!region) {
+			context.client.regions.set(handle, new Region(context.client, { handle }))
+		} else if (!region.name) {
+			// request region name if we know about it already, but haven't received it yet
+			region.init()
+		}
 
 		// client.throttle/bandwidth?
 		const throttle = 500 * 1024

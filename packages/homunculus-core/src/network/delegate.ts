@@ -6,11 +6,13 @@ import type {
 	Packet,
 	PacketMetadata,
 } from "~/network"
+import type { Region } from "~/structures"
 
 export interface DelegateContext {
 	client: Client
 	core: Core
 	circuit: Circuit
+	region: Region
 }
 
 export interface DelegateConfig<T extends object> {

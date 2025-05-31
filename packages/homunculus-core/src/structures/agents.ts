@@ -3,7 +3,7 @@ import type { Agent } from "./agent"
 
 export interface AgentsEvents {
 	set: [agent: Agent]
-	delete: [key: string]
+	delete: [agent: Agent]
 }
 
 export class Agents extends AsyncEventEmitter<AgentsEvents> {
@@ -25,7 +25,11 @@ export class Agents extends AsyncEventEmitter<AgentsEvents> {
 	}
 
 	public delete(key: string) {
-		this.emit("delete", key)
+		const agent = this.get(key)
+
+		if (agent) {
+			this.emit("delete", agent)
+		}
 
 		return this.agents.delete(key)
 	}

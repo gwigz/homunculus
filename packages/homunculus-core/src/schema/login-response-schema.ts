@@ -175,8 +175,6 @@ export const loginResponseSchema = z.preprocess(
 				maxGodLevel: z.number(),
 				godLevel: z.number(),
 				lookAt: vectorSchema,
-				regionX: z.number(),
-				regionY: z.number(),
 				homeInfo: z
 					.object({
 						regionHandle: regionHandleSchema,
@@ -196,6 +194,8 @@ export const loginResponseSchema = z.preprocess(
 				circuitCode: z.number(),
 				simIp: z.string(),
 				simPort: z.number(),
+				regionX: z.number(),
+				regionY: z.number(),
 				agentId: z.string(),
 				sessionId: z.string(),
 				firstName: z

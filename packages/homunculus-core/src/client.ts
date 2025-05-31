@@ -3,7 +3,7 @@ import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
 import { type AuthenticatorOptions, Core, Vector3 } from "./network"
 import { loginOptionsSchema } from "./schema/environment-schema"
 import { services } from "./services"
-import { Nearby } from "./structures"
+import { Nearby, Region } from "./structures"
 import { Regions } from "./structures/regions"
 import { Self } from "./structures/self"
 import { Constants } from "./utilities"
@@ -152,6 +152,11 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 			lookAt: response.lookAt,
 			offset: new Vector3(response.regionX ?? 0, response.regionY ?? 0, 0),
 		})
+
+		const handle =
+			(BigInt(response.regionX ?? 0) << 32n) | BigInt(response.regionY ?? 0)
+
+		this.regions.set(handle, new Region(this, { handle }, true))
 
 		await this._core.handshake({
 			id: response.circuitCode,

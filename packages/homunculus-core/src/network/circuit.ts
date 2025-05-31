@@ -41,6 +41,11 @@ export class Circuit {
 		return this.client.self
 	}
 
+	get region() {
+		// TODO: get the region this circuit connected to
+		return this.client.region
+	}
+
 	public send(packets: Array<Packet<any>>) {
 		assert.notEqual(this.dead, true, Constants.Errors.INACTIVE_CIRCUIT)
 
@@ -100,7 +105,12 @@ export class Circuit {
 		// TODO: allow for partial deserialization if we don't have any delegates
 		await services.delegate.handle(
 			services.deserializer.convert(packet, buffer),
-			{ client: this.client, core: this.core, circuit: this },
+			{
+				client: this.client,
+				core: this.core,
+				circuit: this,
+				region: this.region,
+			},
 		)
 	}
 
@@ -112,8 +122,6 @@ export class Circuit {
 		assert(this.self.key, "Avatar key is required")
 		assert(this.self.sessionId, "Session is required")
 
-		this.client.emit("debug", "Initializing circuit...")
-
 		await this.sendReliable([
 			packets.useCircuitCode({
 				circuitCode: {
@@ -124,10 +132,10 @@ export class Circuit {
 			}),
 		])
 
-		this.client.emit("debug", "Completing avatar movement...")
+		this.client.emit("debug", "Initializing circuit...")
 
 		await this.sendReliable([packets.completeAgentMovement({})])
 
-		this.client.emit("debug", "Avatar movement acknowledged...")
+		this.client.emit("debug", "Completing avatar movement...")
 	}
 }

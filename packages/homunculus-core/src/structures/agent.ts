@@ -9,11 +9,20 @@ const ONE_HOUR = 1000 * 60 * 60
 export class Agent {
 	public firstName?: string
 	public lastName?: string
-	public entity: Entity
+	public entity?: Entity
+
+	/**
+	 * The coarse location of the agent, used by the viewer for minimap.
+	 *
+	 * It is not accurate, should only be used if we have no entity, which
+	 * also would suggest that the agent is not nearby.
+	 */
+	public coarseLocation?: Vector3
 
 	constructor(
 		private readonly client: Client,
-		entity: Entity,
+		public readonly key: string,
+		entity?: Entity,
 	) {
 		this.entity = entity
 
@@ -21,11 +30,7 @@ export class Agent {
 	}
 
 	get id() {
-		return this.entity.id
-	}
-
-	get key() {
-		return this.entity.key
+		return this.entity?.id
 	}
 
 	get name() {
@@ -35,9 +40,9 @@ export class Agent {
 	}
 
 	get distance(): number {
-		return this.entity.position
+		return this.entity?.position
 			? Vector3.distance(this.client.self.position, this.entity.position)
-			: -1
+			: Number.MAX_SAFE_INTEGER
 	}
 
 	/**

@@ -9,30 +9,30 @@ interface LoadingProps {
 	onReady: (initialMessages: Message[]) => void
 }
 
+function formatDebugMessage(message: string) {
+	return {
+		id: crypto.randomUUID(),
+		fromName: "[DEBUG]",
+		chatType: Constants.ChatTypes.DEBUG,
+		sourceType: Constants.ChatSources.SYSTEM,
+		message: `/me ${message}`,
+		timestamp: new Date().toLocaleTimeString(undefined, {
+			hour: "2-digit",
+			minute: "2-digit",
+			hourCycle: "h24",
+		}),
+	} satisfies Message
+}
+
 export function Loading({ client, onReady }: LoadingProps) {
 	const [initialMessages, setInitialMessages] = useState<Message[]>([])
 
 	const handleDebug = useCallback((message: string) => {
-		// TODO: use a store for messages, this wont do once we have multiple routes
-		setInitialMessages((messages) => [
-			...messages,
-			{
-				id: crypto.randomUUID(),
-				fromName: "[DEBUG]",
-				chatType: Constants.ChatTypes.DEBUG,
-				sourceType: Constants.ChatSources.SYSTEM,
-				message: `/me ${message}`,
-				timestamp: new Date().toLocaleTimeString(undefined, {
-					hour: "2-digit",
-					minute: "2-digit",
-					hourCycle: "h24",
-				}),
-			} satisfies Message,
-		])
+		setInitialMessages((messages) => [...messages, formatDebugMessage(message)])
 	}, [])
 
 	const ready = useCallback(
-		() => onReady(initialMessages),
+		() => onReady([...initialMessages, formatDebugMessage("Connected!")]),
 		[initialMessages, onReady],
 	)
 

@@ -1,6 +1,7 @@
 import "./agent-data-update-delegate"
 import "./agent-movement-complete-delegate"
 import "./chat-from-simulator-delegate"
+import "./coarse-location-update-delegate"
 import "./health-message-delegate"
 import "./improved-terse-object-update-delegate"
 import "./kill-object-delegate"

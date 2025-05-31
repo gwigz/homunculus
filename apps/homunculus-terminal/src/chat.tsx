@@ -1,4 +1,5 @@
 import {
+	type Agent,
 	type Client,
 	Constants,
 	type NearbyChatMessage,
@@ -114,25 +115,26 @@ export function Chat({ client, initialMessages = [], onExit }: ChatProps) {
 			for (const agent of region.agents.values()) {
 				if (agent.key === client.self?.key) continue
 
-				const name = agent.name
 				info.push(
-					name
-						? name
+					agent.name
+						? agent.name
 						: `Loading... (\u001b[90m${agent.key.slice(0, 8)}\u001b[39m)`,
 				)
 			}
 
 			info.push("—")
 			info.push(`${region.objects.size} objects`)
-			info.push(`${region.agents.size} agents`)
+			info.push(`${region.agents.size - 1} avatars`)
 		}
 
 		setNearbyInfo(info)
 	}, [client.regions, client.self?.key])
 
 	const handleSubmit = useCallback(
-		(message: string) => {
-			if (!message.trim()) {
+		(untrimmedMessage: string) => {
+			const message = untrimmedMessage.trim()
+
+			if (!message) {
 				return
 			}
 
@@ -209,11 +211,55 @@ export function Chat({ client, initialMessages = [], onExit }: ChatProps) {
 			updateNearbyInfo()
 		}
 
+		// HACK: we can't await the name yet, and we init them without any
+		function waitForAgentName(agent: Agent, message: string) {
+			let ticks = 0
+
+			const timeout = setTimeout(() => {
+				if (!agent.name) {
+					++ticks
+
+					// once we've waited for 3 seconds, we give up and show "(Loading...)"
+					if (ticks < 30) {
+						return
+					}
+				}
+
+				clearTimeout(timeout)
+
+				addMessage({
+					fromName: agent.name ?? "(Loading...)",
+					message: `/me ${message}`,
+					chatType: Constants.ChatTypes.DEBUG,
+					sourceType: Constants.ChatSources.SYSTEM,
+				})
+			}, 100)
+		}
+
+		function handleAgentSet(agent: Agent) {
+			if (agent.key === client.self?.key) {
+				return
+			}
+
+			waitForAgentName(agent, "entered the region.")
+		}
+
+		function handleAgentDelete(agent: Agent) {
+			if (agent.key === client.self?.key) {
+				return
+			}
+
+			waitForAgentName(agent, "left the region.")
+		}
+
 		client.on("debug", handleDebug)
 		client.on("warning", handleWarning)
 		client.on("error", handleError)
 
 		client.nearby.on("chat", handleChat)
+
+		client.region.agents.on("set", handleAgentSet)
+		client.region.agents.on("delete", handleAgentDelete)
 
 		function updateRegions() {
 			for (const region of client.regions.values()) {

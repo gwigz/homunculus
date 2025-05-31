@@ -45,7 +45,10 @@ packets.createObjectUpdateDelegate({
 				region.objects.set(entity.id, entity)
 
 				if (entity.type === 47) {
-					region.agents.set(entity.key, new Agent(context.client, entity))
+					region.agents.set(
+						entity.key,
+						new Agent(context.client, entity.key, entity),
+					)
 				}
 			}
 		}

@@ -38,6 +38,7 @@ Also, check out the [quick start](https://homunculus.inworld.link/en/bot/core) g
 Register commands that respond to local chat messages. Currently, commands only work from local chat, restriction options will be added in future updates.
 
 ```typescript
+// responds to `!ping`
 bot.registerCommand({
   action: "ping",
   process(client, data, { source, fromName }) {

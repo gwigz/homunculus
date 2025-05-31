@@ -20,7 +20,7 @@ client.on("ready", () => {
 			? Constants.ControlFlags.NUDGE_AT_POS
 			: Constants.ControlFlags.NONE
 
-		if (homing && closestAgent) {
+		if (homing && closestAgent?.entity) {
 			// rotate to face the closest avatar
 			// TODO: utilities for facing a point, avatar, or entity
 			const angle = Math.atan2(
@@ -45,7 +45,7 @@ client.on("ready", () => {
 		closestAgent = undefined
 
 		for (const agent of agents) {
-			if (!agent.entity.position || agent.key === self.key) {
+			if (!agent.entity?.position || agent.key === self.key) {
 				continue
 			}
 

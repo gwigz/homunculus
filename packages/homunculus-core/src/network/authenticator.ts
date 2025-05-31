@@ -2,12 +2,9 @@ import crypto from "node:crypto"
 import os from "node:os"
 // @ts-expect-error no types
 import { machineIdSync } from "@usebruno/node-machine-id"
-import xmlrpc from "xmlrpc"
-import {
-	type LoginResponse,
-	loginResponseSchema,
-} from "~/schema/login-response-schema"
+import { loginResponseSchema } from "~/schema"
 import { Constants } from "~/utilities"
+import { xmlRpc } from "./xmlrpc"
 
 export interface AuthenticatorOptions {
 	username: string
@@ -28,7 +25,7 @@ export class Authenticator {
 		this.agent = `${channel} ${version}`
 	}
 
-	public login(options: AuthenticatorOptions) {
+	public async login(options: AuthenticatorOptions) {
 		const platforms = { darwin: "mac", linux: "lnx", win32: "win" }
 		const platform = os.platform()
 
@@ -65,24 +62,16 @@ export class Authenticator {
 			],
 		}
 
-		const client = xmlrpc.createSecureClient({
-			url: Constants.Endpoints.LOGIN_URL,
-			headers: { "User-Agent": this.agent },
-		})
+		const response = await xmlRpc(
+			Constants.Endpoints.LOGIN_URL,
+			"login_to_simulator",
+			parameters,
+			{ "User-Agent": this.agent },
+		)
 
-		return new Promise<LoginResponse>((resolve, reject) => {
-			client.methodCall(
-				"login_to_simulator",
-				[parameters],
-				(error, response) => {
-					if (error) {
-						reject(error)
-					}
+		console.log(response)
 
-					resolve(loginResponseSchema.parse(response))
-				},
-			)
-		})
+		return loginResponseSchema.parse(response)
 	}
 
 	private getActiveMacAddress() {

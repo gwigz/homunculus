@@ -1,5 +1,4 @@
-// NOTE: you would normally import from "@gwigz/homunculus-core"
-import { Client, Constants, Quaternion } from "../src"
+import { Client, Constants, Quaternion } from "@gwigz/homunculus-core"
 
 const client = new Client()
 const controls = Object.values(Constants.ControlFlags)

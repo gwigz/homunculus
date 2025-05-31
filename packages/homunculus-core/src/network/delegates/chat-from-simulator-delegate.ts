@@ -10,6 +10,7 @@ packets.createChatFromSimulatorDelegate({
 			owner: chatData.ownerId,
 			sourceType: chatData.sourceType,
 			chatType: chatData.chatType,
+			type: chatData.chatType,
 			audible: chatData.audible,
 			position: chatData.position,
 			message: chatData.message.toString("utf8").slice(0, -1),

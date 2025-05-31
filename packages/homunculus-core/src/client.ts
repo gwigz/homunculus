@@ -4,6 +4,7 @@ import { type AuthenticatorOptions, Core, Vector3 } from "./network"
 import { loginOptionsSchema } from "./schema/environment-schema"
 import { services } from "./services"
 import { Nearby, Region } from "./structures"
+import { InstantMessages } from "./structures/instant-messages"
 import { Regions } from "./structures/regions"
 import { Self } from "./structures/self"
 import { Constants } from "./utilities"
@@ -53,6 +54,11 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 	public readonly nearby: Nearby
 
 	/**
+	 * Instant messaging interface.
+	 */
+	public readonly instantMessages: InstantMessages
+
+	/**
 	 * The Region representing the current region, as in the region that this
 	 * agent is standing within.
 	 *
@@ -78,6 +84,7 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 		// inventory
 
 		this.nearby = new Nearby(this)
+		this.instantMessages = new InstantMessages(this)
 
 		if (options?.logger !== false) {
 			const logger = {

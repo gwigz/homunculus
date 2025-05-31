@@ -54,10 +54,21 @@ export const ChatTypes = {
 	NORMAL: 1,
 	SHOUT: 2,
 	SAY: 3,
+	/** @deprecated use `TYPING_START` instead */
 	TYPING: 4,
+	/** @deprecated use `TYPING_STOP` instead */
 	STOPPED: 5,
+	TYPING_START: 4,
+	TYPING_STOP: 5,
 	DEBUG: 6,
 	OWNERSAY: 8,
+} as const
+
+export const InstantMessageTypes = {
+	NORMAL: 0,
+	DO_NOT_DISTURB_AUTO_RESPONSE: 20,
+	TYPING_START: 41,
+	TYPING_STOP: 42,
 } as const
 
 export const AgentStates = {

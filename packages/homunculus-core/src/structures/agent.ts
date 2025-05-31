@@ -1,7 +1,6 @@
-import { Buffer } from "node:buffer"
 import { type AvatarCache, cache } from "~/cache"
 import type { Client } from "~/client"
-import { AcknowledgeTimeoutError, packets, UUID, Vector3 } from "~/network"
+import { AcknowledgeTimeoutError, packets, Vector3 } from "~/network"
 import type { Entity } from "~/structures"
 
 const ONE_HOUR = 1000 * 60 * 60
@@ -106,23 +105,6 @@ export class Agent {
 	 * @param message The message to send.
 	 */
 	public message(message: string) {
-		return this.client.send([
-			packets.improvedInstantMessage({
-				messageBlock: {
-					id: this.key,
-					dialog: 0,
-					timestamp: 0,
-					fromGroup: false,
-					fromAgentName: this.client.self.name!,
-					message: Buffer.from(`${message}\0`, "utf8"),
-					toAgentId: this.key,
-					offline: 0,
-					parentEstateId: 0,
-					regionId: UUID.zero,
-					position: Vector3.zero,
-					binaryBucket: "",
-				},
-			}),
-		])
+		return this.client.instantMessages.send(this.key, message)
 	}
 }

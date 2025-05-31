@@ -1,11 +1,11 @@
 import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
 import type { Client } from "~/client"
 import { packets, Quaternion, Vector3 } from "~/network"
-import type { SelfCollision } from "~/network/delegates/mean-collision-alert-delegate"
+import type { Collision } from "~/types"
 import { Constants } from "~/utilities"
 
 export interface SelfEvents {
-	collision: [collision: SelfCollision]
+	collision: [collision: Collision]
 }
 
 export class Self extends AsyncEventEmitter<SelfEvents> {

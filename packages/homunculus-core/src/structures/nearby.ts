@@ -2,18 +2,8 @@ import { Buffer } from "node:buffer"
 import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
 import type { Client } from "~/client"
 import { packets, UUID, Vector3 } from "~/network"
+import type { NearbyChatMessage } from "~/types"
 import { Constants } from "~/utilities"
-
-export interface NearbyChatMessage {
-	fromName: string
-	source: string
-	owner: string
-	sourceType: number
-	chatType: number
-	audible: number
-	position: Vector3
-	message: string
-}
 
 export interface NearbyEvents {
 	chat: [chat: NearbyChatMessage]

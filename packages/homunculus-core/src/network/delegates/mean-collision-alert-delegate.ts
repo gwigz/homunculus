@@ -1,4 +1,5 @@
 import { packets } from "~/network"
+import type { CollisionTypeLabel } from "~/types"
 
 const collisionTypeMap = {
 	0: "invalid",
@@ -7,21 +8,7 @@ const collisionTypeMap = {
 	3: "selected-object",
 	4: "scripted-object",
 	5: "physical-object",
-} as const
-
-type CollisionType = keyof typeof collisionTypeMap
-type CollisionTypeLabel = (typeof collisionTypeMap)[CollisionType]
-
-export interface SelfCollision {
-	/** Key of the object or avatar that caused the collision */
-	source: string
-	/** Timestamp of the collision */
-	timestamp: number
-	/** Magnitude of the collision */
-	magnitude: number
-	/** Type of the collision */
-	type: CollisionTypeLabel
-}
+} as const satisfies Record<number, CollisionTypeLabel>
 
 packets.createMeanCollisionAlertDelegate({
 	handle: (packet, context) => {
@@ -31,7 +18,7 @@ packets.createMeanCollisionAlertDelegate({
 				timestamp: time,
 				magnitude: mag,
 				type:
-					collisionTypeMap[type as CollisionType] ||
+					collisionTypeMap[type as keyof typeof collisionTypeMap] ??
 					("invalid" as CollisionTypeLabel),
 			})
 		}

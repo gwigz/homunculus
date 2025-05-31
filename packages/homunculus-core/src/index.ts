@@ -7,7 +7,10 @@ import "./network/delegates"
 
 // export everything
 export * from "./client"
-export * from "./network"
+export * from "./network/helpers/packet-buffer"
+export * as packets from "./network/packets"
+export type { Packet } from "./network/packets/packet"
+export * from "./network/types"
 export * from "./schema"
-export * from "./structures"
+export type * from "./types"
 export * from "./utilities"

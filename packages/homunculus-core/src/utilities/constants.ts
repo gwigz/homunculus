@@ -61,7 +61,9 @@ export const ChatTypes = {
 	TYPING_START: 4,
 	TYPING_STOP: 5,
 	DEBUG: 6,
+	/** @deprecated use `OWNER_SAY` instead */
 	OWNERSAY: 8,
+	OWNER_SAY: 8,
 } as const
 
 export const InstantMessageTypes = {

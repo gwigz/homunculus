@@ -3,7 +3,7 @@ import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
 import { type AuthenticatorOptions, Core, Vector3 } from "./network"
 import { loginOptionsSchema } from "./schema/environment-schema"
 import { services } from "./services"
-import { Nearby, Region } from "./structures"
+import { Friends, Nearby, Region } from "./structures"
 import { InstantMessages } from "./structures/instant-messages"
 import { Regions } from "./structures/regions"
 import { Self } from "./structures/self"
@@ -49,14 +49,19 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 	public readonly regions = new Regions()
 
 	/**
-	 * Local communication interface.
+	 * Friends interface.
 	 */
-	public readonly nearby: Nearby
+	public readonly friends: Friends
 
 	/**
 	 * Instant messaging interface.
 	 */
 	public readonly instantMessages: InstantMessages
+
+	/**
+	 * Local communication interface.
+	 */
+	public readonly nearby: Nearby
 
 	/**
 	 * The Region representing the current region, as in the region that this
@@ -83,8 +88,9 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 		// groups
 		// inventory
 
-		this.nearby = new Nearby(this)
 		this.instantMessages = new InstantMessages(this)
+		this.friends = new Friends(this)
+		this.nearby = new Nearby(this)
 
 		if (options?.logger !== false) {
 			const logger = {

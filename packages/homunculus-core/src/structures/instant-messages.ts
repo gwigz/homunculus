@@ -12,12 +12,12 @@ export class InstantMessages extends AsyncEventEmitter<InstantMessageEvents> {
 		super()
 	}
 
-	public send(target: string, message: string) {
+	public send(target: string, message: string, type?: InstantMessage["type"]) {
 		return this.client.sendReliable([
 			packets.improvedInstantMessage({
 				messageBlock: {
 					id: UUID.zero,
-					dialog: 0,
+					dialog: type ?? 0,
 					timestamp: 0,
 					fromGroup: false,
 					fromAgentName: this.client.self.name!,

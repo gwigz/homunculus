@@ -32,7 +32,7 @@
 		"dev": "bun run src/index.tsx",
 		"lint": "biome lint .",
 		"prebuild": "rm -rf dist && tsc",
-		"build": "esbuild src/index.tsx --bundle --platform=node --format=esm --packages=external --outdir=dist"
+		"build": "esbuild src/index.tsx --bundle --platform=node --target=node22 --sourcemap --format=esm --packages=external --outdir=dist/index.js"
 	},
 	"dependencies": {
 		"@gwigz/homunculus-core": "workspace:*",

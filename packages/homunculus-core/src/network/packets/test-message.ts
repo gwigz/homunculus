@@ -45,6 +45,7 @@ export const testMessageMetadata = {
 				["test2", U32],
 			],
 			multiple: true,
+			size: 4,
 		},
 	],
 } satisfies PacketMetadata

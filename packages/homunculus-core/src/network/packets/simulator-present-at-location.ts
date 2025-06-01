@@ -63,6 +63,7 @@ export const simulatorPresentAtLocationMetadata = {
 				["port", Port],
 			],
 			multiple: true,
+			size: 4,
 		},
 		{
 			name: "simulatorBlock",

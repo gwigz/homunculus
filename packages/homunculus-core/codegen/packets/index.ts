@@ -14,6 +14,8 @@ interface Block {
 	name: string
 	fields: Field[]
 	variable?: boolean
+	fixed?: boolean
+	size?: number
 }
 
 interface Packet {
@@ -240,12 +242,13 @@ function parseBlock(
 		throw new Error(`Invalid block header at line ${i + 1}: "${line}"`)
 	}
 
-	const [, name, type] = blockHeaderMatch
+	const [, name, type, size] = blockHeaderMatch
 
 	const block: Block = {
 		name: toLowerCamel(name),
 		fields: [],
 		variable: type === BlockType.Variable || type === BlockType.Multiple,
+		size: type === BlockType.Multiple ? Number.parseInt(size) : undefined,
 	}
 
 	i++

@@ -41,12 +41,14 @@ export class Serializer {
 			const length = packet.data[block.name].length
 
 			assert.ok(
-				length <= 255 && (block.multiple || length === 1),
+				length <= 255 &&
+					(block.multiple || length === 1) &&
+					(block.size === undefined || length === block.size),
 				Constants.Errors.INVALID_BLOCK_QUANTITY,
 			)
 
-			if (block.multiple) {
-				// prefix with variable block quantity
+			if (block.multiple && block.size === undefined) {
+				// prefix with variable block quantity if not fixed size
 				array.push(U8.toBuffer(length || 1))
 			}
 

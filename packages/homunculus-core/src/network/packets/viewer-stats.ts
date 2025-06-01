@@ -102,6 +102,7 @@ export const viewerStatsMetadata = {
 				["savings", U32],
 			],
 			multiple: true,
+			size: 2,
 		},
 		{
 			name: "failStats",

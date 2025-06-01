@@ -41,7 +41,7 @@ export class Deserializer {
 		if (metadata.blocks) {
 			for (const block of metadata.blocks) {
 				if (block.multiple) {
-					const quantity = buffer.read(U8)
+					const quantity = block.size ?? buffer.read(U8)
 
 					data[block.name] = []
 

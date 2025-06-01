@@ -45,6 +45,7 @@ export const neighborListMetadata = {
 				["simAccess", U8],
 			],
 			multiple: true,
+			size: 4,
 		},
 	],
 } satisfies PacketMetadata

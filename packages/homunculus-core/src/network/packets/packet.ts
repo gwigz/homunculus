@@ -5,6 +5,7 @@ export interface PacketBlock {
 	name: string
 	parameters: Array<[name: string, type: { toBuffer: (value: any) => Buffer }]>
 	multiple?: true
+	size?: number
 }
 
 export interface PacketMetadata {

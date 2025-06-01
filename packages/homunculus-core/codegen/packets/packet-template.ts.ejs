@@ -81,6 +81,9 @@ export const <%= camelCaseName %>Metadata = {
 <% if (block.variable) { -%>
 			multiple: true,
 <% } -%>
+<% if (block.size) { -%>
+			size: <%= block.size %>,
+<% } -%>
 		},
 <% }) -%>
 	]

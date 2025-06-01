@@ -31,7 +31,7 @@
 		"check": "biome check .",
 		"test": "bun test",
 		"prebuild": "rm -rf dist && tsc && tsc-alias",
-		"build": "esbuild src/index.ts --bundle --platform=node --format=esm --packages=external --outfile=dist",
+		"build": "esbuild src/index.ts --bundle --platform=node --target=node22 --sourcemap --format=esm --packages=external --outfile=dist/index.js",
 		"precodegen": "find ./src/network/packets -type f ! -name 'packet.ts' -delete",
 		"codegen": "bun run ./codegen/packets",
 		"postcodegen": "biome check ./src/network --fix"

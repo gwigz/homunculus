@@ -13,7 +13,7 @@ class Bool {
 	public static toBuffer(bool: boolean | number): Buffer {
 		const buffer = Buffer.allocUnsafe(Bool.size)
 
-		buffer.writeUInt8(Number(bool), 0)
+		buffer.writeUInt8(Number(!!bool), 0)
 
 		return buffer
 	}

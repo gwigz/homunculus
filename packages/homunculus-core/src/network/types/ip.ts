@@ -1,7 +1,7 @@
 import { Buffer } from "node:buffer"
 
 class IP {
-	public static readonly size: number = 1
+	public static readonly size: number = 4
 
 	/**
 	 * Converts an IP address (string) input into a buffer, one place per byte, 4

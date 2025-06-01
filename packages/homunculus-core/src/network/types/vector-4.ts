@@ -15,6 +15,48 @@ class Vector4 {
 		return `<${vector.x}, ${vector.y}, ${vector.z}, ${vector.w}>`
 	}
 
+	public static distance(a: Vector4, b: Vector4): number {
+		const dx = b.x - a.x
+		const dy = b.y - a.y
+		const dz = b.z - a.z
+		const dw = b.w - a.w
+
+		return Math.sqrt(dx * dx + dy * dy + dz * dz + dw * dw)
+	}
+
+	public static dot(a: Vector4, b: Vector4): number {
+		return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w
+	}
+
+	public static add(a: Vector4, b: Vector4): Vector4 {
+		return new Vector4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w)
+	}
+
+	public static subtract(a: Vector4, b: Vector4): Vector4 {
+		return new Vector4(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w)
+	}
+
+	public static multiply(vector: Vector4, scalar: number): Vector4 {
+		return new Vector4(
+			vector.x * scalar,
+			vector.y * scalar,
+			vector.z * scalar,
+			vector.w * scalar,
+		)
+	}
+
+	public magnitude(): number {
+		return Math.sqrt(
+			this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w,
+		)
+	}
+
+	public normalize(): Vector4 {
+		const mag = this.magnitude()
+		if (mag === 0) return Vector4.zero
+		return Vector4.multiply(this, 1 / mag)
+	}
+
 	/**
 	 * Converts array input into a buffer representing a 4 point vector.
 	 *

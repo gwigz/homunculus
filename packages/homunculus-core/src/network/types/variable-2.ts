@@ -1,16 +1,15 @@
 import Variable from "./variable"
 
 class Variable2 extends Variable {
-	public static readonly prefix: number = 2
+	public static readonly prefix = 2
 
 	/**
 	 * Converts string into a length-prefixed buffer, ending with a null
 	 * byte.
 	 *
-	 * @param {string} string Maximum length of 65535 bytes, may truncate
-	 * @returns {Buffer}
+	 * @param string Maximum length of 65535 bytes, may truncate
 	 */
-	public static toBuffer(string: string): Buffer {
+	public static toBuffer(string: string) {
 		return Variable2.toPrefixedBuffer(Variable2.prefix, string)
 	}
 
@@ -19,9 +18,8 @@ class Variable2 extends Variable {
 	 *
 	 * @param buffer Buffer to convert
 	 * @param start Position to read from
-	 * @returns {Buffer}
 	 */
-	public static fromBuffer(buffer: Buffer, start: number): Buffer {
+	public static fromBuffer(buffer: Buffer, start: number) {
 		return Variable2.fromPrefixedBuffer(Variable2.prefix, buffer, start)
 	}
 }

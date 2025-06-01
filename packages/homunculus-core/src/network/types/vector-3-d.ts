@@ -3,6 +3,7 @@ import { Buffer } from "node:buffer"
 class Vector3D {
 	public static readonly size: number = 24
 	public static readonly zero = new Vector3D(0, 0, 0)
+	public static readonly one = new Vector3D(1, 1, 1)
 
 	constructor(
 		readonly x: number,
@@ -10,8 +11,12 @@ class Vector3D {
 		readonly z: number,
 	) {}
 
-	public static toString(vector: Vector3D) {
-		return `<${vector.x}, ${vector.y}, ${vector.z}>`
+	public toString() {
+		return `<${this.x}, ${this.y}, ${this.z}>`
+	}
+
+	public toBuffer() {
+		return Vector3D.toBuffer(this)
 	}
 
 	/**
@@ -36,6 +41,76 @@ class Vector3D {
 		}
 
 		return buffer
+	}
+
+	/**
+	 * Calculates the distance between this vector and another vector.
+	 */
+	public distance(other: Vector3D) {
+		return Vector3D.distance(this, other)
+	}
+
+	/**
+	 * Calculates the distance between two vectors.
+	 */
+	public static distance(from: Vector3D, to: Vector3D) {
+		const dx = from.x - to.x
+		const dy = from.y - to.y
+		const dz = from.z - to.z
+
+		return Math.sqrt(dx * dx + dy * dy + dz * dz)
+	}
+
+	/**
+	 * Normalizes this vector to a unit vector.
+	 */
+	public normalize() {
+		return Vector3D.normalize(this)
+	}
+
+	/**
+	 * Normalizes a vector to a unit vector.
+	 */
+	public static normalize(vector: Vector3D) {
+		const magnitude = Math.sqrt(vector.x ** 2 + vector.y ** 2 + vector.z ** 2)
+
+		return new Vector3D(
+			vector.x / magnitude,
+			vector.y / magnitude,
+			vector.z / magnitude,
+		)
+	}
+
+	/**
+	 * Calculates the dot product between this vector and another vector.
+	 */
+	public dot(other: Vector3D) {
+		return Vector3D.dot(this, other)
+	}
+
+	/**
+	 * Calculates the dot product between two vectors.
+	 */
+	public static dot(left: Vector3D, right: Vector3D) {
+		return left.x * right.x + left.y * right.y + left.z * right.z
+	}
+
+	/**
+	 * Calculates the cross product between this vector and another vector.
+	 */
+	public cross(other: Vector3D) {
+		return Vector3D.cross(this, other)
+	}
+
+	/**
+	 * Calculates the cross product between two vectors.
+	 */
+	public static cross(left: Vector3D, right: Vector3D) {
+		return new Vector3D(
+			left.y * right.z - left.z * right.y,
+			left.z * right.x - left.x * right.z,
+			left.x * right.y - left.y * right.x,
+		)
 	}
 
 	/**

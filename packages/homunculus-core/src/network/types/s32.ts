@@ -1,24 +1,33 @@
 import { Buffer } from "node:buffer"
 
-class S16 {
-	public static readonly size: number = 4
+class S32 {
+	public static readonly size = 4
+
+	private static readonly MIN_VALUE = -2147483648
+	private static readonly MAX_VALUE = 2147483647
 
 	/**
-	 * Converts integer input into a buffer representing an 32-bit signed integer.
+	 * Converts integer input into a buffer representing a 32-bit signed integer.
 	 *
 	 * @param integer Integer to convert
 	 * @returns {Buffer}
 	 */
 	public static toBuffer(integer: number): Buffer {
-		const buffer = Buffer.allocUnsafe(S16.size)
+		const buffer = Buffer.allocUnsafe(S32.size)
 
-		buffer.writeInt32LE(integer, 0)
+		if (integer > S32.MAX_VALUE) {
+			buffer.writeInt32LE(S32.MIN_VALUE, 0)
+		} else if (integer < S32.MIN_VALUE) {
+			buffer.writeInt32LE(S32.MAX_VALUE, 0)
+		} else {
+			buffer.writeInt32LE(integer, 0)
+		}
 
 		return buffer
 	}
 
 	/**
-	 * Converts buffer input into an integer which was representing an 32-bit
+	 * Converts buffer input into an integer which was representing a 32-bit
 	 * signed integer.
 	 *
 	 * @param buffer Buffer to convert
@@ -30,4 +39,4 @@ class S16 {
 	}
 }
 
-export default S16
+export default S32

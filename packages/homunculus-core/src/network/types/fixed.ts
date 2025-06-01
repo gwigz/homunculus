@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/complexity/noThisInStatic: using values from extended classes */
 import { Buffer } from "node:buffer"
 
 abstract class Fixed {
@@ -7,22 +8,19 @@ abstract class Fixed {
 	 * Pads buffer bytes of fixed length if necessary.
 	 *
 	 * @param buffer This will truncate or pad if necessary
-	 * @returns {Buffer}
 	 */
-	public static toBuffer(buffer: Buffer): Buffer {
-		if (buffer.length === Fixed.size) {
+	public static toBuffer(buffer: Buffer) {
+		if (buffer.length === this.size) {
 			return buffer
 		}
 
-		if (buffer.length > Fixed.size) {
-			return buffer.subarray(0, Fixed.size)
+		if (buffer.length > this.size) {
+			return buffer.subarray(0, this.size)
 		}
 
-		const output = Buffer.alloc(Fixed.size)
+		const output = Buffer.alloc(this.size)
 
-		// Insert into new buffer, limited by correct size, this way it will be
-		// padded with zeros.
-		output.copy(buffer, 0, Fixed.size)
+		buffer.copy(output, 0, 0, Math.min(buffer.length, this.size))
 
 		return output
 	}
@@ -32,10 +30,9 @@ abstract class Fixed {
 	 *
 	 * @param buffer Buffer to handle
 	 * @param start Position to read from
-	 * @returns {Buffer}
 	 */
 	public static fromBuffer(buffer: Buffer, start: number) {
-		return buffer.subarray(start, start + Fixed.size)
+		return buffer.subarray(start, start + this.size)
 	}
 }
 

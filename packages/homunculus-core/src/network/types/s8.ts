@@ -1,7 +1,10 @@
 import { Buffer } from "node:buffer"
 
 class S8 {
-	public static readonly size: number = 1
+	public static readonly size = 1
+
+	private static readonly MIN_VALUE = -128
+	private static readonly MAX_VALUE = 127
 
 	/**
 	 * Converts integer input into a buffer representing an 8-bit signed integer.
@@ -12,7 +15,13 @@ class S8 {
 	public static toBuffer(integer: number): Buffer {
 		const buffer = Buffer.allocUnsafe(S8.size)
 
-		buffer.writeInt8(integer, 0)
+		if (integer > S8.MAX_VALUE) {
+			buffer.writeInt8(S8.MIN_VALUE, 0)
+		} else if (integer < S8.MIN_VALUE) {
+			buffer.writeInt8(S8.MAX_VALUE, 0)
+		} else {
+			buffer.writeInt8(integer, 0)
+		}
 
 		return buffer
 	}

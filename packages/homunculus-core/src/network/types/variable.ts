@@ -1,7 +1,12 @@
 import assert from "node:assert"
 import { Buffer } from "node:buffer"
 
-class Variable {
+abstract class Variable {
+	public static size: number
+
+	private static readonly MAX_LENGTH_1 = 255
+	private static readonly MAX_LENGTH_2 = 65535
+
 	/**
 	 * Converts a string to a buffer prefixed by length.
 	 *
@@ -9,12 +14,14 @@ class Variable {
 	 * @param value Input value
 	 */
 	public static toPrefixedBuffer(size: number, value: string | Buffer) {
-		const max = 256 * (size * 8)
-
 		const buffer =
 			typeof value === "string" ? Buffer.from(value, "utf-8") : value
 
-		const length = Math.min(max, buffer.length)
+		const length = Math.min(
+			size === 1 ? Variable.MAX_LENGTH_1 : Variable.MAX_LENGTH_2,
+			buffer.length,
+		)
+
 		const prefix = Buffer.allocUnsafe(size)
 
 		if (size === 1) {
@@ -43,8 +50,6 @@ class Variable {
 		const length =
 			size === 1 ? buffer.readUInt8(start) : buffer.readUInt16LE(start)
 
-		// may want to use slice instead here, so the delegates can handle whatever
-		// this value contains
 		return buffer.subarray(start + size, start + length + size)
 	}
 }

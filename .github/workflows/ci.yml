@@ -1,4 +1,4 @@
-name: Test
+name: CI
 
 on:
   push:
@@ -10,11 +10,15 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
-      - run: bun install
+        with:
+          bun-version: latest
       - name: Install dependencies
         run: bun install
+      - name: Lint
+        run: bun run biome ci
       - name: Test
-        run: bun test
+        run: bun run test -- --coverage

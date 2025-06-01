@@ -69,8 +69,6 @@ export class Authenticator {
 			{ "User-Agent": this.agent },
 		)
 
-		console.log(response)
-
 		return loginResponseSchema.parse(response)
 	}
 

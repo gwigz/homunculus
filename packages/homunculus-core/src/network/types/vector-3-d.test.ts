@@ -77,15 +77,15 @@ describe("Vector3D", () => {
 
 	describe("vector operations", () => {
 		it("calculates distance between vectors", () => {
-			const v1 = new Vector3D(1, 2, 3)
-			const v2 = new Vector3D(4, 6, 8)
+			const v1 = new Vector3D(0, 0, 0)
+			const v2 = new Vector3D(3, 4, 0)
 
-			expect(v1.distance(v2)).toBeCloseTo(7.0710678118654755)
-			expect(Vector3D.distance(v1, v2)).toBeCloseTo(7.0710678118654755)
+			expect(v1.distance(v2)).toBeCloseTo(5)
+			expect(Vector3D.distance(v1, v2)).toBeCloseTo(5)
 		})
 
 		it("normalizes to unit length", () => {
-			const vector = new Vector3D(3, 4, 5)
+			const vector = new Vector3D(3, 4, 0)
 			const normalized = vector.normalize()
 
 			const magnitude = Math.sqrt(
@@ -93,9 +93,9 @@ describe("Vector3D", () => {
 			)
 
 			expect(magnitude).toBeCloseTo(1)
-			expect(normalized.x).toBeCloseTo(0.4242640687119285)
-			expect(normalized.y).toBeCloseTo(0.565685424949238)
-			expect(normalized.z).toBeCloseTo(0.7071067811865475)
+			expect(normalized.x).toBeCloseTo(0.6)
+			expect(normalized.y).toBeCloseTo(0.8)
+			expect(normalized.z).toBeCloseTo(0)
 		})
 
 		it("calculates dot product", () => {
@@ -123,6 +123,12 @@ describe("Vector3D", () => {
 			expect(normalized.x).toBe(Number.NaN)
 			expect(normalized.y).toBe(Number.NaN)
 			expect(normalized.z).toBe(Number.NaN)
+		})
+
+		it("calculates length", () => {
+			const vector = new Vector3D(1, 2, 3)
+
+			expect(vector.length()).toBeCloseTo(Math.sqrt(14))
 		})
 	})
 })

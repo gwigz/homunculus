@@ -63,6 +63,7 @@ describe("S16", () => {
 		it("creates from buffer with correct value", () => {
 			const value = 42
 			const buffer = Buffer.allocUnsafe(S16.size)
+
 			buffer.writeInt16LE(value, 0)
 
 			expect(S16.fromBuffer(buffer)).toBe(value)
@@ -71,6 +72,7 @@ describe("S16", () => {
 		it("creates from buffer with correct value at offset", () => {
 			const value = 42
 			const buffer = Buffer.allocUnsafe(S16.size + 2)
+
 			buffer.writeInt16LE(value, 2)
 
 			expect(S16.fromBuffer(buffer, 2)).toBe(value)
@@ -87,6 +89,7 @@ describe("S16", () => {
 		it("handles positive maximum value", () => {
 			const value = 32767
 			const buffer = Buffer.allocUnsafe(S16.size)
+
 			buffer.writeInt16LE(value, 0)
 
 			expect(S16.fromBuffer(buffer)).toBe(value)
@@ -95,6 +98,7 @@ describe("S16", () => {
 		it("handles negative maximum value", () => {
 			const value = -32768
 			const buffer = Buffer.allocUnsafe(S16.size)
+
 			buffer.writeInt16LE(value, 0)
 
 			expect(S16.fromBuffer(buffer)).toBe(value)

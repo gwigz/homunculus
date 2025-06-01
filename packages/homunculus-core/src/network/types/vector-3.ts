@@ -6,6 +6,7 @@ export class Vector3 {
 	static readonly size = 12
 	static readonly zero = new Vector3(0, 0, 0)
 	static readonly one = new Vector3(1, 1, 1)
+	static readonly forward = new Vector3(1, 0, 0)
 
 	constructor(
 		public x: number,
@@ -114,6 +115,13 @@ export class Vector3 {
 			left.z * right.x - left.x * right.z,
 			left.x * right.y - left.y * right.x,
 		)
+	}
+
+	/**
+	 * Calculates the length of the vector.
+	 */
+	public length() {
+		return Math.sqrt(this.x ** 2 + this.y ** 2 + this.z ** 2)
 	}
 
 	/**

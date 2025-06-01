@@ -63,6 +63,7 @@ describe("S8", () => {
 		it("creates from buffer with correct value", () => {
 			const value = 42
 			const buffer = Buffer.allocUnsafe(S8.size)
+
 			buffer.writeInt8(value, 0)
 
 			expect(S8.fromBuffer(buffer)).toBe(value)
@@ -71,6 +72,7 @@ describe("S8", () => {
 		it("creates from buffer with correct value at offset", () => {
 			const value = 42
 			const buffer = Buffer.allocUnsafe(S8.size + 1)
+
 			buffer.writeInt8(value, 1)
 
 			expect(S8.fromBuffer(buffer, 1)).toBe(value)
@@ -79,6 +81,7 @@ describe("S8", () => {
 		it("handles zero value", () => {
 			const value = 0
 			const buffer = Buffer.allocUnsafe(S8.size)
+
 			buffer.writeInt8(value, 0)
 
 			expect(S8.fromBuffer(buffer)).toBe(value)
@@ -87,6 +90,7 @@ describe("S8", () => {
 		it("handles positive maximum value", () => {
 			const value = 127
 			const buffer = Buffer.allocUnsafe(S8.size)
+
 			buffer.writeInt8(value, 0)
 
 			expect(S8.fromBuffer(buffer)).toBe(value)
@@ -95,6 +99,7 @@ describe("S8", () => {
 		it("handles negative maximum value", () => {
 			const value = -128
 			const buffer = Buffer.allocUnsafe(S8.size)
+
 			buffer.writeInt8(value, 0)
 
 			expect(S8.fromBuffer(buffer)).toBe(value)

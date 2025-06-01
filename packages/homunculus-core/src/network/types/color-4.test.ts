@@ -21,6 +21,7 @@ describe("Color4", () => {
 	describe("toString", () => {
 		it("returns correct string representation", () => {
 			const color = new Color4(255, 128, 64, 32)
+
 			expect(Color4.toString(color)).toBe("<255, 128, 64, 32>")
 		})
 	})
@@ -73,12 +74,14 @@ describe("Color4", () => {
 	describe("buffer deserialization", () => {
 		it("creates from buffer with correct values", () => {
 			const buffer = Buffer.allocUnsafe(Color4.size)
+
 			buffer.writeUInt8(255, 0)
 			buffer.writeUInt8(128, 1)
 			buffer.writeUInt8(64, 2)
 			buffer.writeUInt8(32, 3)
 
 			const color = Color4.fromBuffer(buffer)
+
 			expect(color.r).toBe(255)
 			expect(color.g).toBe(128)
 			expect(color.b).toBe(64)
@@ -87,12 +90,14 @@ describe("Color4", () => {
 
 		it("creates from buffer with correct values at offset", () => {
 			const buffer = Buffer.allocUnsafe(Color4.size + 2)
+
 			buffer.writeUInt8(255, 2)
 			buffer.writeUInt8(128, 3)
 			buffer.writeUInt8(64, 4)
 			buffer.writeUInt8(32, 5)
 
 			const color = Color4.fromBuffer(buffer, 2)
+
 			expect(color.r).toBe(255)
 			expect(color.g).toBe(128)
 			expect(color.b).toBe(64)
@@ -101,12 +106,14 @@ describe("Color4", () => {
 
 		it("handles zero values", () => {
 			const buffer = Buffer.allocUnsafe(Color4.size)
+
 			buffer.writeUInt8(0, 0)
 			buffer.writeUInt8(0, 1)
 			buffer.writeUInt8(0, 2)
 			buffer.writeUInt8(0, 3)
 
 			const color = Color4.fromBuffer(buffer)
+
 			expect(color.r).toBe(0)
 			expect(color.g).toBe(0)
 			expect(color.b).toBe(0)

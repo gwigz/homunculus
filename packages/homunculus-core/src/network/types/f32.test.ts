@@ -39,6 +39,7 @@ describe("F32", () => {
 		it("creates from buffer with correct value", () => {
 			const value = 1.5
 			const buffer = Buffer.allocUnsafe(F32.size)
+
 			buffer.writeFloatLE(value, 0)
 
 			expect(F32.fromBuffer(buffer)).toBe(value)
@@ -47,6 +48,7 @@ describe("F32", () => {
 		it("creates from buffer with correct value at offset", () => {
 			const value = 1.5
 			const buffer = Buffer.allocUnsafe(F32.size + 4)
+
 			buffer.writeFloatLE(value, 4)
 
 			expect(F32.fromBuffer(buffer, 4)).toBe(value)
@@ -55,6 +57,7 @@ describe("F32", () => {
 		it("handles zero value", () => {
 			const value = 0
 			const buffer = Buffer.allocUnsafe(F32.size)
+
 			buffer.writeFloatLE(value, 0)
 
 			expect(F32.fromBuffer(buffer)).toBe(value)
@@ -63,6 +66,7 @@ describe("F32", () => {
 		it("handles negative value", () => {
 			const value = -1.5
 			const buffer = Buffer.allocUnsafe(F32.size)
+
 			buffer.writeFloatLE(value, 0)
 
 			expect(F32.fromBuffer(buffer)).toBe(value)

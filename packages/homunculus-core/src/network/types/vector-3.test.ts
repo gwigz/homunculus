@@ -153,5 +153,11 @@ describe("Vector3", () => {
 			expect(normalized.y).toBe(Number.NaN)
 			expect(normalized.z).toBe(Number.NaN)
 		})
+
+		it("calculates length", () => {
+			const vector = new Vector3(1, 2, 3)
+
+			expect(vector.length()).toBeCloseTo(Math.sqrt(14))
+		})
 	})
 })

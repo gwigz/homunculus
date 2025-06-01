@@ -94,7 +94,6 @@ describe("Quaternion", () => {
 		it("creates quaternion from euler angles array", () => {
 			// 90 degrees around X axis
 			const euler: Euler = [Math.PI / 2, 0, 0]
-
 			const quaternion = Quaternion.fromEuler(euler)
 
 			expect(quaternion.x).toBeCloseTo(Math.SQRT2 / 2) // sin(45 degrees)
@@ -106,7 +105,6 @@ describe("Quaternion", () => {
 		it("creates quaternion from Vector3 euler angles", () => {
 			// 90 degrees around X axis
 			const euler = new Vector3(Math.PI / 2, 0, 0)
-
 			const quaternion = Quaternion.fromEuler(euler)
 
 			expect(quaternion.x).toBeCloseTo(Math.SQRT2 / 2) // sin(45 degrees)

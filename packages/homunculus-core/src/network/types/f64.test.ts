@@ -47,6 +47,7 @@ describe("F64", () => {
 		it("creates from buffer with correct value", () => {
 			const value = 1.5
 			const buffer = Buffer.allocUnsafe(F64.size)
+
 			buffer.writeDoubleLE(value, 0)
 
 			expect(F64.fromBuffer(buffer)).toBe(value)
@@ -55,6 +56,7 @@ describe("F64", () => {
 		it("creates from buffer with correct value at offset", () => {
 			const value = 1.5
 			const buffer = Buffer.allocUnsafe(F64.size + 8)
+
 			buffer.writeDoubleLE(value, 8)
 
 			expect(F64.fromBuffer(buffer, 8)).toBe(value)
@@ -63,6 +65,7 @@ describe("F64", () => {
 		it("handles zero value", () => {
 			const value = 0
 			const buffer = Buffer.allocUnsafe(F64.size)
+
 			buffer.writeDoubleLE(value, 0)
 
 			expect(F64.fromBuffer(buffer)).toBe(value)
@@ -71,6 +74,7 @@ describe("F64", () => {
 		it("handles negative value", () => {
 			const value = -1.5
 			const buffer = Buffer.allocUnsafe(F64.size)
+
 			buffer.writeDoubleLE(value, 0)
 
 			expect(F64.fromBuffer(buffer)).toBe(value)
@@ -79,6 +83,7 @@ describe("F64", () => {
 		it("handles large value", () => {
 			const value = Number.MAX_SAFE_INTEGER
 			const buffer = Buffer.allocUnsafe(F64.size)
+
 			buffer.writeDoubleLE(value, 0)
 
 			expect(F64.fromBuffer(buffer)).toBe(value)

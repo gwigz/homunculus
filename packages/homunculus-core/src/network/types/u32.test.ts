@@ -55,6 +55,7 @@ describe("U32", () => {
 		it("creates from buffer with correct value", () => {
 			const value = 42
 			const buffer = Buffer.allocUnsafe(U32.size)
+
 			buffer.writeUInt32LE(value, 0)
 
 			expect(U32.fromBuffer(buffer)).toBe(value)
@@ -63,6 +64,7 @@ describe("U32", () => {
 		it("creates from buffer with correct value at offset", () => {
 			const value = 42
 			const buffer = Buffer.allocUnsafe(U32.size + 4)
+
 			buffer.writeUInt32LE(value, 4)
 
 			expect(U32.fromBuffer(buffer, 4)).toBe(value)
@@ -71,6 +73,7 @@ describe("U32", () => {
 		it("handles zero value", () => {
 			const value = 0
 			const buffer = Buffer.allocUnsafe(U32.size)
+
 			buffer.writeUInt32LE(value, 0)
 
 			expect(U32.fromBuffer(buffer)).toBe(value)
@@ -79,6 +82,7 @@ describe("U32", () => {
 		it("handles maximum value", () => {
 			const value = 4294967295
 			const buffer = Buffer.allocUnsafe(U32.size)
+
 			buffer.writeUInt32LE(value, 0)
 
 			expect(U32.fromBuffer(buffer)).toBe(value)

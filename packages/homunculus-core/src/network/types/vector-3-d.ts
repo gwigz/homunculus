@@ -114,6 +114,13 @@ class Vector3D {
 	}
 
 	/**
+	 * Calculates the length of the vector.
+	 */
+	public length() {
+		return Math.sqrt(this.x ** 2 + this.y ** 2 + this.z ** 2)
+	}
+
+	/**
 	 * Converts buffer input into an array of double values representing a 3 point
 	 * vector.
 	 *

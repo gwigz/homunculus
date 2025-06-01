@@ -1,5 +1,7 @@
 import type { Vector3 } from "./network"
 
+export type { Agent, Entity, Region } from "./structures"
+
 export interface NearbyChatMessage {
 	fromName: string
 	source: string

@@ -13,12 +13,14 @@ NOTES.md
 # Logs
 logs
 *.log
+lcov.info
 
 # Runtime data
 pids
 *.pid
 *.seed
 *.db
+*.tmp
 
 # Dependency directories
 node_modules

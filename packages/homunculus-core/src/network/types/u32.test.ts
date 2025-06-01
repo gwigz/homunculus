@@ -1,16 +1,16 @@
 import { Buffer } from "node:buffer"
-import { describe, expect, test } from "bun:test"
+import { describe, expect, it } from "bun:test"
 import U32 from "./u32"
 
 describe("U32", () => {
 	describe("size", () => {
-		test("has correct size", () => {
+		it("has correct size", () => {
 			expect(U32.size).toBe(4)
 		})
 	})
 
 	describe("buffer serialization", () => {
-		test("converts to buffer with correct value", () => {
+		it("converts to buffer with correct value", () => {
 			const value = 42
 			const buffer = U32.toBuffer(value)
 
@@ -18,7 +18,7 @@ describe("U32", () => {
 			expect(buffer.readUInt32LE(0)).toBe(value)
 		})
 
-		test("handles zero value", () => {
+		it("handles zero value", () => {
 			const value = 0
 			const buffer = U32.toBuffer(value)
 
@@ -26,7 +26,7 @@ describe("U32", () => {
 			expect(buffer.readUInt32LE(0)).toBe(value)
 		})
 
-		test("handles maximum value", () => {
+		it("handles maximum value", () => {
 			const value = 4294967295
 			const buffer = U32.toBuffer(value)
 
@@ -34,7 +34,7 @@ describe("U32", () => {
 			expect(buffer.readUInt32LE(0)).toBe(value)
 		})
 
-		test("clamps values above maximum", () => {
+		it("clamps values above maximum", () => {
 			const value = 4294967296
 			const buffer = U32.toBuffer(value)
 
@@ -42,7 +42,7 @@ describe("U32", () => {
 			expect(buffer.readUInt32LE(0)).toBe(0)
 		})
 
-		test("clamps negative values", () => {
+		it("clamps negative values", () => {
 			const value = -1
 			const buffer = U32.toBuffer(value)
 
@@ -52,7 +52,7 @@ describe("U32", () => {
 	})
 
 	describe("buffer deserialization", () => {
-		test("creates from buffer with correct value", () => {
+		it("creates from buffer with correct value", () => {
 			const value = 42
 			const buffer = Buffer.allocUnsafe(U32.size)
 			buffer.writeUInt32LE(value, 0)
@@ -60,7 +60,7 @@ describe("U32", () => {
 			expect(U32.fromBuffer(buffer)).toBe(value)
 		})
 
-		test("creates from buffer with correct value at offset", () => {
+		it("creates from buffer with correct value at offset", () => {
 			const value = 42
 			const buffer = Buffer.allocUnsafe(U32.size + 4)
 			buffer.writeUInt32LE(value, 4)
@@ -68,7 +68,7 @@ describe("U32", () => {
 			expect(U32.fromBuffer(buffer, 4)).toBe(value)
 		})
 
-		test("handles zero value", () => {
+		it("handles zero value", () => {
 			const value = 0
 			const buffer = Buffer.allocUnsafe(U32.size)
 			buffer.writeUInt32LE(value, 0)
@@ -76,7 +76,7 @@ describe("U32", () => {
 			expect(U32.fromBuffer(buffer)).toBe(value)
 		})
 
-		test("handles maximum value", () => {
+		it("handles maximum value", () => {
 			const value = 4294967295
 			const buffer = Buffer.allocUnsafe(U32.size)
 			buffer.writeUInt32LE(value, 0)

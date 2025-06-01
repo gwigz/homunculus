@@ -1,5 +1,5 @@
 import { Buffer } from "node:buffer"
-import { describe, expect, test } from "bun:test"
+import { describe, expect, it } from "bun:test"
 import Quaternion from "./quaternion"
 import U16 from "./u16"
 import Vector3 from "./vector-3"
@@ -8,7 +8,7 @@ type Euler = [x: number, y: number, z: number]
 
 describe("Quaternion", () => {
 	describe("construction and basic properties", () => {
-		test("creates quaternion with correct x, y, z, w values", () => {
+		it("creates quaternion with correct x, y, z, w values", () => {
 			const quaternion = new Quaternion(1, 2, 3, 4)
 
 			expect(quaternion.x).toBe(1)
@@ -17,7 +17,7 @@ describe("Quaternion", () => {
 			expect(quaternion.w).toBe(4)
 		})
 
-		test("has correct static properties", () => {
+		it("has correct static properties", () => {
 			expect(Quaternion.size).toBe(12)
 			expect(Quaternion.zero.x).toBe(0)
 			expect(Quaternion.zero.y).toBe(0)
@@ -31,7 +31,7 @@ describe("Quaternion", () => {
 	})
 
 	describe("string representation", () => {
-		test("formats as <x, y, z, w>", () => {
+		it("formats as <x, y, z, w>", () => {
 			const quaternion = new Quaternion(1, 2, 3, 4)
 
 			expect(Quaternion.toString(quaternion)).toBe("<1, 2, 3, 4>")
@@ -39,7 +39,7 @@ describe("Quaternion", () => {
 	})
 
 	describe("buffer serialization", () => {
-		test("converts to buffer with correct float values", () => {
+		it("converts to buffer with correct float values", () => {
 			const quaternion = new Quaternion(1.5, 2.5, 3.5, 4.5)
 			const buffer = Quaternion.toBuffer(quaternion)
 
@@ -49,7 +49,7 @@ describe("Quaternion", () => {
 			expect(buffer.readFloatLE(8)).toBe(3.5)
 		})
 
-		test("creates from buffer with correct values", () => {
+		it("creates from buffer with correct values", () => {
 			const buffer = Buffer.allocUnsafe(Quaternion.size)
 
 			buffer.writeFloatLE(1.5, 0)
@@ -64,7 +64,7 @@ describe("Quaternion", () => {
 			expect(quaternion.w).toBeCloseTo(0) // w is 0 when sum of squares > 1
 		})
 
-		test("creates from buffer with U16 type", () => {
+		it("creates from buffer with U16 type", () => {
 			const buffer = Buffer.allocUnsafe(U16.size * 3)
 
 			buffer.writeUInt16LE(32768, 0) // 0.5 in normalized U16
@@ -79,7 +79,7 @@ describe("Quaternion", () => {
 			expect(quaternion.w).toBeCloseTo(Math.SQRT2 / 2)
 		})
 
-		test("handles negative w component in toBuffer", () => {
+		it("handles negative w component in toBuffer", () => {
 			const quaternion = new Quaternion(1.5, 2.5, 3.5, -4.5)
 			const buffer = Quaternion.toBuffer(quaternion)
 
@@ -91,7 +91,7 @@ describe("Quaternion", () => {
 	})
 
 	describe("euler angle conversion", () => {
-		test("creates quaternion from euler angles array", () => {
+		it("creates quaternion from euler angles array", () => {
 			// 90 degrees around X axis
 			const euler: Euler = [Math.PI / 2, 0, 0]
 
@@ -103,7 +103,7 @@ describe("Quaternion", () => {
 			expect(quaternion.w).toBeCloseTo(Math.SQRT2 / 2) // cos(45 degrees)
 		})
 
-		test("creates quaternion from Vector3 euler angles", () => {
+		it("creates quaternion from Vector3 euler angles", () => {
 			// 90 degrees around X axis
 			const euler = new Vector3(Math.PI / 2, 0, 0)
 
@@ -115,7 +115,7 @@ describe("Quaternion", () => {
 			expect(quaternion.w).toBeCloseTo(Math.SQRT2 / 2) // cos(45 degrees)
 		})
 
-		test("converts quaternion to euler angles", () => {
+		it("converts quaternion to euler angles", () => {
 			// create a quaternion representing 90 degrees around X axis
 			const quaternion = new Quaternion(Math.SQRT2 / 2, 0, 0, Math.SQRT2 / 2)
 			const euler = Quaternion.toEuler(quaternion)
@@ -125,7 +125,7 @@ describe("Quaternion", () => {
 			expect(euler.z).toBe(0)
 		})
 
-		test("handles multiple rotations", () => {
+		it("handles multiple rotations", () => {
 			// create a quaternion representing 90 degrees around X and Y axes
 			const euler: Euler = [Math.PI / 2, Math.PI / 2, 0]
 

@@ -7,8 +7,7 @@ class Bool {
 	 * Converts boolean input into a buffer representing an 8-bit unsigned
 	 * boolean.
 	 *
-	 * @param {boolean|number} bool Boolean to convert
-	 * @returns {Buffer}
+	 * @param bool Boolean to convert
 	 */
 	public static toBuffer(bool: boolean | number): Buffer {
 		const buffer = Buffer.allocUnsafe(Bool.size)
@@ -24,7 +23,6 @@ class Bool {
 	 *
 	 * @param buffer Buffer to convert
 	 * @param position Position to read from
-	 * @returns {boolean}
 	 */
 	public static fromBuffer(buffer: Buffer, position = 0): boolean {
 		return !!buffer.readUInt8(position)

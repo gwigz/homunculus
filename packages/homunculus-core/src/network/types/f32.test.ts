@@ -1,16 +1,16 @@
 import { Buffer } from "node:buffer"
-import { describe, expect, test } from "bun:test"
+import { describe, expect, it } from "bun:test"
 import F32 from "./f32"
 
 describe("F32", () => {
 	describe("size", () => {
-		test("has correct size", () => {
+		it("has correct size", () => {
 			expect(F32.size).toBe(4)
 		})
 	})
 
 	describe("buffer serialization", () => {
-		test("converts to buffer with correct float value", () => {
+		it("converts to buffer with correct float value", () => {
 			const value = 1.5
 			const buffer = F32.toBuffer(value)
 
@@ -18,7 +18,7 @@ describe("F32", () => {
 			expect(buffer.readFloatLE(0)).toBe(value)
 		})
 
-		test("handles zero value", () => {
+		it("handles zero value", () => {
 			const value = 0
 			const buffer = F32.toBuffer(value)
 
@@ -26,7 +26,7 @@ describe("F32", () => {
 			expect(buffer.readFloatLE(0)).toBe(value)
 		})
 
-		test("handles negative value", () => {
+		it("handles negative value", () => {
 			const value = -1.5
 			const buffer = F32.toBuffer(value)
 
@@ -36,7 +36,7 @@ describe("F32", () => {
 	})
 
 	describe("buffer deserialization", () => {
-		test("creates from buffer with correct value", () => {
+		it("creates from buffer with correct value", () => {
 			const value = 1.5
 			const buffer = Buffer.allocUnsafe(F32.size)
 			buffer.writeFloatLE(value, 0)
@@ -44,7 +44,7 @@ describe("F32", () => {
 			expect(F32.fromBuffer(buffer)).toBe(value)
 		})
 
-		test("creates from buffer with correct value at offset", () => {
+		it("creates from buffer with correct value at offset", () => {
 			const value = 1.5
 			const buffer = Buffer.allocUnsafe(F32.size + 4)
 			buffer.writeFloatLE(value, 4)
@@ -52,7 +52,7 @@ describe("F32", () => {
 			expect(F32.fromBuffer(buffer, 4)).toBe(value)
 		})
 
-		test("handles zero value", () => {
+		it("handles zero value", () => {
 			const value = 0
 			const buffer = Buffer.allocUnsafe(F32.size)
 			buffer.writeFloatLE(value, 0)
@@ -60,7 +60,7 @@ describe("F32", () => {
 			expect(F32.fromBuffer(buffer)).toBe(value)
 		})
 
-		test("handles negative value", () => {
+		it("handles negative value", () => {
 			const value = -1.5
 			const buffer = Buffer.allocUnsafe(F32.size)
 			buffer.writeFloatLE(value, 0)

@@ -1,10 +1,10 @@
 import { Buffer } from "node:buffer"
-import { describe, expect, test } from "bun:test"
+import { describe, expect, it } from "bun:test"
 import Vector3D from "./vector-3-d"
 
 describe("Vector3D", () => {
 	describe("construction and basic properties", () => {
-		test("creates vector with correct x, y, z values", () => {
+		it("creates vector with correct x, y, z values", () => {
 			const vector = new Vector3D(1, 2, 3)
 
 			expect(vector.x).toBe(1)
@@ -12,7 +12,7 @@ describe("Vector3D", () => {
 			expect(vector.z).toBe(3)
 		})
 
-		test("has correct static properties", () => {
+		it("has correct static properties", () => {
 			expect(Vector3D.size).toBe(24)
 			expect(Vector3D.zero.x).toBe(0)
 			expect(Vector3D.zero.y).toBe(0)
@@ -24,7 +24,7 @@ describe("Vector3D", () => {
 	})
 
 	describe("string representation", () => {
-		test("formats as <x, y, z>", () => {
+		it("formats as <x, y, z>", () => {
 			const vector = new Vector3D(1, 2, 3)
 
 			expect(vector.toString()).toBe("<1, 2, 3>")
@@ -32,7 +32,7 @@ describe("Vector3D", () => {
 	})
 
 	describe("buffer serialization", () => {
-		test("converts to buffer with correct double values", () => {
+		it("converts to buffer with correct double values", () => {
 			const vector = new Vector3D(1.5, 2.5, 3.5)
 			const buffer = vector.toBuffer()
 
@@ -42,8 +42,8 @@ describe("Vector3D", () => {
 			expect(buffer.readDoubleLE(16)).toBe(3.5)
 		})
 
-		test("creates from buffer with correct values", () => {
-			const buffer = Buffer.allocUnsafe(Vector3D.size)
+		it("creates from buffer with correct values", () => {
+			const buffer = Buffer.alloc(24)
 
 			buffer.writeDoubleLE(1.5, 0)
 			buffer.writeDoubleLE(2.5, 8)
@@ -55,18 +55,37 @@ describe("Vector3D", () => {
 			expect(vector.y).toBe(2.5)
 			expect(vector.z).toBe(3.5)
 		})
+
+		it("handles array input", () => {
+			const buffer = Vector3D.toBuffer([1.5, 2.5, 3.5])
+
+			expect(buffer.length).toBe(24)
+			expect(buffer.readDoubleLE(0)).toBe(1.5)
+			expect(buffer.readDoubleLE(8)).toBe(2.5)
+			expect(buffer.readDoubleLE(16)).toBe(3.5)
+		})
+
+		it("handles missing array values", () => {
+			const buffer = Vector3D.toBuffer([1.5, 0, 0])
+
+			expect(buffer.length).toBe(24)
+			expect(buffer.readDoubleLE(0)).toBe(1.5)
+			expect(buffer.readDoubleLE(8)).toBe(0)
+			expect(buffer.readDoubleLE(16)).toBe(0)
+		})
 	})
 
 	describe("vector operations", () => {
-		test("calculates distance between vectors", () => {
-			const v1 = new Vector3D(0, 0, 0)
-			const v2 = new Vector3D(3, 4, 0)
+		it("calculates distance between vectors", () => {
+			const v1 = new Vector3D(1, 2, 3)
+			const v2 = new Vector3D(4, 6, 8)
 
-			expect(Vector3D.distance(v1, v2)).toBe(5)
+			expect(v1.distance(v2)).toBeCloseTo(7.0710678118654755)
+			expect(Vector3D.distance(v1, v2)).toBeCloseTo(7.0710678118654755)
 		})
 
-		test("normalizes to unit length", () => {
-			const vector = new Vector3D(3, 4, 0)
+		it("normalizes to unit length", () => {
+			const vector = new Vector3D(3, 4, 5)
 			const normalized = vector.normalize()
 
 			const magnitude = Math.sqrt(
@@ -74,23 +93,36 @@ describe("Vector3D", () => {
 			)
 
 			expect(magnitude).toBeCloseTo(1)
+			expect(normalized.x).toBeCloseTo(0.4242640687119285)
+			expect(normalized.y).toBeCloseTo(0.565685424949238)
+			expect(normalized.z).toBeCloseTo(0.7071067811865475)
 		})
 
-		test("calculates dot product", () => {
+		it("calculates dot product", () => {
 			const v1 = new Vector3D(1, 2, 3)
 			const v2 = new Vector3D(4, 5, 6)
 
-			expect(Vector3D.dot(v1, v2)).toBe(32) // 1 * 4 + 2 * 5 + 3 * 6
+			expect(v1.dot(v2)).toBe(32)
+			expect(Vector3D.dot(v1, v2)).toBe(32)
 		})
 
-		test("calculates cross product", () => {
-			const v1 = new Vector3D(1, 0, 0)
-			const v2 = new Vector3D(0, 1, 0)
-			const cross = Vector3D.cross(v1, v2)
+		it("calculates cross product", () => {
+			const v1 = new Vector3D(1, 2, 3)
+			const v2 = new Vector3D(4, 5, 6)
+			const cross = v1.cross(v2)
 
-			expect(cross.x).toBe(0)
-			expect(cross.y).toBe(0)
-			expect(cross.z).toBe(1)
+			expect(cross.x).toBe(-3)
+			expect(cross.y).toBe(6)
+			expect(cross.z).toBe(-3)
+		})
+
+		it("handles zero vector normalization", () => {
+			const vector = new Vector3D(0, 0, 0)
+			const normalized = vector.normalize()
+
+			expect(normalized.x).toBe(Number.NaN)
+			expect(normalized.y).toBe(Number.NaN)
+			expect(normalized.z).toBe(Number.NaN)
 		})
 	})
 })

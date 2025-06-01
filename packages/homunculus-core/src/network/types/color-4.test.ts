@@ -1,16 +1,16 @@
 import { Buffer } from "node:buffer"
-import { describe, expect, test } from "bun:test"
+import { describe, expect, it } from "bun:test"
 import Color4 from "./color-4"
 
 describe("Color4", () => {
 	describe("size", () => {
-		test("has correct size", () => {
+		it("has correct size", () => {
 			expect(Color4.size).toBe(4)
 		})
 	})
 
 	describe("zero", () => {
-		test("has correct zero values", () => {
+		it("has correct zero values", () => {
 			expect(Color4.zero.r).toBe(0)
 			expect(Color4.zero.g).toBe(0)
 			expect(Color4.zero.b).toBe(0)
@@ -19,14 +19,14 @@ describe("Color4", () => {
 	})
 
 	describe("toString", () => {
-		test("returns correct string representation", () => {
+		it("returns correct string representation", () => {
 			const color = new Color4(255, 128, 64, 32)
 			expect(Color4.toString(color)).toBe("<255, 128, 64, 32>")
 		})
 	})
 
 	describe("buffer serialization", () => {
-		test("converts Color4 instance to buffer", () => {
+		it("converts Color4 instance to buffer", () => {
 			const color = new Color4(255, 128, 64, 32)
 			const buffer = Color4.toBuffer(color)
 
@@ -37,7 +37,7 @@ describe("Color4", () => {
 			expect(buffer.readUInt8(3)).toBe(32)
 		})
 
-		test("converts array to buffer", () => {
+		it("converts array to buffer", () => {
 			const color = [255, 128, 64, 32] as [number, number, number, number]
 			const buffer = Color4.toBuffer(color)
 
@@ -48,7 +48,7 @@ describe("Color4", () => {
 			expect(buffer.readUInt8(3)).toBe(32)
 		})
 
-		test("handles missing array values", () => {
+		it("handles missing array values", () => {
 			const color = [255, 0, 64, 32] as [number, number, number, number]
 			const buffer = Color4.toBuffer(color)
 
@@ -59,7 +59,7 @@ describe("Color4", () => {
 			expect(buffer.readUInt8(3)).toBe(32)
 		})
 
-		test("handles zero color", () => {
+		it("handles zero color", () => {
 			const buffer = Color4.toBuffer(Color4.zero)
 
 			expect(buffer.length).toBe(Color4.size)
@@ -71,7 +71,7 @@ describe("Color4", () => {
 	})
 
 	describe("buffer deserialization", () => {
-		test("creates from buffer with correct values", () => {
+		it("creates from buffer with correct values", () => {
 			const buffer = Buffer.allocUnsafe(Color4.size)
 			buffer.writeUInt8(255, 0)
 			buffer.writeUInt8(128, 1)
@@ -85,7 +85,7 @@ describe("Color4", () => {
 			expect(color.a).toBe(32)
 		})
 
-		test("creates from buffer with correct values at offset", () => {
+		it("creates from buffer with correct values at offset", () => {
 			const buffer = Buffer.allocUnsafe(Color4.size + 2)
 			buffer.writeUInt8(255, 2)
 			buffer.writeUInt8(128, 3)
@@ -99,7 +99,7 @@ describe("Color4", () => {
 			expect(color.a).toBe(32)
 		})
 
-		test("handles zero values", () => {
+		it("handles zero values", () => {
 			const buffer = Buffer.allocUnsafe(Color4.size)
 			buffer.writeUInt8(0, 0)
 			buffer.writeUInt8(0, 1)

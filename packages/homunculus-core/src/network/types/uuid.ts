@@ -1,74 +1,66 @@
+import assert from "node:assert"
 import { Buffer } from "node:buffer"
 import { randomUUID } from "node:crypto"
 
 class UUID {
-	public static readonly size: number = 16
-	public static readonly zero: string = "00000000-0000-0000-0000-000000000000"
+	public static readonly size = 16
+	public static readonly zero = "00000000-0000-0000-0000-000000000000"
 
 	/**
 	 * Converts string input into a buffer representing a UUID.
 	 *
-	 * @todo Optimize this, it's probably not that good
-	 * @param uuid UUID string to convert
+	 * @todo Optimize this, it's probably not that good.
+	 * @param uuid UUID string to convert.
 	 */
-	public static toBuffer(uuid: string | Buffer): Buffer {
-		if (typeof uuid !== "string") {
+	public static toBuffer(uuid: string | Buffer) {
+		if (Buffer.isBuffer(uuid)) {
+			assert(uuid.length === 16, "Buffer must be exactly 16 bytes for a UUID")
+
 			return uuid
 		}
 
-		const bytes = []
-		const parts = uuid.split("-")
+		assert(UUID.validate(uuid), `Invalid UUID string: ${uuid}`)
 
-		for (const part of parts) {
-			for (let c = 0; c < part.length; c += 2) {
-				bytes.push(Number.parseInt(part.substr(c, 2), 16))
-			}
-		}
-
-		return Buffer.from(bytes)
+		return Buffer.from(uuid.replace(/-/g, ""), "hex")
 	}
 
 	/**
 	 * Converts buffer input into a UUID string.
 	 *
-	 * @todo Optimize this, it's probably not that good
 	 * @param buffer Buffer to convert
 	 * @param position Position to read from
 	 */
-	public static fromBuffer(buffer: Buffer, position = 0): string {
-		let output = ""
-		let i = position
+	public static fromBuffer(buffer: Buffer, position = 0) {
+		const hex = buffer.toString("hex", position, position + UUID.size)
+		const output = `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`
 
-		for (let c = 0; c < 16; c++) {
-			output += UUID.pad(buffer.readUInt8(i++).toString(16), 2)
-
-			if (c === 3 || c === 5 || c === 7 || c === 9) {
-				output += "-"
-			}
-		}
+		assert(
+			UUID.validate(output),
+			`Invalid UUID string generated from buffer: ${output}`,
+		)
 
 		return output
 	}
 
 	/**
-	 * Zero padding helper function, may be moved.
-	 *
-	 * @param value Character to pad
-	 * @param width Number of characters to zero pad
+	 * Generates a random UUID (using `node:crypto.randomUUID`).
 	 */
-	public static pad(value: string, width: number): string {
-		const size = width - value.length
-
-		return size > 0
-			? new Array(size + (/\./.test(value) ? 2 : 1)).join("0") + value
-			: `${value}`
+	public static random() {
+		return randomUUID()
 	}
 
 	/**
-	 * Generates a random UUID (using `node:crypto.randomUUID`).
+	 * Validates if a string is in UUID format.
+	 *
+	 * This is a loose validation that only checks the format, not the actual values.
+	 *
+	 * @param uuid String to validate.
+	 * @returns boolean indicating if the string is a valid UUID format.
 	 */
-	public static random(): string {
-		return randomUUID()
+	public static validate(uuid: string) {
+		return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+			uuid,
+		)
 	}
 }
 

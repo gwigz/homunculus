@@ -140,7 +140,7 @@ export class Vector3 {
 
 		return new Vector3(
 			...(("toFloat" in type
-				? output.map((value) => type.toFloat(value, lower ?? 0, upper ?? 0))
+				? output.map((value) => type.toFloat(value, lower ?? 0, upper ?? 1))
 				: output) as [x: number, y: number, z: number]),
 		)
 	}

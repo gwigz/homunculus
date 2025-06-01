@@ -3,6 +3,7 @@ dist
 
 # Unfinished stuff
 NOTES.md
+.cursor
 
 # Environment variables
 .env

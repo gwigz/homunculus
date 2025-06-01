@@ -29,6 +29,7 @@
 		"dev": "bun run ./src/index.ts",
 		"lint": "biome lint .",
 		"check": "biome check .",
+		"test": "bun test",
 		"prebuild": "rm -rf dist && tsc && tsc-alias",
 		"build": "esbuild src/index.ts --bundle --platform=node --format=esm --packages=external --outfile=dist",
 		"precodegen": "find ./src/network/packets -type f ! -name 'packet.ts' -delete",

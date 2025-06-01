@@ -14,7 +14,8 @@
 		"dev:docs": "pnpm --filter @gwigz/homunculus-docs dev",
 		"build": "pnpm -r build",
 		"lint": "biome lint",
-		"check": "biome check"
+		"check": "biome check",
+		"test": "bun test"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.0.0-beta.5",

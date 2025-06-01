@@ -37,16 +37,12 @@ class U16 {
 	 * @param value U16 wide number to convert.
 	 * @param lower Lower limit for conversion.
 	 * @param upper Upper limit for conversion.
-	 * @returns Float value, will return 0.0 if delta is reached.
+	 * @returns Float value mapped to the target range.
 	 */
 	public static toFloat(value: number, lower: number, upper: number) {
-		const float = value * ONE_OVER_U16_MAX
+		const normalized = value * ONE_OVER_U16_MAX
 
-		if (Math.abs(float) < (upper - lower) * ONE_OVER_U16_MAX) {
-			return 0.0
-		}
-
-		return float
+		return lower + normalized * (upper - lower)
 	}
 }
 

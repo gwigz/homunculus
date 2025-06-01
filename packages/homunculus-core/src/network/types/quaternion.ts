@@ -78,38 +78,37 @@ class Quaternion {
 		lower?: number,
 		upper?: number,
 	) {
-		const quaternion = [
+		const raw = [
 			type.fromBuffer(buffer, position),
 			type.fromBuffer(buffer, position + type.size),
 			type.fromBuffer(buffer, position + type.size * 2),
 			normalized ? 0.0 : type.fromBuffer(buffer, position + type.size * 3),
 		]
 
-		if (normalized) {
-			const sum =
-				1 -
-				quaternion[0]! * quaternion[0]! -
-				quaternion[1]! * quaternion[1]! -
-				quaternion[2]! * quaternion[2]!
-
-			quaternion[3] = sum > 0.0 ? Math.sqrt(sum) : 0.0
-		}
+		let x: number
+		let y: number
+		let z: number
+		let w: number
 
 		if ("toFloat" in type) {
-			return new Quaternion(
-				type.toFloat(quaternion[0]!, lower!, upper!),
-				type.toFloat(quaternion[1]!, lower!, upper!),
-				type.toFloat(quaternion[2]!, lower!, upper!),
-				type.toFloat(quaternion[3]!, lower!, upper!),
-			)
+			x = type.toFloat(raw[0]!, lower!, upper!)
+			y = type.toFloat(raw[1]!, lower!, upper!)
+			z = type.toFloat(raw[2]!, lower!, upper!)
+			w = normalized ? 0.0 : type.toFloat(raw[3]!, lower!, upper!)
+		} else {
+			x = raw[0]!
+			y = raw[1]!
+			z = raw[2]!
+			w = normalized ? 0.0 : raw[3]!
 		}
 
-		return new Quaternion(
-			quaternion[0]!,
-			quaternion[1]!,
-			quaternion[2]!,
-			quaternion[3]!,
-		)
+		if (normalized) {
+			const sum = 1 - x * x - y * y - z * z
+
+			w = sum > 0.0 ? Math.sqrt(sum) : 0.0
+		}
+
+		return new Quaternion(x, y, z, w)
 	}
 
 	/**

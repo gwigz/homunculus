@@ -83,5 +83,17 @@
 			"quoteStyle": "double",
 			"semicolons": "asNeeded"
 		}
-	}
+	},
+	"overrides": [
+		{
+			"includes": ["**/examples/**"],
+			"linter": {
+				"rules": {
+					"correctness": {
+						"noUnusedFunctionParameters": "off"
+					}
+				}
+			}
+		}
+	]
 }

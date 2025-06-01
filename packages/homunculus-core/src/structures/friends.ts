@@ -2,7 +2,10 @@ import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
 import type { Client } from "~/client"
 import type { Friend } from "./friend"
 
-export type FriendEvents = {}
+export interface FriendEvents {
+	set: [friend: Friend]
+	delete: [friend: Friend]
+}
 
 export class Friends extends AsyncEventEmitter<FriendEvents> {
 	private friends = new Map<string, Friend>()

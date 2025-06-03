@@ -1,11 +1,18 @@
 import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
 import type { Client } from "~/client"
-import { packets, Quaternion, Vector3 } from "~/network"
+import {
+	type ParcelPropertiesData,
+	packets,
+	Quaternion,
+	Vector3,
+} from "~/network"
+import { Parcel } from "~/structures"
 import type { Collision } from "~/types"
 import { Constants } from "~/utilities"
 
 export interface SelfEvents {
 	collision: [collision: Collision]
+	"parcel-update": [parcel: Parcel]
 }
 
 export class Self extends AsyncEventEmitter<SelfEvents> {
@@ -22,6 +29,12 @@ export class Self extends AsyncEventEmitter<SelfEvents> {
 	public rotation = Quaternion.identity
 	public position = Vector3.zero
 
+	public cameraAtAxis = new Vector3(0, 1, -0.4)
+	public cameraLeftAxis = new Vector3(-1, 0, -4)
+	public cameraUpAxis = new Vector3(0, 0.4, 0.9)
+
+	public parcel?: Parcel
+
 	/** If the user is an estate admin in the current region */
 	public isEstateManager = false
 
@@ -29,14 +42,21 @@ export class Self extends AsyncEventEmitter<SelfEvents> {
 	public health = 100
 
 	/**
+	 * The last parcel sequence ID that was received from the server. This is
+	 * used to determine if the current parcel properties has changed.
+	 *
+	 * @internal
+	 */
+	public lastParcelSequenceId = -1
+
+	/**
 	 * @see {@link https://wiki.secondlife.com/wiki/How_movement_works}
 	 */
 	public controlFlags = 0
 
-	private lastControlFlags = 0
-
-	private agentUpdateInterval?: NodeJS.Timeout
-
+	/**
+	 * @internal
+	 */
 	constructor(
 		private readonly client: Client,
 		data: {
@@ -56,13 +76,7 @@ export class Self extends AsyncEventEmitter<SelfEvents> {
 		this.circuitCode = data.circuitCode
 		this.firstName = data.firstName
 		this.lastName = data.lastName
-		this.lookAt = data.lookAt ?? Vector3.one
-
-		this.agentUpdateInterval = setInterval(() => {
-			if (this.client.status === Constants.Status.READY) {
-				this.sendAgentUpdate()
-			}
-		}, 1_000)
+		this.lookAt = data.lookAt ?? new Vector3(1, 0, 0)
 	}
 
 	get name() {
@@ -73,15 +87,29 @@ export class Self extends AsyncEventEmitter<SelfEvents> {
 		this.rotation = Quaternion.fromEuler(value)
 	}
 
-	public destroy() {
-		clearInterval(this.agentUpdateInterval)
+	public updateParcelProperties(data: ParcelPropertiesData) {
+		// TODO: remove this once tested
+		this.client.emit(
+			"debug",
+			`Parcel properties updated: ${JSON.stringify(data.parcelData)}`,
+		)
 
-		this.agentUpdateInterval = undefined
+		this.lastParcelSequenceId = data.parcelData!.sequenceId
+		this.parcel = new Parcel(data)
+
+		this.emit("parcel-update", this.parcel)
 	}
 
-	public sendAgentUpdate() {
-		this.lastControlFlags = this.controlFlags
-		this.controlFlags = 0
+	public sendAgentUpdate(
+		options: { state?: number; controlFlags?: number } = {},
+	) {
+		if (options.state !== undefined) {
+			this.state = options.state
+		}
+
+		if (options.controlFlags !== undefined) {
+			this.controlFlags = options.controlFlags
+		}
 
 		return this.client.send([
 			packets.agentUpdate({
@@ -90,11 +118,11 @@ export class Self extends AsyncEventEmitter<SelfEvents> {
 					headRotation: this.rotation,
 					state: this.state,
 					cameraCenter: this.position,
-					cameraAtAxis: Vector3.zero,
-					cameraLeftAxis: Vector3.zero,
-					cameraUpAxis: Vector3.zero,
-					far: 20,
-					controlFlags: this.lastControlFlags,
+					cameraAtAxis: this.cameraAtAxis,
+					cameraLeftAxis: this.cameraLeftAxis,
+					cameraUpAxis: this.cameraUpAxis,
+					far: 32,
+					controlFlags: this.controlFlags,
 					flags: 0,
 				},
 			}),

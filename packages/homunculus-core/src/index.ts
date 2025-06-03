@@ -2,7 +2,6 @@
 import "./network/packets"
 
 // initialize delegates
-import "./services"
 import "./network/delegates"
 
 // export everything

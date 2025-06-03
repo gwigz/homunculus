@@ -12,6 +12,7 @@ export interface AuthenticatorOptions {
 	start?: "home" | "last" | string
 	mfaToken?: string
 	mfaTokenHash?: string
+	additionalLoginOptions?: string[]
 }
 
 export class Authenticator {
@@ -59,6 +60,7 @@ export class Authenticator {
 				"inventory-skeleton",
 				"buddy-list",
 				"login-flags",
+				...(options.additionalLoginOptions ?? []),
 			],
 		}
 

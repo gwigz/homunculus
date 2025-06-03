@@ -41,13 +41,6 @@ class DeferredAcknowledgePromise<T = void> {
 				this.retryInterval = setInterval(() => {
 					this.retries++
 
-					console.log(
-						"retrying",
-						packet.metadata.name,
-						this.retries,
-						maxRetries,
-					)
-
 					if (this.retries > maxRetries) {
 						this.cleanup()
 						this.reject(new AcknowledgeTimeoutError(packet.metadata.name))

@@ -34,6 +34,7 @@ describe("Quaternion", () => {
 		it("formats as <x, y, z, w>", () => {
 			const quaternion = new Quaternion(1, 2, 3, 4)
 
+			expect(quaternion.toString()).toBe("<1, 2, 3, 4>")
 			expect(Quaternion.toString(quaternion)).toBe("<1, 2, 3, 4>")
 		})
 	})

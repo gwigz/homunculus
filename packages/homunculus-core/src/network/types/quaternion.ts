@@ -4,7 +4,7 @@ import type U16 from "./u16"
 import Vector3 from "./vector-3"
 
 class Quaternion {
-	public static readonly size: number = 12
+	public static readonly size = 12
 	public static readonly zero = new Quaternion(0, 0, 0, 0)
 	public static readonly identity = new Quaternion(0, 0, 0, 1)
 
@@ -18,7 +18,16 @@ class Quaternion {
 	/**
 	 * Returns a string representation of the quaternion.
 	 *
-	 * @returns {string} String in the format "<x, y, z, w>"
+	 * @returns String in the format "<x, y, z, w>"
+	 */
+	public toString() {
+		return Quaternion.toString(this)
+	}
+
+	/**
+	 * Returns a string representation of a quaternion.
+	 *
+	 * @returns String in the format "<x, y, z, w>"
 	 */
 	public static toString(quaternion: Quaternion) {
 		return `<${quaternion.x}, ${quaternion.y}, ${quaternion.z}, ${quaternion.w}>`
@@ -27,12 +36,11 @@ class Quaternion {
 	/**
 	 * Converts array input into a buffer representing a quaternion.
 	 *
-	 * @param {number[]} quaternion Should contain 4 values
-	 * @returns {Buffer}
+	 * @param quaternion Should contain 4 values
 	 */
 	public static toBuffer(
 		quaternion: [x: number, y: number, z: number, w: number] | Quaternion,
-	): Buffer {
+	) {
 		const buffer = Buffer.allocUnsafe(Quaternion.size)
 
 		if (Array.isArray(quaternion)) {

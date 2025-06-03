@@ -1,6 +1,8 @@
 import { Buffer } from "node:buffer"
 import { packets } from "~/network"
 import { Region } from "~/structures"
+import { Constants } from "~/utilities"
+import { wait } from "~/utilities/wait"
 
 let counter = 0
 
@@ -50,15 +52,38 @@ packets.createAgentMovementCompleteDelegate({
 		throttles.writeFloatLE(texture, 20)
 		throttles.writeFloatLE(asset, 24)
 
-		await context.circuit.send([
+		await context.circuit.sendReliable([
+			packets.agentFov({
+				// TODO: fix capitalization
+				fOVBlock: {
+					genCounter: 0,
+					verticalAngle: 1.2566370964050293,
+				},
+			}),
 			packets.agentThrottle({
 				throttle: { genCounter: counter++, throttles },
 			}),
-			packets.setAlwaysRun({ agentData: { alwaysRun: false } }),
-			// new AgentDataUpdateRequest(),
+			packets.agentHeightWidth({
+				heightWidthBlock: { genCounter: 0, height: 1920, width: 1080 },
+			}),
 		])
 
-		// notify the core that we're connected, after a short delay
-		setTimeout(() => context.core.ready(), 1_000)
+		// TODO: MoneyBalanceRequest
+		// TODO: Request inventory
+		// TODO: Queue gestures
+		// TODO: Queue RezMultipleAttachmentsFromInv? (shocked the server doesn't handle this)
+
+		// NOTE: temporary fix for squatting animation
+		// TODO: handle AvatarAnimation based on current control flags?
+		for (const controlFlags of [
+			Constants.ControlFlags.NONE,
+			Constants.ControlFlags.FINISH_ANIM,
+			Constants.ControlFlags.NONE,
+		]) {
+			await wait(1000)
+			await context.client.self.sendAgentUpdate({ controlFlags })
+		}
+
+		context.core.ready()
 	},
 })

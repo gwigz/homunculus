@@ -56,11 +56,6 @@ export class PacketBuffer {
 
 			this.frequency = 3
 		}
-
-		// if zero-coded, de-zero-...code first
-		if (this.zerocoded) {
-			this.dezerocode()
-		}
 	}
 
 	public prepare() {
@@ -113,6 +108,8 @@ export class PacketBuffer {
 	}
 
 	public dezerocode() {
+		assert(this.zerocoded, "Packet is not zero-coded")
+
 		// skip header
 		const start = 6
 
@@ -128,9 +125,7 @@ export class PacketBuffer {
 		for (let index = start; index <= end; index++) {
 			if (zero) {
 				zero = false
-
-				// minus two bytes for the overhead
-				size += this.buffer.readUInt8(index) - 2
+				size += this.buffer.readUInt8(index)
 			} else if (this.buffer[index] === 0 && index <= cap) {
 				zero = true
 			}
@@ -142,6 +137,9 @@ export class PacketBuffer {
 
 		// copy header
 		this.buffer.copy(buffer, 0, 0, start - 1)
+
+		// set the header to non-zero-coded
+		buffer[0] = this.buffer[0]! & ~0x80
 
 		// copy body, with fill for zero-coded bytes
 		for (let index = start; index <= end; index++) {
@@ -238,14 +236,11 @@ export class PacketBuffer {
 			return []
 		}
 
-		const acks = []
 		const length = this.buffer.readUInt8(this.buffer.length - 1)
 		const start = this.buffer.length - (length * 4 + 1)
 
-		for (let i = 0; i < length; i++) {
-			acks.push(this.buffer.readUInt32LE(start - (i * 4 + 1)))
-		}
-
-		return acks
+		return Array.from({ length }, (_, i) =>
+			this.buffer.readUInt32BE(start + i * 4),
+		)
 	}
 }

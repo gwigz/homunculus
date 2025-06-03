@@ -1,11 +1,5 @@
 import type { Client } from "~/client"
-import type {
-	Circuit,
-	Core,
-	DeserializedPacket,
-	Packet,
-	PacketMetadata,
-} from "~/network"
+import type { Circuit, Core, Packet, PacketMetadata } from "~/network"
 import type { Region } from "~/structures"
 
 export interface DelegateContext {
@@ -17,7 +11,7 @@ export interface DelegateContext {
 
 export interface DelegateConfig<T extends object> {
 	handle: (packet: Packet<T>, context: DelegateContext) => Promise<any> | any
-	skip?: (packet: Packet<T>, context: DelegateContext) => boolean
+	skip?: (context: DelegateContext) => boolean
 	priority?: number
 	metadata: PacketMetadata
 }
@@ -28,7 +22,7 @@ export class Delegate {
 	/**
 	 * Register a new packet delegate.
 	 */
-	register<T extends object>(config: DelegateConfig<T>) {
+	public register<T extends object>(config: DelegateConfig<T>) {
 		const delegates = this.delegates.get(config.metadata.name) || []
 
 		delegates.push(config)
@@ -38,26 +32,11 @@ export class Delegate {
 	}
 
 	/**
-	 * Handle a packet by running all registered delegates for its type.
+	 * Gets all delegates that are ready to handle a packet.
 	 */
-	async handle(packet: DeserializedPacket, context: DelegateContext) {
-		const delegates = this.delegates.get(packet.metadata.name) || []
+	public get(name: string, context: DelegateContext) {
+		const delegates = this.delegates.get(name) || []
 
-		for (const delegate of delegates) {
-			if (delegate.skip?.(packet, context)) {
-				continue
-			}
-
-			const promise = delegate.handle(packet, context)
-
-			if (promise instanceof Promise) {
-				promise.catch((error) => {
-					context.client.emit(
-						"error",
-						error instanceof Error ? error : new Error(String(error)),
-					)
-				})
-			}
-		}
+		return delegates.filter((delegate) => !delegate.skip?.(context))
 	}
 }

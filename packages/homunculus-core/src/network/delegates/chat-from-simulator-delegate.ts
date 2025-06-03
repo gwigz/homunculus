@@ -16,5 +16,5 @@ packets.createChatFromSimulatorDelegate({
 			message: chatData.message.toString("utf8").slice(0, -1),
 		})
 	},
-	skip: (_, context) => !context.client.nearby.listenerCount("chat"),
+	skip: (context) => !context.client.nearby.listenerCount("chat"),
 })

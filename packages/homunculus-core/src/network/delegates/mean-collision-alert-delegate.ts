@@ -23,5 +23,5 @@ packets.createMeanCollisionAlertDelegate({
 			})
 		}
 	},
-	skip: (_, context) => !context.client.self.listenerCount("collision"),
+	skip: (context) => !context.client.self.listenerCount("collision"),
 })

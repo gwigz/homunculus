@@ -99,13 +99,14 @@ const bot = new Bot(client, { commandPrefix: "!" })
 // ---cut---
 bot.registerCommand({
   action: "ping",
-  process(client, data, { source, fromName }) {
+  process(client, data, { source }) {
+    // only respond to messages from a specific avatar
     if (source !== "a2e76fcd-9360-4f6d-a924-000000000003") {
       return
     }
 
     // return a message (to local chat)
-    return `Pong ${fromName}!`
+    return "Hi Philip!"
   },
 })
 ```

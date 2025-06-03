@@ -59,7 +59,7 @@ export class Region {
 		} catch (error) {
 			if (error instanceof AcknowledgeTimeoutError) {
 				this.client.emit(
-					"warning",
+					"warn",
 					`Timed out trying to get name for region "${this.handle}".`,
 				)
 			} else {
@@ -88,6 +88,14 @@ export class Region {
 			}
 		}
 	}
+
+	// public async getParcelByPosition(position: Vector3) {
+	// 	return this.getParcelByCoordinates(position.x, position.y)
+	// }
+
+	// public async getParcelByCoordinates(x: number, y: number) {
+	// 	// TODO: implement this
+	// }
 
 	/**
 	 * Handles coarse location updates for agents in the region.

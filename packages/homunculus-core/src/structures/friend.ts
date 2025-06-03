@@ -3,6 +3,9 @@ import type { Client } from "~/client"
 export class Friend {
 	public online?: boolean
 
+	/**
+	 * @internal
+	 */
 	constructor(
 		private readonly client: Client,
 		public readonly key: string,

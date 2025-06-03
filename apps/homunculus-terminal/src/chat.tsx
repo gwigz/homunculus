@@ -17,8 +17,8 @@ export interface Message extends Partial<NearbyChatMessage> {
 }
 
 const inaudibleChatTypes = [
-	Constants.ChatTypes.TYPING,
-	Constants.ChatTypes.STOPPED,
+	Constants.ChatTypes.TYPING_START,
+	Constants.ChatTypes.TYPING_STOP,
 ] as number[]
 
 const chatInputHeight = 3
@@ -253,7 +253,7 @@ export function Chat({ client, initialMessages = [], onExit }: ChatProps) {
 		}
 
 		client.on("debug", handleDebug)
-		client.on("warning", handleWarning)
+		client.on("warn", handleWarning)
 		client.on("error", handleError)
 
 		client.nearby.on("chat", handleChat)
@@ -273,7 +273,7 @@ export function Chat({ client, initialMessages = [], onExit }: ChatProps) {
 
 		return () => {
 			client.off("debug", handleDebug)
-			client.off("warning", handleWarning)
+			client.off("warn", handleWarning)
 			client.off("error", handleError)
 
 			client.nearby.off("chat", handleChat)

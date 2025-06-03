@@ -3,8 +3,8 @@ import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
 import type { Region } from "./region"
 
 export interface RegionsEvents {
-	set: [region: Region]
-	delete: [handle: string]
+	connect: [region: Region]
+	disconnect: [handle: string]
 }
 
 export class Regions extends AsyncEventEmitter<RegionsEvents> {
@@ -25,13 +25,13 @@ export class Regions extends AsyncEventEmitter<RegionsEvents> {
 		}
 
 		this.regions.set(handle.toString(), region)
-		this.emit("set", region)
+		this.emit("connect", region)
 
 		return this
 	}
 
 	public delete(handle: string | number | bigint) {
-		this.emit("delete", handle.toString())
+		this.emit("disconnect", handle.toString())
 
 		return this.regions.delete(handle.toString())
 	}

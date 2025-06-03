@@ -12,6 +12,9 @@ export interface NearbyEvents {
 export class Nearby extends AsyncEventEmitter<NearbyEvents> {
 	private typingTimeout?: NodeJS.Timeout
 
+	/**
+	 * @internal
+	 */
 	constructor(private readonly client: Client) {
 		super()
 	}

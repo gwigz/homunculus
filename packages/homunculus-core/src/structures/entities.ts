@@ -2,7 +2,7 @@ import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
 import type { Entity } from "./entity"
 
 export interface EntitiesEvents {
-	set: [entity: Entity]
+	create: [entity: Entity]
 	delete: [id: number]
 }
 
@@ -30,7 +30,7 @@ export class Entities extends AsyncEventEmitter<EntitiesEvents> {
 		this.entities.set(id, entity)
 		this.register.set(entity.key, id)
 
-		this.emit("set", entity)
+		this.emit("create", entity)
 
 		return this
 	}

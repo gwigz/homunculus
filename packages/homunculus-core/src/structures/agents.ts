@@ -2,8 +2,8 @@ import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
 import type { Agent } from "./agent"
 
 export interface AgentsEvents {
-	set: [agent: Agent]
-	delete: [agent: Agent]
+	"entered-region": [agent: Agent]
+	"left-region": [agent: Agent]
 }
 
 export class Agents extends AsyncEventEmitter<AgentsEvents> {
@@ -19,7 +19,7 @@ export class Agents extends AsyncEventEmitter<AgentsEvents> {
 
 	public set(key: string, agent: Agent) {
 		this.agents.set(key, agent)
-		this.emit("set", agent)
+		this.emit("entered-region", agent)
 
 		return this
 	}
@@ -28,7 +28,7 @@ export class Agents extends AsyncEventEmitter<AgentsEvents> {
 		const agent = this.get(key)
 
 		if (agent) {
-			this.emit("delete", agent)
+			this.emit("left-region", agent)
 		}
 
 		return this.agents.delete(key)

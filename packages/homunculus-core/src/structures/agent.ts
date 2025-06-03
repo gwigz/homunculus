@@ -18,6 +18,9 @@ export class Agent {
 	 */
 	public coarseLocation?: Vector3
 
+	/**
+	 * @internal
+	 */
 	constructor(
 		private readonly client: Client,
 		public readonly key: string,
@@ -57,6 +60,7 @@ export class Agent {
 			}
 
 			if (!avatar || avatar.lastUpdated < Date.now() - ONE_HOUR) {
+				// TODO: add a queue for requesting names, so we can bulk them
 				await this.client.sendReliable([
 					packets.uuidNameRequest({ uuidNameBlock: [{ id: this.key }] }),
 				])
@@ -64,7 +68,7 @@ export class Agent {
 		} catch (error) {
 			if (error instanceof AcknowledgeTimeoutError) {
 				this.client.emit(
-					"warning",
+					"warn",
 					`Timed out trying to get name for agent "${this.key}".`,
 				)
 			} else {

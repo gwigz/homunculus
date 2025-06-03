@@ -124,6 +124,7 @@ export class Entity {
 
 	/**
 	 * @param client The Client that instantiated this Entity.
+	 * @internal
 	 */
 	constructor(
 		private readonly client: Client,

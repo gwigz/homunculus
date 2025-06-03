@@ -8,6 +8,9 @@ export interface InstantMessageEvents {
 }
 
 export class InstantMessages extends AsyncEventEmitter<InstantMessageEvents> {
+	/**
+	 * @internal
+	 */
 	constructor(private readonly client: Client) {
 		super()
 	}

@@ -1,6 +1,6 @@
 export const ClientEvents = {
 	DEBUG: "debug",
-	WARNING: "warning",
+	WARN: "warn",
 	ERROR: "error",
 	READY: "ready",
 	CONNECTING: "connecting",

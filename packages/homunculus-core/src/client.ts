@@ -19,7 +19,7 @@ export interface ClientEvents {
 	[Constants.ClientEvents.READY]: []
 	[Constants.ClientEvents.DEBUG]: [message: string]
 	[Constants.ClientEvents.ERROR]: [error: Error]
-	[Constants.ClientEvents.WARNING]: [warning: string]
+	[Constants.ClientEvents.WARN]: [warning: string]
 	[Constants.ClientEvents.CONNECTING]: []
 	[Constants.ClientEvents.RECONNECTING]: []
 	[Constants.ClientEvents.DISCONNECTING]: []
@@ -75,6 +75,21 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 		return this.regions.current
 	}
 
+	/**
+	 * The Parcel representing the current parcel, as in the parcel that this
+	 * agent is standing within.
+	 *
+	 * @note This value changes with movement or parcel updates. Always use
+	 * `client.parcel` rather than storing a reference to this value.
+	 */
+	public get parcel() {
+		return this.self.parcel
+	}
+
+	public get status() {
+		return this._core.status
+	}
+
 	private readonly _core: Core
 	private _self?: Self
 
@@ -105,7 +120,7 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 			}
 
 			if (logger?.warn) {
-				this.on(Constants.ClientEvents.WARNING, logger.warn)
+				this.on(Constants.ClientEvents.WARN, logger.warn)
 			}
 
 			if (logger?.error) {
@@ -114,10 +129,6 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 		}
 
 		// https://gist.github.com/gwigz/0c13179591a3d005eb4765a3bfe9fc3d
-	}
-
-	get status() {
-		return this._core.status
 	}
 
 	/**
@@ -155,6 +166,8 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 		if (response.message) {
 			this.emit(Constants.ClientEvents.DEBUG, response.message)
 		}
+
+		// TODO: load in `response.buddyList` into `this.friends`
 
 		this.self = new Self(this, {
 			key: response.agentId,

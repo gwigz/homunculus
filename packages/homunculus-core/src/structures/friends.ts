@@ -3,8 +3,8 @@ import type { Client } from "~/client"
 import type { Friend } from "./friend"
 
 export interface FriendEvents {
-	set: [friend: Friend]
-	delete: [friend: Friend]
+	"online-status-change": [friend: Friend]
+	"friendship-terminated": [friend: Friend]
 }
 
 export class Friends extends AsyncEventEmitter<FriendEvents> {
@@ -24,7 +24,7 @@ export class Friends extends AsyncEventEmitter<FriendEvents> {
 
 	public set(key: string, friend: Friend) {
 		this.friends.set(key, friend)
-		this.emit("set", friend)
+		this.emit("online-status-change", friend)
 
 		return this
 	}
@@ -33,7 +33,7 @@ export class Friends extends AsyncEventEmitter<FriendEvents> {
 		const friend = this.get(key)
 
 		if (friend) {
-			this.emit("delete", friend)
+			this.emit("friendship-terminated", friend)
 		}
 
 		return this.friends.delete(key)

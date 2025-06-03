@@ -1,3 +1,4 @@
+import assert from "node:assert"
 import type { Circuit, Packet } from "~/network"
 import { packets } from "~/network"
 
@@ -10,6 +11,63 @@ export class AcknowledgeTimeoutError extends Error {
 	}
 }
 
+class DeferredAcknowledgePromise<T = void> {
+	public readonly promise: Promise<T>
+
+	public resolve!: (value: T | PromiseLike<T>) => void
+	public reject!: (reason?: any) => void
+
+	private timeout?: NodeJS.Timeout
+
+	private retries = 0
+	private retryInterval?: NodeJS.Timeout
+
+	constructor(circuit: Circuit, packet: Packet<any>, timeout: number) {
+		assert(timeout >= 1000, "Timeout must be at least 1000ms")
+
+		this.promise = new Promise<T>((resolve, reject) => {
+			this.resolve = resolve
+			this.reject = reject
+
+			this.timeout = setTimeout(() => {
+				this.cleanup()
+				this.reject(new AcknowledgeTimeoutError(packet.metadata.name))
+			}, timeout)
+
+			const retryInterval = Math.min(1000, timeout / 3)
+			const maxRetries = Math.floor(timeout / retryInterval)
+
+			if (maxRetries > 0) {
+				this.retryInterval = setInterval(() => {
+					this.retries++
+
+					console.log(
+						"retrying",
+						packet.metadata.name,
+						this.retries,
+						maxRetries,
+					)
+
+					if (this.retries > maxRetries) {
+						this.cleanup()
+						this.reject(new AcknowledgeTimeoutError(packet.metadata.name))
+					} else {
+						circuit.sendReliableWithRetries(packet, this.retries)
+					}
+				}, retryInterval)
+			}
+		})
+	}
+
+	public cleanup() {
+		clearTimeout(this.timeout)
+		clearInterval(this.retryInterval)
+
+		this.timeout = undefined
+		this.retryInterval = undefined
+	}
+}
+
 export class Acknowledger {
 	private acknowledge = packets.packetAck({ packets: [] })
 
@@ -19,13 +77,7 @@ export class Acknowledger {
 		queued: new Set<number>(),
 	}
 
-	private awaiting = new Map<
-		number,
-		[
-			resolve: (value: void | PromiseLike<void>) => void,
-			timeout: NodeJS.Timeout,
-		]
-	>()
+	private awaiting = new Map<number, DeferredAcknowledgePromise>()
 
 	private tickInterval?: NodeJS.Timeout
 	private pruneInterval?: NodeJS.Timeout
@@ -60,28 +112,26 @@ export class Acknowledger {
 		timeout = 10_000,
 	) {
 		if (this.awaiting.has(sequence)) {
-			return this.awaiting.get(sequence)
+			return this.awaiting.get(sequence)!.promise
 		}
 
-		return new Promise<void>((resolve, reject) => {
-			this.awaiting.set(sequence, [
-				resolve,
-				setTimeout(
-					() => reject(new AcknowledgeTimeoutError(packet.metadata.name)),
-					timeout,
-				),
-			])
-		})
+		const deferred = new DeferredAcknowledgePromise(
+			this.circuit,
+			packet,
+			timeout,
+		)
+
+		this.awaiting.set(sequence, deferred)
+
+		return deferred.promise
 	}
 
 	public handleReceivedAck(number: number) {
-		const awaiting = this.awaiting.get(number)
+		const deferred = this.awaiting.get(number)
 
-		if (awaiting) {
-			const [resolve, timeout] = awaiting
-
-			clearTimeout(timeout)
-			resolve()
+		if (deferred) {
+			deferred.cleanup()
+			deferred.resolve()
 
 			this.awaiting.delete(number)
 		}
@@ -119,7 +169,7 @@ export class Acknowledger {
 		const uptime = process.uptime()
 
 		for (const [sequence, timestamp] of this.packets.seen) {
-			if (uptime - timestamp > 5) {
+			if (uptime - timestamp > 10) {
 				this.packets.seen.delete(sequence)
 			} else {
 				// rest of the packets are probably still valid

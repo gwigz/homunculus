@@ -3,6 +3,7 @@ import type { Client } from "~/client"
 import {
 	Acknowledger,
 	type Core,
+	type DelegateContext,
 	type Packet,
 	type PacketBuffer,
 	packets,
@@ -27,6 +28,8 @@ export class Circuit {
 
 	private dead = true
 
+	private context: DelegateContext
+
 	constructor(
 		private readonly client: Client,
 		private readonly core: Core,
@@ -35,6 +38,13 @@ export class Circuit {
 		this.id = data.id
 		this.address = data.address
 		this.port = data.port
+
+		this.context = {
+			client: this.client,
+			core: this.core,
+			circuit: this,
+			region: this.region,
+		}
 	}
 
 	get self() {
@@ -58,7 +68,8 @@ export class Circuit {
 	}
 
 	/**
-	 * @todo Add a retry mechanism, not just a timeout.
+	 * @param packets Packets to send.
+	 * @param timeout Timeout in milliseconds, must be at least 1000ms.
 	 */
 	public sendReliable(packets: Array<Packet<any>>, timeout = 5_000) {
 		assert.notEqual(this.dead, true, Constants.Errors.INACTIVE_CIRCUIT)
@@ -78,6 +89,18 @@ export class Circuit {
 		this.core.send(this, serialized)
 
 		return Promise.all(promises)
+	}
+
+	/**
+	 * @internal
+	 */
+	public sendReliableWithRetries(
+		packet: Packet<any>,
+		retryAttemptIndex: number,
+	) {
+		assert(retryAttemptIndex > 0, "Retry attempt index must be greater than 0")
+
+		this.core.send(this, [this.serializer.convert(packet)])
 	}
 
 	public async receive(buffer: PacketBuffer) {
@@ -103,15 +126,30 @@ export class Circuit {
 		}
 
 		// TODO: allow for partial deserialization if we don't have any delegates
-		await services.delegate.handle(
-			services.deserializer.convert(packet, buffer),
-			{
-				client: this.client,
-				core: this.core,
-				circuit: this,
-				region: this.region,
-			},
-		)
+		try {
+			const delegates = services.delegate.get(packet.name, this.context)
+
+			if (delegates?.length) {
+				const deserialized = services.deserializer.convert(packet, buffer)
+
+				for (const delegate of delegates) {
+					delegate.handle(deserialized, this.context)
+				}
+			}
+		} catch (error) {
+			this.client.emit(
+				Constants.ClientEvents.ERROR,
+				new Error(`Error deserializing packet ${packet.name}`, {
+					cause: error,
+				}),
+			)
+
+			// this.client.emit(
+			// 	Constants.ClientEvents.DEBUG,
+			// 	// @ts-expect-error
+			// 	buffer.buffer.toString("hex"),
+			// )
+		}
 	}
 
 	public async handshake() {

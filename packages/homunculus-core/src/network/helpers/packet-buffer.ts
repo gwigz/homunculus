@@ -16,7 +16,7 @@ import {
  */
 export class PacketBuffer {
 	public readonly id?: number
-	public readonly frequency?: number
+	public readonly frequency?: 0 | 1 | 2 | 3
 
 	private buffer: Buffer
 	private position = 0
@@ -26,9 +26,6 @@ export class PacketBuffer {
 
 		if (delegating) {
 			this.position = 0
-
-			// skip parsing packet header if we are just want to use this for a
-			// buffer, may move the stuff below into a similar method like prepare
 			return
 		}
 
@@ -36,45 +33,33 @@ export class PacketBuffer {
 			return
 		}
 
-		const header = this.zerocoded
-			? ([] as number[])
-			: this.buffer.subarray(6, Math.min(this.buffer.length, 12))
-
-		const offset = Math.min(this.buffer.length, 12)
-
-		if (Array.isArray(header)) {
-			for (let i = 6; i < offset; i++) {
-				if (this.buffer[i] === 0x00) {
-					// handle zero-coding: expand the next byte as a run-length count of zeros
-					header.push(...new Uint8Array(this.buffer.readUInt8(++i)))
-				} else {
-					header.push(this.buffer[i] ?? 0)
-				}
-			}
-		}
-
-		// Determine the frequency and message ID based on the header
-		if (header[0] !== 0xff) {
+		// determine the frequency
+		if (this.buffer[6] !== 0xff) {
 			// high frequency (frequency = 0)
-			this.id = header[0]
+			this.id = this.buffer[6]
 			this.frequency = 0
-		} else if (header[1] !== 0xff) {
+		} else if (this.buffer[7] !== 0xff) {
 			// medium frequency (frequency = 1)
-			this.id = header[1]
+			this.id = this.buffer[7]
 			this.frequency = 1
-		} else if (header[2] !== 0xff) {
+		} else if (this.buffer[8] !== 0xff) {
 			// low frequency (frequency = 2)
-			this.id = (header[2]! << 8) | (header[3] ?? 0)
+			this.id = (this.buffer[8]! << 8) | (this.buffer[9] ?? 0)
 			this.frequency = 2
 		} else {
 			// fixed frequency (frequency = 3)
 			this.id =
-				((header[0] << 24) >>> 0) +
-				((header[1] << 16) >>> 0) +
-				((header[2] << 8) >>> 0) +
-				(header[3] ?? 0)
+				((this.buffer[6] << 24) >>> 0) +
+				((this.buffer[7] << 16) >>> 0) +
+				((this.buffer[8] << 8) >>> 0) +
+				(this.buffer[9] ?? 0)
 
 			this.frequency = 3
+		}
+
+		// if zero-coded, de-zero-...code first
+		if (this.zerocoded) {
+			this.dezerocode()
 		}
 	}
 
@@ -128,30 +113,53 @@ export class PacketBuffer {
 	}
 
 	public dezerocode() {
-		const output = [...this.buffer.subarray(0, 6)]
+		// skip header
+		const start = 6
 
-		let end = this.length
+		// skip acks (they're not zero-coded)
+		const end = this.length - 1
+		const tail = this.acks ? this.buffer.readUInt8(end) * 4 + 1 : 0
+		const cap = end - tail
 
-		// acks are not zero-coded, so we can skip them
-		if (this.acks) {
-			const acks = this.buffer.readUInt8(this.buffer.length - 1)
+		let size = 0
+		let zero = false
+		let position = start
 
-			if (acks > 0) {
-				end = this.buffer.length - (acks * 4 + 1)
+		for (let index = start; index <= end; index++) {
+			if (zero) {
+				zero = false
+
+				// minus two bytes for the overhead
+				size += this.buffer.readUInt8(index) - 2
+			} else if (this.buffer[index] === 0 && index <= cap) {
+				zero = true
 			}
-
-			assert.ok(end >= 7, "Invalid packet")
 		}
 
-		for (let i = 6; i < end; i++) {
-			if (this.buffer[i] === 0x00) {
-				output.push(...new Uint8Array(this.buffer.readUInt8(++i)))
+		zero = false
+
+		const buffer = Buffer.allocUnsafe(end + 1 + size)
+
+		// copy header
+		this.buffer.copy(buffer, 0, 0, start - 1)
+
+		// copy body, with fill for zero-coded bytes
+		for (let index = start; index <= end; index++) {
+			if (zero) {
+				zero = false
+
+				const count = this.buffer.readUInt8(index)
+
+				buffer.fill(0, position, position + count)
+				position += count
+			} else if (this.buffer[index] === 0 && index <= cap) {
+				zero = true
 			} else {
-				output.push(this.buffer[i] ?? 0)
+				buffer[position++] = this.buffer[index]!
 			}
 		}
 
-		this.buffer = Buffer.from(output)
+		this.buffer = buffer
 	}
 
 	public read(type: Type, ...args: any[]) {

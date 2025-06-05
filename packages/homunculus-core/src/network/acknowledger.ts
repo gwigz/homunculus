@@ -65,7 +65,6 @@ export class Acknowledger {
 	private acknowledge = packets.packetAck({ packets: [] })
 
 	private packets = {
-		// TODO: consider an array that only stores last n packets
 		seen: new Map<number, number>(),
 		queued: new Set<number>(),
 	}

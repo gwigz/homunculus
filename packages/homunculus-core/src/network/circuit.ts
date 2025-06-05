@@ -125,7 +125,6 @@ export class Circuit {
 			return
 		}
 
-		// TODO: allow for partial deserialization if we don't have any delegates
 		try {
 			const delegates = services.delegate.get(packet.name, this.context)
 

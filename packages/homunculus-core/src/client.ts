@@ -3,7 +3,7 @@ import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
 import { type AuthenticatorOptions, Core, Vector3 } from "./network"
 import { loginOptionsSchema } from "./schema/environment-schema"
 import { services } from "./services"
-import { Friends, Nearby, Region } from "./structures"
+import { Friend, Friends, Nearby, Region } from "./structures"
 import { InstantMessages } from "./structures/instant-messages"
 import { Regions } from "./structures/regions"
 import { Self } from "./structures/self"
@@ -167,8 +167,6 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 			this.emit(Constants.ClientEvents.DEBUG, response.message)
 		}
 
-		// TODO: load in `response.buddyList` into `this.friends`
-
 		this.self = new Self(this, {
 			key: response.agentId,
 			sessionId: response.sessionId,
@@ -178,6 +176,12 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 			lookAt: response.lookAt,
 			offset: new Vector3(response.regionX ?? 0, response.regionY ?? 0, 0),
 		})
+
+		for (const buddy of response.buddyList ?? []) {
+			if (buddy.buddyId) {
+				this.friends.set(buddy.buddyId, new Friend(this, buddy.buddyId))
+			}
+		}
 
 		const handle =
 			(BigInt(response.regionX ?? 0) << 32n) | BigInt(response.regionY ?? 0)

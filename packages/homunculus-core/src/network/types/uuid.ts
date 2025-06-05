@@ -2,14 +2,17 @@ import assert from "node:assert"
 import { Buffer } from "node:buffer"
 import { randomUUID } from "node:crypto"
 
-class UUID {
+export type UUIDString = string & { readonly __brand: unique symbol }
+
+export class UUID {
 	public static readonly size = 16
-	public static readonly zero = "00000000-0000-0000-0000-000000000000"
+
+	public static readonly zero =
+		"00000000-0000-0000-0000-000000000000" as UUIDString
 
 	/**
 	 * Converts string input into a buffer representing a UUID.
 	 *
-	 * @todo Optimize this, it's probably not that good.
 	 * @param uuid UUID string to convert.
 	 */
 	public static toBuffer(uuid: string | Buffer) {
@@ -39,14 +42,14 @@ class UUID {
 			`Invalid UUID string generated from buffer: ${output}`,
 		)
 
-		return output
+		return output as UUIDString
 	}
 
 	/**
 	 * Generates a random UUID (using `node:crypto.randomUUID`).
 	 */
 	public static random() {
-		return randomUUID()
+		return randomUUID() as UUIDString
 	}
 
 	/**
@@ -57,7 +60,7 @@ class UUID {
 	 * @param uuid String to validate.
 	 * @returns boolean indicating if the string is a valid UUID format.
 	 */
-	public static validate(uuid: string) {
+	public static validate(uuid: string): uuid is UUIDString {
 		return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
 			uuid,
 		)

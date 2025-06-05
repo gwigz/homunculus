@@ -1,6 +1,6 @@
 import { Buffer } from "node:buffer"
 import { describe, expect, it } from "bun:test"
-import UUID from "./uuid"
+import UUID, { type UUIDString } from "./uuid"
 
 describe("UUID", () => {
 	describe("size and constants", () => {
@@ -9,13 +9,15 @@ describe("UUID", () => {
 		})
 
 		it("has correct zero UUID", () => {
-			expect(UUID.zero).toBe("00000000-0000-0000-0000-000000000000")
+			expect(UUID.zero).toBe(
+				"00000000-0000-0000-0000-000000000000" as UUIDString,
+			)
 		})
 	})
 
 	describe("buffer serialization", () => {
 		it("converts string UUID to buffer", () => {
-			const uuid = "a2e76fcd-9360-4f6d-a924-000000000003"
+			const uuid = "a2e76fcd-9360-4f6d-a924-000000000003" as UUIDString
 			const buffer = UUID.toBuffer(uuid)
 
 			expect(buffer.length).toBe(UUID.size)
@@ -39,14 +41,14 @@ describe("UUID", () => {
 
 	describe("buffer deserialization", () => {
 		it("creates UUID from buffer", () => {
-			const uuid = "a2e76fcd-9360-4f6d-a924-000000000003"
+			const uuid = "a2e76fcd-9360-4f6d-a924-000000000003" as UUIDString
 			const buffer = UUID.toBuffer(uuid)
 
 			expect(UUID.fromBuffer(buffer)).toBe(uuid)
 		})
 
 		it("creates UUID from buffer at offset", () => {
-			const uuid = "a2e76fcd-9360-4f6d-a924-000000000003"
+			const uuid = "a2e76fcd-9360-4f6d-a924-000000000003" as UUIDString
 			const buffer = Buffer.allocUnsafe(UUID.size + 4)
 
 			UUID.toBuffer(uuid).copy(buffer, 4)

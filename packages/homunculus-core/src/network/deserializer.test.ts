@@ -208,19 +208,13 @@ describe("Deserializer", () => {
 		//   PingID = 179
 
 		const expectedResult = {
-			metadata: {
-				name: "CompletePingCheck",
-				id: 2,
-			},
+			metadata: { name: "CompletePingCheck", id: 2 },
 			sequence: 11941,
-			data: {
-				pingId: {
-					pingId: 179,
-				},
-			},
+			data: { pingId: { pingId: 179 } },
 		} as const
 
 		const packetBuffer = deserializer.read(
+			// 0xb3 (pingId) -> 0x00009f4b, 0x00009f4c, 0x00009f4e, 0x03 (3 acks)
 			Buffer.from("1000002ea50002b300009f4b00009f4c00009f4e03", "hex"),
 		)
 

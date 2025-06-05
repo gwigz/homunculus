@@ -4,7 +4,7 @@ const client = new Client()
 
 client.nearby.on("chat", (chat) => {
 	if (
-		chat.chatType === Constants.ChatTypes.NORMAL &&
+		chat.type === Constants.ChatTypes.NORMAL &&
 		chat.sourceType === Constants.ChatSources.AGENT
 	) {
 		if (chat.message.includes("ping")) {

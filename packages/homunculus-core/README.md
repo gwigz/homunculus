@@ -8,6 +8,7 @@ Node.js framework that allows basic interactions with the virtual world
 
 - Local chat interactions
 - Minimal details about nearby objects and avatars
+- Optional SOCKS5 proxy support
 - More to come later...
 
 ## Installation

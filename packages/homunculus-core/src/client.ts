@@ -1,7 +1,15 @@
 import assert from "node:assert"
 import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
-import { type AuthenticatorOptions, Core, Vector3 } from "./network"
-import { loginOptionsSchema } from "./schema/environment-schema"
+import {
+	type AuthenticatorOptions,
+	Core,
+	type ProxyOptions,
+	Vector3,
+} from "./network"
+import {
+	loginOptionsSchema,
+	proxyOptionsSchema,
+} from "./schema/environment-schema"
 import { services } from "./services"
 import { Friend, Friends, Nearby, Region } from "./structures"
 import { InstantMessages } from "./structures/instant-messages"
@@ -93,10 +101,23 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 	private readonly _core: Core
 	private _self?: Self
 
-	constructor(options?: { logger?: DebugHandlers | false } | undefined) {
+	constructor(
+		options?:
+			| { logger?: DebugHandlers | false; proxy?: ProxyOptions }
+			| undefined,
+	) {
 		super()
 
-		this._core = new Core(this)
+		this._core = new Core(
+			this,
+			options?.proxy || process.env.SOCKS5_HOST
+				? proxyOptionsSchema.parse({
+						host: process.env.SOCKS5_HOST,
+						port: Number.parseInt(process.env.SOCKS5_PORT ?? "0", 10),
+						...options?.proxy,
+					})
+				: undefined,
+		)
 
 		// parcel
 		// friends

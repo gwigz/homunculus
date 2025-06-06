@@ -1,5 +1,11 @@
 import type { Client } from "~/client"
-import { Circuit, type CircuitOptions, packets, Socket } from "~/network"
+import {
+	Circuit,
+	type CircuitOptions,
+	type ProxyOptions,
+	packets,
+	Socket,
+} from "~/network"
 import { Constants } from "~/utilities"
 
 /**
@@ -30,8 +36,11 @@ export class Core {
 	/**
 	 * @param client For emitting processed messages back to.
 	 */
-	constructor(private readonly client: Client) {
-		this.socket = new Socket(client, this)
+	constructor(
+		private readonly client: Client,
+		proxy?: ProxyOptions,
+	) {
+		this.socket = new Socket(client, this, proxy)
 	}
 
 	/**

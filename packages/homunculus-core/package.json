@@ -43,6 +43,10 @@
 		"keyv": "^5.3.3",
 		"zod": "^3.25.36"
 	},
+	"optionalDependencies": {
+		"https-proxy-agent": "^7.0.6",
+		"socks": "^2.8.4"
+	},
 	"devDependencies": {
 		"@biomejs/biome": "2.0.0-beta.5",
 		"@types/bun": "^1.2.15",

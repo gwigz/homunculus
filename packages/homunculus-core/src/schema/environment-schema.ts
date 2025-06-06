@@ -1,5 +1,16 @@
 import { z } from "zod/v4"
 
+export const proxyOptionsSchema = z
+	.object({
+		host: z.string().min(1, "Proxy host must be specified"),
+		port: z.coerce
+			.number()
+			.int()
+			.min(1, "Proxy port must be at least 1")
+			.max(65535, "Proxy port must be between 1 and 65535"),
+	})
+	.optional()
+
 export const loginOptionsSchema = z.object({
 	username: z
 		.string()

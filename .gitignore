@@ -22,6 +22,7 @@ pids
 *.seed
 *.db
 *.tmp
+*.crt
 
 # Dependency directories
 node_modules

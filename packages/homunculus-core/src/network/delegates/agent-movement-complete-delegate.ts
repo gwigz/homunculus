@@ -4,8 +4,6 @@ import { Region } from "~/structures"
 import { Constants } from "~/utilities"
 import { wait } from "~/utilities/wait"
 
-let counter = 0
-
 packets.createAgentMovementCompleteDelegate({
 	handle: async (packet, context) => {
 		context.client.emit("debug", "Agent movement complete...")
@@ -21,7 +19,6 @@ packets.createAgentMovementCompleteDelegate({
 		context.client.self.lookAt = data.lookAt
 
 		const handle = data.regionHandle as bigint
-
 		const region = context.client.regions.get(handle)
 
 		if (!region) {
@@ -61,7 +58,7 @@ packets.createAgentMovementCompleteDelegate({
 				},
 			}),
 			packets.agentThrottle({
-				throttle: { genCounter: counter++, throttles },
+				throttle: { genCounter: 0, throttles },
 			}),
 			packets.agentHeightWidth({
 				heightWidthBlock: { genCounter: 0, height: 1920, width: 1080 },

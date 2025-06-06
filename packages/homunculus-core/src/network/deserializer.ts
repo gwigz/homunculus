@@ -38,19 +38,17 @@ export class Deserializer {
 		buffer.prepare()
 
 		// parse everything...
-		if (metadata.blocks) {
-			for (const block of metadata.blocks) {
-				if (block.multiple) {
-					const quantity = block.size ?? buffer.read(U8)
+		for (const block of metadata.blocks ?? []) {
+			if (block.multiple) {
+				const quantity = block.size ?? buffer.read(U8)
 
-					data[block.name] = []
+				data[block.name] = []
 
-					for (let i = 0; i < quantity; i++) {
-						data[block.name]!.push(this.readParameters(buffer, block))
-					}
-				} else {
-					data[block.name] = this.readParameters(buffer, block)
+				for (let i = 0; i < quantity; i++) {
+					data[block.name]!.push(this.readParameters(buffer, block))
 				}
+			} else {
+				data[block.name] = this.readParameters(buffer, block)
 			}
 		}
 

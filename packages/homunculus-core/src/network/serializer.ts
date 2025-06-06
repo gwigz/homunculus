@@ -9,7 +9,7 @@ const MAX_SEQUENCE = 0x01000000
 const ACK_FLAG = 0x40
 
 export class Serializer {
-	public sequence = 1
+	public sequence = 2
 
 	constructor(
 		/** Circuit instance that instantiated this Serializer. */

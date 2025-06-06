@@ -11,6 +11,8 @@ import {
 	Vector3,
 } from "~/network"
 
+const FREQUENCY_OFFSETS = [1, 2, 4, 4] as const
+
 /**
  * @link http://wiki.secondlife.com/wiki/Packet_Layout
  */
@@ -24,6 +26,7 @@ export class PacketBuffer {
 	constructor(buffer: Buffer, delegating = false) {
 		this.buffer = buffer
 
+		// TODO: separate this into a different class
 		if (delegating) {
 			this.position = 0
 			return
@@ -33,28 +36,56 @@ export class PacketBuffer {
 			return
 		}
 
-		// determine the frequency
-		if (this.buffer[6] !== 0xff) {
-			// high frequency (frequency = 0)
-			this.id = this.buffer[6]
-			this.frequency = 0
-		} else if (this.buffer[7] !== 0xff) {
-			// medium frequency (frequency = 1)
-			this.id = this.buffer[7]
-			this.frequency = 1
-		} else if (this.buffer[8] !== 0xff) {
-			// low frequency (frequency = 2)
-			this.id = (this.buffer[8]! << 8) | (this.buffer[9] ?? 0)
-			this.frequency = 2
-		} else {
-			// fixed frequency (frequency = 3)
-			this.id =
-				((this.buffer[6] << 24) >>> 0) +
-				((this.buffer[7] << 16) >>> 0) +
-				((this.buffer[8] << 8) >>> 0) +
-				(this.buffer[9] ?? 0)
+		// the 5th byte is extra header bytes, which we need to skip
+		const start = 6 + this.buffer.readUInt8(5)
 
-			this.frequency = 3
+		const id = this.zerocoded
+			? Buffer.alloc(4)
+			: this.buffer.subarray(start, start + 4)
+
+		// the message ID can be zero-coded, in that case, we need to parse it
+		if (this.zerocoded) {
+			const length = this.buffer.length
+
+			let read = start
+			let write = 0
+
+			while (write < 4 && read < length) {
+				const byte = this.buffer[read]
+
+				if (byte === 0) {
+					const zeros = Math.min(this.buffer[read + 1] || 0, 4 - write)
+
+					id.fill(0, write, write + zeros)
+					write += zeros
+					read += 2
+				} else {
+					id[write++] = byte!
+					read++
+				}
+			}
+		}
+
+		this.frequency = 0
+
+		while (this.frequency < 3 && id[this.frequency] === 0xff) {
+			this.frequency++
+		}
+
+		this.position = start + FREQUENCY_OFFSETS[this.frequency]!
+
+		if (this.frequency === 0) {
+			this.id = id[0]
+		} else if (this.frequency === 1) {
+			this.id = id[1]
+		} else if (this.frequency === 2) {
+			this.id = (id[2]! << 8) | (id[3] ?? 0)
+		} else {
+			this.id =
+				((id[0]! << 24) >>> 0) +
+				((id[1]! << 16) >>> 0) +
+				((id[2]! << 8) >>> 0) +
+				(id[3] ?? 0)
 		}
 	}
 
@@ -62,20 +93,6 @@ export class PacketBuffer {
 		if (this.zerocoded) {
 			this.dezerocode()
 		}
-
-		if (!this.frequency) {
-			// high frequency
-			this.position = this.buffer.readUInt8(5) + 7
-		} else if (this.frequency === 1) {
-			// low frequency
-			// medium frequency
-			this.position = this.buffer.readUInt8(5) + 8
-		} else {
-			// low and fixed frequency
-			this.position = this.buffer.readUInt8(5) + 10
-		}
-
-		return this
 	}
 
 	get length() {
@@ -138,9 +155,6 @@ export class PacketBuffer {
 		// copy header
 		this.buffer.copy(buffer, 0, 0, start - 1)
 
-		// set the header to non-zero-coded
-		buffer[0] = this.buffer[0]! & ~0x80
-
 		// copy body, with fill for zero-coded bytes
 		for (let index = start; index <= end; index++) {
 			if (zero) {
@@ -156,6 +170,9 @@ export class PacketBuffer {
 				buffer[position++] = this.buffer[index]!
 			}
 		}
+
+		// set the header to non-zero-coded
+		buffer[0] = this.buffer[0]! & ~0x80
 
 		this.buffer = buffer
 	}

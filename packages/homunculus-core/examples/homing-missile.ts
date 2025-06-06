@@ -1,14 +1,12 @@
-import {
-	type Agent,
-	Client,
-	Constants,
-	Quaternion,
-} from "@gwigz/homunculus-core"
+import { type Agent, Client, Constants, Quaternion } from "../src"
 
 const client = new Client()
 
 let closestAgent: Agent | undefined
 let closestDistance: number | undefined
+
+let lastControlFlags = 0
+let lastAngle = 0
 
 client.on("ready", () => {
 	setInterval(() => {
@@ -20,21 +18,26 @@ client.on("ready", () => {
 			? Constants.ControlFlags.NUDGE_AT_POS
 			: Constants.ControlFlags.NONE
 
-		if (homing && closestAgent?.entity) {
-			// rotate to face the closest avatar
-			// TODO: utilities for facing a point, avatar, or entity
-			const angle = Math.atan2(
-				closestAgent.entity.position!.y - self.position.y,
-				closestAgent.entity.position!.x - self.position.x,
-			)
+		const angle =
+			homing && closestAgent?.entity
+				? Math.atan2(
+						closestAgent.entity.position!.y - self.position.y,
+						closestAgent.entity.position!.x - self.position.x,
+					)
+				: lastAngle
 
-			const cos = Math.cos(angle)
-			const sin = Math.sin(angle)
+		const angleChanged = Math.abs(lastAngle - angle) > 0.01
 
-			self.rotation = new Quaternion(0, 0, sin, cos)
+		if (lastControlFlags !== self.controlFlags || angleChanged) {
+			lastControlFlags = self.controlFlags
+
+			if (angleChanged) {
+				self.rotation = new Quaternion(0, 0, Math.sin(angle), Math.cos(angle))
+				lastAngle = angle
+			}
+
+			self.sendAgentUpdate()
 		}
-
-		self.sendAgentUpdate()
 	}, 50)
 
 	setInterval(() => {
@@ -49,12 +52,7 @@ client.on("ready", () => {
 				continue
 			}
 
-			// TODO: utilities for distance calculations
-			const distance = Math.sqrt(
-				(agent.entity.position.x - self.position.x) ** 2 +
-					(agent.entity.position.y - self.position.y) ** 2 +
-					(agent.entity.position.z - self.position.z) ** 2,
-			)
+			const distance = agent.entity.position.distance(self.position)
 
 			if (distance < closestDistance) {
 				closestDistance = distance

@@ -1,7 +1,7 @@
 import { Buffer } from "node:buffer"
 import { AsyncEventEmitter } from "@vladfrangu/async_event_emitter"
 import type { Client } from "~/client"
-import { packets, UUID, Vector3 } from "~/network"
+import { packets, UUID } from "~/network"
 import type { NearbyChatMessage } from "~/types"
 import { Constants } from "~/utilities"
 
@@ -35,8 +35,7 @@ export class Nearby extends AsyncEventEmitter<NearbyEvents> {
 						(agent.coarseLocation &&
 							agent.coarseLocation.z !== Number.MAX_SAFE_INTEGER)) &&
 					// within 20 meters
-					Vector3.distance(
-						this.client.self.position,
+					this.client.self.position.distance(
 						agent.entity?.position ?? agent.coarseLocation!,
 					) <= 20,
 			),

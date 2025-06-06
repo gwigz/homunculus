@@ -1,4 +1,9 @@
-import { type Agent, Client, Constants, Quaternion } from "../src"
+import {
+	type Agent,
+	Client,
+	Constants,
+	Quaternion,
+} from "@gwigz/homunculus-core"
 
 const client = new Client()
 

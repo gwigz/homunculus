@@ -27,7 +27,7 @@ export const Errors = {
 	MISSING_PARAMETER: "Missing packet parameter (%s), packet will not be sent.",
 	INVALID_PARAMETER_TYPE: "Method parameter invalid.",
 	UNEXPECTED_OBJECT_UPDATE: "Recieved object update for unknown region!",
-	UNEXPECTED_OBJECT_UPDATE_LENGTH: "Unexpected object update length!",
+	UNEXPECTED_OBJECT_UPDATE_LENGTH: "Unexpected object update length: %d",
 } as const
 
 export const Status = {

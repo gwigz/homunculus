@@ -50,8 +50,10 @@ class U16 {
 	 */
 	public static toFloat(value: number, lower: number, upper: number) {
 		const normalized = value * ONE_OVER_U16_MAX
+		const delta = upper - lower
+		const output = normalized * delta + lower
 
-		return lower + normalized * (upper - lower)
+		return Math.abs(output) < delta * ONE_OVER_U16_MAX ? 0.0 : output
 	}
 }
 

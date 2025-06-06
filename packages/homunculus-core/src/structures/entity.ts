@@ -11,6 +11,8 @@ export interface EntityOptions {
 	flags?: number
 	position?: Vector3
 	velocity?: Vector3
+	angularVelocity?: Vector3
+	acceleration?: Vector3
 	rotation?: Quaternion
 	scale?: Vector3
 	text?: { value: string; color: Color4 } | { value: Buffer; color: Buffer }

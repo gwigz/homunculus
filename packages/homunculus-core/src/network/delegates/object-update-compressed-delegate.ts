@@ -187,32 +187,27 @@ packets.createObjectUpdateCompressedDelegate({
 
 			const insert = !region.objects.has(id)
 
-			try {
-				const entity = insert
-					? updateEntity(new Entity(context.client, { id, key, flags }), buffer)
-					: updateEntity(region.objects.get(id)!, buffer)
+			const entity = insert
+				? updateEntity(new Entity(context.client, { id, key, flags }), buffer)
+				: updateEntity(region.objects.get(id)!, buffer)
 
-				entity.flags |= flags
+			entity.flags |= flags
 
-				if (insert) {
-					region.objects.set(id, entity)
+			if (insert) {
+				region.objects.set(id, entity)
 
-					if (entity.type === 47) {
-						region.agents.set(
-							entity.key,
-							new Agent(context.client, entity.key, entity),
-						)
-					}
+				if (entity.type === 47) {
+					region.agents.set(
+						entity.key,
+						new Agent(context.client, entity.key, entity),
+					)
 				}
+			}
 
-				if (entity.type === 47 && entity.key === context.client.self.key) {
-					context.client.self.state = entity.state
-					context.client.self.position = entity.position!
-					context.client.self.rotation = entity.rotation!
-				}
-			} catch (error) {
-				context.client.emit("debug", `Error updating object "${key}".`)
-				context.client.emit("error", error as Error)
+			if (entity.type === 47 && entity.key === context.client.self.key) {
+				context.client.self.state = entity.state
+				context.client.self.position = entity.position!
+				context.client.self.rotation = entity.rotation!
 			}
 		}
 	},

@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<llsd>
+  <map>
+    <!-- Basic Types -->
+    <key>undef_value</key>
+    <undef/>
+
+    <key>boolean_true</key>
+    <boolean>1</boolean>
+
+    <key>boolean_false</key>
+    <boolean>0</boolean>
+
+    <key>integer_positive</key>
+    <integer>42</integer>
+
+    <key>integer_negative</key>
+    <integer>-123</integer>
+
+    <key>integer_zero</key>
+    <integer>0</integer>
+
+    <key>real_positive</key>
+    <real>3.14159</real>
+
+    <key>real_negative</key>
+    <real>-2.71828</real>
+
+    <key>real_nan</key>
+    <real>NaNS</real>
+
+    <key>real_infinity</key>
+    <real>Infinity</real>
+
+    <key>real_negative_infinity</key>
+    <real>-Infinity</real>
+
+    <key>real_negative_zero</key>
+    <real>-Zero</real>
+
+    <key>string_hello</key>
+    <string>Hello, World!</string>
+
+    <key>string_empty</key>
+    <string></string>
+
+    <key>string_with_entities</key>
+    <string>&lt;tag&gt; &amp; &quot;quotes&quot;</string>
+
+    <key>string_unicode</key>
+    <string>Unicode: αβγ 🚀 测试</string>
+
+    <key>uuid_valid</key>
+    <uuid>550e8400-e29b-41d4-a716-446655440000</uuid>
+
+    <key>date_valid</key>
+    <date>2023-12-25T10:30:00.000Z</date>
+
+    <key>uri_https</key>
+    <uri>https://example.com/path?param=value</uri>
+
+    <key>binary_hello</key>
+    <binary encoding="base64">SGVsbG8gV29ybGQ=</binary>
+
+    <key>binary_empty</key>
+    <binary encoding="base64"></binary>
+
+    <!-- Arrays -->
+    <key>array_empty</key>
+    <array></array>
+
+    <key>array_single</key>
+    <array>
+      <integer>42</integer>
+    </array>
+
+    <key>array_mixed</key>
+    <array>
+      <integer>42</integer>
+      <string>hello</string>
+      <boolean>1</boolean>
+      <real>3.14</real>
+      <undef/>
+      <uuid>550e8400-e29b-41d4-a716-446655440000</uuid>
+      <date>2023-12-25T10:30:00.000Z</date>
+      <binary encoding="base64">dGVzdA==</binary>
+    </array>
+
+    <key>array_nested</key>
+    <array>
+      <array>
+        <integer>1</integer>
+        <integer>2</integer>
+      </array>
+      <array>
+        <string>a</string>
+        <string>b</string>
+      </array>
+    </array>
+
+    <!-- Maps -->
+    <key>map_empty</key>
+    <map></map>
+
+    <key>map_simple</key>
+    <map>
+      <key>name</key>
+      <string>John Doe</string>
+      <key>age</key>
+      <integer>30</integer>
+      <key>active</key>
+      <boolean>1</boolean>
+      <key>score</key>
+      <real>95.5</real>
+    </map>
+
+    <key>map_with_special_keys</key>
+    <map>
+      <key></key>
+      <string>empty key value</string>
+      <key>special &lt;key&gt;</key>
+      <string>value with special chars</string>
+      <key>key with spaces</key>
+      <integer>123</integer>
+      <key>unicode_key_αβγ</key>
+      <boolean>1</boolean>
+    </map>
+
+    <key>map_nested</key>
+    <map>
+      <key>user</key>
+      <map>
+        <key>name</key>
+        <string>Alice</string>
+        <key>preferences</key>
+        <map>
+          <key>theme</key>
+          <string>dark</string>
+          <key>notifications</key>
+          <boolean>1</boolean>
+        </map>
+      </map>
+      <key>version</key>
+      <integer>2</integer>
+    </map>
+
+    <key>map_with_arrays</key>
+    <map>
+      <key>numbers</key>
+      <array>
+        <integer>1</integer>
+        <integer>2</integer>
+        <integer>3</integer>
+      </array>
+      <key>mixed</key>
+      <array>
+        <string>hello</string>
+        <boolean>0</boolean>
+        <real>420.69</real>
+      </array>
+    </map>
+
+    <key>array_with_maps</key>
+    <array>
+      <map>
+        <key>id</key>
+        <integer>1</integer>
+        <key>name</key>
+        <string>Item 1</string>
+      </map>
+      <map>
+        <key>id</key>
+        <integer>2</integer>
+        <key>name</key>
+        <string>Item 2</string>
+      </map>
+    </array>
+
+    <!-- Complex Nested Structure -->
+    <key>complex_nested</key>
+    <map>
+      <key>root</key>
+      <map>
+        <key>level1</key>
+        <array>
+          <map>
+            <key>level2</key>
+            <array>
+              <map>
+                <key>level3</key>
+                <string>deep value</string>
+                <key>numbers</key>
+                <array>
+                  <integer>1</integer>
+                  <integer>2</integer>
+                  <integer>3</integer>
+                </array>
+                <key>uuid</key>
+                <uuid>550e8400-e29b-41d4-a716-446655440000</uuid>
+              </map>
+            </array>
+          </map>
+        </array>
+      </map>
+      <key>metadata</key>
+      <map>
+        <key>created</key>
+        <date>2023-12-25T10:30:00.000Z</date>
+        <key>data</key>
+        <binary encoding="base64">dGVzdCBkYXRh</binary>
+        <key>flags</key>
+        <array>
+          <boolean>1</boolean>
+          <boolean>0</boolean>
+          <undef/>
+        </array>
+      </map>
+    </map>
+  </map>
+</llsd>

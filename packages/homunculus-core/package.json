@@ -40,7 +40,9 @@
 		"@keyv/sqlite": "^4.0.4",
 		"@usebruno/node-machine-id": "^2.0.0",
 		"@vladfrangu/async_event_emitter": "^2.4.6",
+		"@xmldom/xmldom": "^0.9.8",
 		"keyv": "^5.3.3",
+		"ts-pattern": "^5.7.1",
 		"zod": "^3.25.36"
 	},
 	"optionalDependencies": {

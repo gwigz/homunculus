@@ -13,5 +13,6 @@
 	},
 	"[jsonc]": {
 		"editor.defaultFormatter": "biomejs.biome"
-	}
+	},
+	"cSpell.words": ["LLSD"]
 }

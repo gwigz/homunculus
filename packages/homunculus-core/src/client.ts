@@ -207,7 +207,14 @@ export class Client extends AsyncEventEmitter<ClientEvents> {
 		const handle =
 			(BigInt(response.regionX ?? 0) << 32n) | BigInt(response.regionY ?? 0)
 
-		this.regions.set(handle, new Region(this, { handle }, true))
+		this.regions.set(
+			handle,
+			new Region(
+				this,
+				{ handle, seedCapability: response.seedCapability },
+				true,
+			),
+		)
 
 		await this._core.handshake({
 			id: response.circuitCode,

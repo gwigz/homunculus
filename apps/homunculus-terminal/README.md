@@ -43,6 +43,7 @@ Use [environment values](https://github.com/gwigz/homunculus/blob/main/.env.exam
 
 Homunculus has been made possible thanks to these wonderful resources:
 
+- [Hippolyzer](https://github.com/SaladDais/Hippolyzer) for being a great resource, and testing utility
 - [`libopenmetaverse`](https://github.com/openmetaversefoundation/libopenmetaverse) for kicking off the open-source "metaverse" community
 - [`pyogp`](http://wiki.secondlife.com/wiki/PyOGP) by the late Enus Linden and their team
 - `node-omv` by Wolfspirit for their proof of concept

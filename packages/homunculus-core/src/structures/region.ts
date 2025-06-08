@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto"
 import { cache, type RegionCache } from "~/cache"
 import type { Client } from "~/client"
 import { AcknowledgeTimeoutError, packets, UUID, type Vector3 } from "~/network"
-import { Agent, Agents, Entities } from "~/structures"
+import { Agent, Agents, Capabilities, Entities } from "~/structures"
 
 const ONE_DAY = 1000 * 60 * 60 * 24
 
@@ -12,6 +12,7 @@ export class Region {
 	public name?: string
 	public agents = new Agents()
 	public objects = new Entities()
+	public capabilities?: Capabilities
 
 	/**
 	 * Creates a new region instance.
@@ -23,10 +24,14 @@ export class Region {
 	 */
 	constructor(
 		private readonly client: Client,
-		data: { handle: bigint },
+		data: { handle: bigint; seedCapability?: string },
 		skipInitialUpdate = false,
 	) {
 		this.handle = data.handle
+
+		if (data.seedCapability) {
+			this.capabilities = new Capabilities(client, data.seedCapability)
+		}
 
 		if (!skipInitialUpdate) {
 			this.init()

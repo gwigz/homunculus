@@ -185,25 +185,27 @@ export const loginResponseSchema = z.preprocess(
 				home: z.string(),
 				secondsSinceEpoch: z.number(),
 				secureSessionId: z.string(),
-				seedCapability: z.string(),
+				seedCapability: z.url(),
 				startLocation: z.string(),
 			})
 			.partial()
 			.extend({
 				login: z.literal(true),
-				circuitCode: z.number(),
-				simIp: z.string(),
-				simPort: z.number(),
-				regionX: z.number(),
-				regionY: z.number(),
-				agentId: z.string(),
-				sessionId: z.string(),
+				circuitCode: z.int().positive(),
+				simIp: z.ipv4(),
+				simPort: z.int().min(1).max(65535),
+				regionX: z.int().positive(),
+				regionY: z.int().positive(),
+				agentId: z.uuid(),
+				sessionId: z.uuid(),
 				firstName: z
 					.string()
+					.trim()
+					.min(1)
 					.transform((value) =>
 						/^"[a-z0-9 ]+"$/i.test(value) ? value.replace(/"/g, "") : value,
 					),
-				lastName: z.string(),
+				lastName: z.string().trim(),
 			}),
 
 		z.object({

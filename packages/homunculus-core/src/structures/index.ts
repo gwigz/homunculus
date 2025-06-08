@@ -1,5 +1,6 @@
 export * from "./agent"
 export * from "./agents"
+export * from "./capabilities"
 export * from "./entities"
 export * from "./entity"
 export * from "./friend"

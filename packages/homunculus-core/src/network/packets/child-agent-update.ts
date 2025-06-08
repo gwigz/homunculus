@@ -10,6 +10,11 @@
  */
 
 import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "../packet"
+import {
 	Bool,
 	F32,
 	Quaternion,
@@ -21,11 +26,6 @@ import {
 	Variable2,
 	Vector3,
 } from "../types"
-import {
-	createPacketDelegate,
-	createPacketSender,
-	type PacketMetadata,
-} from "./packet"
 
 export interface ChildAgentUpdateData {
 	agentData: {
@@ -68,8 +68,8 @@ export interface ChildAgentUpdateData {
 	granterBlock?: {
 		granterId: string
 	}[]
-	nVPairData?: {
-		nVPairs: string | Buffer
+	nvPairData?: {
+		nvPairs: string | Buffer
 	}[]
 	visualParam?: {
 		paramValue: number
@@ -143,8 +143,8 @@ export const childAgentUpdateMetadata = {
 			multiple: true,
 		},
 		{
-			name: "nVPairData",
-			parameters: [["nVPairs", Variable2]],
+			name: "nvPairData",
+			parameters: [["nvPairs", Variable2]],
 			multiple: true,
 		},
 		{

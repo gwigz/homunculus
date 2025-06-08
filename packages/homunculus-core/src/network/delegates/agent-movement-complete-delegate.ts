@@ -51,8 +51,7 @@ packets.createAgentMovementCompleteDelegate({
 
 		await context.circuit.sendReliable([
 			packets.agentFov({
-				// TODO: fix capitalization
-				fOVBlock: {
+				fovBlock: {
 					genCounter: 0,
 					verticalAngle: 1.2566370964050293,
 				},

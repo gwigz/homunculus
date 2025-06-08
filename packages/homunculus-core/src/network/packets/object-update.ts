@@ -10,6 +10,11 @@
  */
 
 import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "../packet"
+import {
 	Color4,
 	F32,
 	S8,
@@ -22,11 +27,6 @@ import {
 	Variable2,
 	Vector3,
 } from "../types"
-import {
-	createPacketDelegate,
-	createPacketSender,
-	type PacketMetadata,
-} from "./packet"
 
 export interface ObjectUpdateData {
 	regionData?: {
@@ -70,7 +70,7 @@ export interface ObjectUpdateData {
 		text: string | Buffer
 		textColor: Color4
 		mediaUrl: string | Buffer
-		pSBlock: string | Buffer
+		psBlock: string | Buffer
 		extraParams: string | Buffer
 		sound: string
 		ownerId: string
@@ -135,7 +135,7 @@ export const objectUpdateMetadata = {
 				["text", Variable1],
 				["textColor", Color4],
 				["mediaUrl", Variable1],
-				["pSBlock", Variable1],
+				["psBlock", Variable1],
 				["extraParams", Variable1],
 				["sound", UUID],
 				["ownerId", UUID],

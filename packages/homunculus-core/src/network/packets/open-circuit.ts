@@ -9,12 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { IP, Port } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { IP, Port } from "../types"
 
 export interface OpenCircuitData {
 	circuitInfo?: {

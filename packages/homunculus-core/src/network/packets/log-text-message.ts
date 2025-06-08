@@ -9,12 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { F64, U32, UUID, Variable2 } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { F64, U32, UUID, Variable2 } from "../types"
 
 export interface LogTextMessageData {
 	dataBlock?: {

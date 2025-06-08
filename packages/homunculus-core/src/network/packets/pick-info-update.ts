@@ -9,12 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { Bool, S32, UUID, Variable1, Variable2, Vector3D } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { Bool, S32, UUID, Variable1, Variable2, Vector3D } from "../types"
 
 export interface PickInfoUpdateData {
 	agentData?: {

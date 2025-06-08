@@ -9,12 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { Bool, UUID, Variable1, Variable2 } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { Bool, UUID, Variable1, Variable2 } from "../types"
 
 export interface AvatarPropertiesUpdateData {
 	agentData?: {
@@ -23,9 +23,9 @@ export interface AvatarPropertiesUpdateData {
 	}
 	propertiesData?: {
 		imageId: string
-		fLImageId: string
+		flImageId: string
 		aboutText: string | Buffer
-		fLAboutText: string | Buffer
+		flAboutText: string | Buffer
 		allowPublish: boolean
 		maturePublish: boolean
 		profileUrl: string | Buffer
@@ -49,9 +49,9 @@ export const avatarPropertiesUpdateMetadata = {
 			name: "propertiesData",
 			parameters: [
 				["imageId", UUID],
-				["fLImageId", UUID],
+				["flImageId", UUID],
 				["aboutText", Variable2],
-				["fLAboutText", Variable1],
+				["flAboutText", Variable1],
 				["allowPublish", Bool],
 				["maturePublish", Bool],
 				["profileUrl", Variable1],

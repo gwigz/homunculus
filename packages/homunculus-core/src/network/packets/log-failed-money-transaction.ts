@@ -9,12 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { IP, S32, U8, U32, UUID } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { IP, S32, U8, U32, UUID } from "../types"
 
 export interface LogFailedMoneyTransactionData {
 	transactionData?: {

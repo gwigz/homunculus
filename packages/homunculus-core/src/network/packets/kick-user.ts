@@ -9,12 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { IP, Port, UUID, Variable2 } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { IP, Port, UUID, Variable2 } from "../types"
 
 export interface KickUserData {
 	targetBlock?: {

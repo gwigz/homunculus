@@ -13,7 +13,7 @@ import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
 
 export type CloseCircuitData = Record<string, never>
 

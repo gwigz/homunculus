@@ -9,12 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { S32, U32, UUID, Vector3 } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { S32, U32, UUID, Vector3 } from "../types"
 
 export interface ObjectGrabData {
 	agentData?: {
@@ -26,8 +26,8 @@ export interface ObjectGrabData {
 		grabOffset: Vector3
 	}
 	surfaceInfo?: {
-		uVCoord: Vector3
-		sTCoord: Vector3
+		uvCoord: Vector3
+		stCoord: Vector3
 		faceIndex: number
 		position: Vector3
 		normal: Vector3
@@ -58,8 +58,8 @@ export const objectGrabMetadata = {
 		{
 			name: "surfaceInfo",
 			parameters: [
-				["uVCoord", Vector3],
-				["sTCoord", Vector3],
+				["uvCoord", Vector3],
+				["stCoord", Vector3],
 				["faceIndex", S32],
 				["position", Vector3],
 				["normal", Vector3],

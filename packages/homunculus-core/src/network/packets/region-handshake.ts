@@ -9,12 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { Bool, F32, S32, U8, U32, U64, UUID, Variable1 } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { Bool, F32, S32, U8, U32, U64, UUID, Variable1 } from "../types"
 
 export interface RegionHandshakeData {
 	regionInfo?: {
@@ -47,8 +47,8 @@ export interface RegionHandshakeData {
 		regionId: string
 	}
 	regionInfo3?: {
-		cPUClassId: number
-		cPURatio: number
+		cpuClassId: number
+		cpuRatio: number
 		coloName: string | Buffer
 		productSku: string | Buffer
 		productName: string | Buffer
@@ -102,8 +102,8 @@ export const regionHandshakeMetadata = {
 		{
 			name: "regionInfo3",
 			parameters: [
-				["cPUClassId", S32],
-				["cPURatio", S32],
+				["cpuClassId", S32],
+				["cpuRatio", S32],
 				["coloName", Variable1],
 				["productSku", Variable1],
 				["productName", Variable1],

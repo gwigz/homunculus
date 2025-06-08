@@ -9,12 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { F32, U8, U32, UUID } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { F32, U8, U32, UUID } from "../types"
 
 export interface MeanCollisionAlertData {
 	meanCollision?: {

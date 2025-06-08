@@ -9,12 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { Quaternion, UUID, Variable1, Vector3 } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { Quaternion, UUID, Variable1, Vector3 } from "../types"
 
 export interface TelehubInfoData {
 	telehubBlock?: {

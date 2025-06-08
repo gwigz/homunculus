@@ -9,19 +9,19 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { Bool, UUID, Variable1, Variable2 } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { Bool, UUID, Variable1, Variable2 } from "../types"
 
 export interface UserInfoReplyData {
 	agentData?: {
 		agentId?: string
 	}
 	userData?: {
-		iMViaEMail: boolean
+		imViaEMail: boolean
 		directoryVisibility: string | Buffer
 		eMail: string | Buffer
 	}
@@ -39,7 +39,7 @@ export const userInfoReplyMetadata = {
 		{
 			name: "userData",
 			parameters: [
-				["iMViaEMail", Bool],
+				["imViaEMail", Bool],
 				["directoryVisibility", Variable1],
 				["eMail", Variable2],
 			],

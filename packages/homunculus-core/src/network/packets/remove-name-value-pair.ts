@@ -9,19 +9,19 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { UUID, Variable2 } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { UUID, Variable2 } from "../types"
 
 export interface RemoveNameValuePairData {
 	taskData?: {
 		id: string
 	}
 	nameValueData?: {
-		nVPair: string | Buffer
+		nvPair: string | Buffer
 	}[]
 }
 
@@ -37,7 +37,7 @@ export const removeNameValuePairMetadata = {
 		},
 		{
 			name: "nameValueData",
-			parameters: [["nVPair", Variable2]],
+			parameters: [["nvPair", Variable2]],
 			multiple: true,
 		},
 	],

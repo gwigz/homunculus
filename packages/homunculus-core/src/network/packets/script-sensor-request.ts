@@ -10,6 +10,11 @@
  */
 
 import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "../packet"
+import {
 	F32,
 	Quaternion,
 	S32,
@@ -19,11 +24,6 @@ import {
 	Variable1,
 	Vector3,
 } from "../types"
-import {
-	createPacketDelegate,
-	createPacketSender,
-	type PacketMetadata,
-} from "./packet"
 
 export interface ScriptSensorRequestData {
 	requester?: {

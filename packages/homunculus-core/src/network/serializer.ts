@@ -2,7 +2,7 @@ import assert from "node:assert"
 import { Buffer } from "node:buffer"
 import { Constants } from "~/utilities"
 import type { Circuit } from "./circuit"
-import type { Packet, PacketBlock, PacketMetadata } from "./packets"
+import type { Packet, PacketBlock, PacketMetadata } from "./packet"
 import { U8 } from "./types"
 
 const MAX_SEQUENCE = 0x01000000

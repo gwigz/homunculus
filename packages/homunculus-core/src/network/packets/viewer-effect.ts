@@ -9,12 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { Color4, F32, U8, UUID, Variable1 } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { Color4, F32, U8, UUID, Variable1 } from "../types"
 
 export interface ViewerEffectData {
 	agentData?: {

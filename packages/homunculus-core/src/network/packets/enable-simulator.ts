@@ -9,12 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { IP, Port, U64 } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { IP, Port, U64 } from "../types"
 
 export interface EnableSimulatorData {
 	simulatorInfo?: {

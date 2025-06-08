@@ -9,12 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { Bool, Quaternion, UUID, Vector3 } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { Bool, Quaternion, UUID, Vector3 } from "../types"
 
 export interface AvatarSitResponseData {
 	sitObject?: {

@@ -9,15 +9,15 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { UUID } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { UUID } from "../types"
 
 export interface KillChildAgentsData {
-	iDBlock?: {
+	idBlock?: {
 		agentId: string
 	}
 }
@@ -29,7 +29,7 @@ export const killChildAgentsMetadata = {
 	trusted: true,
 	blocks: [
 		{
-			name: "iDBlock",
+			name: "idBlock",
 			parameters: [["agentId", UUID]],
 		},
 	],

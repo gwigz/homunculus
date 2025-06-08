@@ -9,12 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { F64, IP, Port, U64, UUID, Variable1 } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { F64, IP, Port, U64, UUID, Variable1 } from "../types"
 
 export interface RegionPresenceResponseData {
 	regionData?: {

@@ -9,12 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { IP, Port, U8, U32, U64, UUID, Variable2 } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { IP, Port, U8, U32, U64, UUID, Variable2 } from "../types"
 
 export interface TeleportFinishData {
 	info?: {

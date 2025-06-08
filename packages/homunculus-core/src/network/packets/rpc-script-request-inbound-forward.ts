@@ -9,17 +9,17 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { IP, Port, U32, UUID, Variable2 } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { IP, Port, U32, UUID, Variable2 } from "../types"
 
 export interface RpcScriptRequestInboundForwardData {
 	dataBlock?: {
-		rPCServerIp: IP
-		rPCServerPort: Port
+		rpcServerIp: IP
+		rpcServerPort: Port
 		taskId: string
 		itemId: string
 		channelId: string
@@ -37,8 +37,8 @@ export const rpcScriptRequestInboundForwardMetadata = {
 		{
 			name: "dataBlock",
 			parameters: [
-				["rPCServerIp", IP],
-				["rPCServerPort", Port],
+				["rpcServerIp", IP],
+				["rpcServerPort", Port],
 				["taskId", UUID],
 				["itemId", UUID],
 				["channelId", UUID],

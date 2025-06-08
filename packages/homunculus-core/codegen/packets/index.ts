@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs"
 import { join } from "node:path"
 import ejs from "ejs"
+import { toLowerCamel } from "../../src/utilities/to-lower-camel"
 
 interface Field {
 	name: string
@@ -56,27 +57,6 @@ function toDashCase(value: string): string {
 		.replace(/([a-z0-9])([A-Z])/g, "$1-$2")
 		.replace(/([A-Z])([A-Z][a-z])/g, "$1-$2")
 		.toLowerCase()
-}
-
-function toLowerCamel(value: string): string {
-	if (value === value.toUpperCase()) {
-		return value.toLowerCase()
-	}
-
-	if (value.startsWith("UUID")) {
-		return value.replace(/^UUID(.*)/, "uuid$1")
-	}
-
-	return value
-		.replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")
-		.replace(/([a-z\d])([A-Z])/g, "$1 $2")
-		.split(" ")
-		.map((word, i) =>
-			i === 0
-				? word.charAt(0).toLowerCase() + word.slice(1)
-				: word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
-		)
-		.join("")
 }
 
 function parseFrequency(frequency: string): Frequency {
@@ -398,7 +378,6 @@ async function generatePackets() {
 
 		const indexContent = packets
 			.map((packet) => `export * from "./${toDashCase(packet.name)}"`)
-			.concat(["export * from './packet'"])
 			.join("\n")
 
 		writeFileSync(join(outputDir, "index.ts"), indexContent)

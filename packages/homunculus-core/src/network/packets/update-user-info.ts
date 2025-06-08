@@ -9,12 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { Bool, UUID, Variable1 } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { Bool, UUID, Variable1 } from "../types"
 
 export interface UpdateUserInfoData {
 	agentData?: {
@@ -22,7 +22,7 @@ export interface UpdateUserInfoData {
 		sessionId?: string
 	}
 	userData?: {
-		iMViaEMail: boolean
+		imViaEMail: boolean
 		directoryVisibility: string | Buffer
 	}
 }
@@ -42,7 +42,7 @@ export const updateUserInfoMetadata = {
 		{
 			name: "userData",
 			parameters: [
-				["iMViaEMail", Bool],
+				["imViaEMail", Bool],
 				["directoryVisibility", Variable1],
 			],
 		},

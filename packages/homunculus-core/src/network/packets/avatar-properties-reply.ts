@@ -9,12 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { U32, UUID, Variable1, Variable2 } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { U32, UUID, Variable1, Variable2 } from "../types"
 
 export interface AvatarPropertiesReplyData {
 	agentData: {
@@ -23,10 +23,10 @@ export interface AvatarPropertiesReplyData {
 	}
 	propertiesData?: {
 		imageId: string
-		fLImageId: string
+		flImageId: string
 		partnerId: string
 		aboutText: string | Buffer
-		fLAboutText: string | Buffer
+		flAboutText: string | Buffer
 		bornOn: string | Buffer
 		profileUrl: string | Buffer
 		charterMember: string | Buffer
@@ -52,10 +52,10 @@ export const avatarPropertiesReplyMetadata = {
 			name: "propertiesData",
 			parameters: [
 				["imageId", UUID],
-				["fLImageId", UUID],
+				["flImageId", UUID],
 				["partnerId", UUID],
 				["aboutText", Variable2],
-				["fLAboutText", Variable1],
+				["flAboutText", Variable1],
 				["bornOn", Variable1],
 				["profileUrl", Variable1],
 				["charterMember", Variable1],

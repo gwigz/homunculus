@@ -9,12 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { Quaternion, S8, U8, U16, U32, UUID, Vector3 } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { Quaternion, S8, U8, U16, U32, UUID, Vector3 } from "../types"
 
 export interface ObjectAddData {
 	agentData: {

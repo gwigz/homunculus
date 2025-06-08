@@ -9,12 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { F32, S32, U32, U64, UUID, Variable1 } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { F32, S32, U32, U64, UUID, Variable1 } from "../types"
 
 export interface GodUpdateRegionInfoData {
 	agentData?: {

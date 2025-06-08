@@ -10,6 +10,11 @@
  */
 
 import {
+	createPacketDelegate,
+	createPacketSender,
+	type PacketMetadata,
+} from "../packet"
+import {
 	Bool,
 	F32,
 	S32,
@@ -20,11 +25,6 @@ import {
 	Variable2,
 	Vector3,
 } from "../types"
-import {
-	createPacketDelegate,
-	createPacketSender,
-	type PacketMetadata,
-} from "./packet"
 
 export interface ParcelPropertiesData {
 	parcelData?: {
@@ -41,8 +41,8 @@ export interface ParcelPropertiesData {
 		claimDate: number
 		claimPrice: number
 		rentPrice: number
-		aABBMin: Vector3
-		aABBMax: Vector3
+		aabbMin: Vector3
+		aabbMax: Vector3
 		bitmap: string | Buffer
 		area: number
 		status: number
@@ -112,8 +112,8 @@ export const parcelPropertiesMetadata = {
 				["claimDate", S32],
 				["claimPrice", S32],
 				["rentPrice", S32],
-				["aABBMin", Vector3],
-				["aABBMax", Vector3],
+				["aabbMin", Vector3],
+				["aabbMax", Vector3],
 				["bitmap", Variable2],
 				["area", S32],
 				["status", U8],

@@ -9,12 +9,12 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { Bool, U8, U32, UUID, Variable1, Variable2, Vector3 } from "../types"
 import {
 	createPacketDelegate,
 	createPacketSender,
 	type PacketMetadata,
-} from "./packet"
+} from "../packet"
+import { Bool, U8, U32, UUID, Variable1, Variable2, Vector3 } from "../types"
 
 export interface ImprovedInstantMessageData {
 	agentData?: {

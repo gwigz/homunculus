@@ -9,7 +9,7 @@ class Bool {
 	 *
 	 * @param bool Boolean to convert
 	 */
-	public static toBuffer(bool: boolean | number): Buffer {
+	public static toBuffer(bool: boolean | number) {
 		const buffer = Buffer.allocUnsafe(Bool.size)
 
 		buffer.writeUInt8(Number(!!bool), 0)
@@ -24,7 +24,7 @@ class Bool {
 	 * @param buffer Buffer to convert
 	 * @param position Position to read from
 	 */
-	public static fromBuffer(buffer: Buffer, position = 0): boolean {
+	public static fromBuffer(buffer: Buffer, position = 0) {
 		return !!buffer.readUInt8(position)
 	}
 }

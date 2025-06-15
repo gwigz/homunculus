@@ -1,4 +1,4 @@
-import * as Types from "../model/types"
+import * as Types from "~/model/types"
 import type { Primitive } from "./primitive"
 
 export const Color4 = {
@@ -11,13 +11,16 @@ export const Color4 = {
 
 		return offset + 4
 	},
-	decode: (buffer, offset) => [
-		Types.Color4({
-			r: buffer.readUInt8(offset),
-			g: buffer.readUInt8(offset + 1),
-			b: buffer.readUInt8(offset + 2),
-			a: buffer.readUInt8(offset + 3),
-		}),
-		4,
-	],
+	decode: (buffer, state) => {
+		const value = Types.Color4({
+			r: buffer.readUInt8(state.offset),
+			g: buffer.readUInt8(state.offset + 1),
+			b: buffer.readUInt8(state.offset + 2),
+			a: buffer.readUInt8(state.offset + 3),
+		})
+
+		state.offset += 4
+
+		return value
+	},
 } as const satisfies Primitive<Types.Color4>

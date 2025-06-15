@@ -17,9 +17,13 @@ export const U64 = {
 
 		return offset + 8
 	},
-	decode: (buffer, offset) => [
-		BigInt.asUintN(32, BigInt(buffer.readUInt32LE(offset))) |
-			(BigInt.asUintN(32, BigInt(buffer.readUInt32LE(offset + 4))) << 32n),
-		offset + 8,
-	],
+	decode: (buffer, state) => {
+		const value =
+			BigInt.asUintN(32, BigInt(buffer.readUInt32LE(state.offset))) |
+			(BigInt.asUintN(32, BigInt(buffer.readUInt32LE(state.offset + 4))) << 32n)
+
+		state.offset += 8
+
+		return value
+	},
 } as const satisfies Primitive<bigint>

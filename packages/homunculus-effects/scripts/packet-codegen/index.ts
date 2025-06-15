@@ -1,7 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs"
 import { join } from "node:path"
 import ejs from "ejs"
-import { toLowerCamel } from "../../src/utilities/to-lower-camel"
 
 interface Field {
 	name: string
@@ -50,6 +49,32 @@ const BLOCK_HEADER_REGEX =
 
 const FIELD_REGEX =
 	/^\s*\{\s*(?<name>\w+)\s+(?<type>(?:LLUUID|\w+)|(?:Variable|Fixed))(?:\s+(?<size>\d+))?\s*\}(?:\s*\/\/.*)?$/
+
+function toCamelCase(value: string) {
+	if (value === value.toUpperCase()) {
+		return value.toLowerCase()
+	}
+
+	return value
+		.replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")
+		.replace(/([a-z\d])([A-Z])/g, "$1 $2")
+		.split(" ")
+		.map((word, i) => {
+			if (i === 0) {
+				// for the first word, if it's all uppercase, lowercase the entire word
+				if (word === word.toUpperCase()) {
+					return word.toLowerCase()
+				}
+
+				// otherwise, just lowercase the first character
+				return word.charAt(0).toLowerCase() + word.slice(1)
+			}
+
+			// for subsequent words, capitalize first letter and lowercase the rest
+			return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+		})
+		.join("")
+}
 
 function toDashCase(value: string): string {
 	return value
@@ -101,12 +126,12 @@ function shouldMakeAgentDataOptional(block: Block): boolean {
 }
 
 function getTypeScriptType(type: string): string {
-	if (type === "Bool") {
+	if (type === "Boolean") {
 		return "boolean"
 	}
 
 	if (type.startsWith("Variable") || type.startsWith("Fixed")) {
-		return "string | Buffer"
+		return "Buffer"
 	}
 
 	if (type === "U64") {
@@ -118,7 +143,7 @@ function getTypeScriptType(type: string): string {
 	}
 
 	if (type === "UUID") {
-		return "string"
+		return "Types.UUID"
 	}
 
 	if (
@@ -129,21 +154,13 @@ function getTypeScriptType(type: string): string {
 	}
 
 	if (
-		[
-			"IP",
-			"Port",
-			"Color4",
-			"Vector3",
-			"Vector3D",
-			"Vector4",
-			"Quaternion",
-		].includes(type)
+		["IP", "Port", "Color4", "Vector3", "Vector4", "Quaternion"].includes(type)
 	) {
-		return type
+		return `Types.${type}`
 	}
 
-	if (type === "Vector3d") {
-		return "Vector3D"
+	if (type === "Vector3d" || type === "Vector3D") {
+		return "Types.Vector3"
 	}
 
 	throw new Error(`Unknown type: ${type}`)
@@ -177,7 +194,7 @@ function parseField(line: string, blockName: string): Field {
 	} else if (type === "LLUUID") {
 		fieldType = "UUID"
 	} else if (type === "BOOL") {
-		fieldType = "Bool"
+		fieldType = "Boolean"
 	} else if (type.startsWith("LL")) {
 		fieldType = type.replace("LL", "")
 
@@ -191,11 +208,11 @@ function parseField(line: string, blockName: string): Field {
 	}
 
 	if (blockName === "agentData") {
-		isOptional = isOptionalAgentDataField(toLowerCamel(name))
+		isOptional = isOptionalAgentDataField(toCamelCase(name))
 	}
 
 	return {
-		name: toLowerCamel(name),
+		name: toCamelCase(name),
 		type: fieldType,
 		variable: isVariable,
 		size: size ? Number.parseInt(size) : undefined,
@@ -225,7 +242,7 @@ function parseBlock(
 	const [, name, type, size] = blockHeaderMatch
 
 	const block: Block = {
-		name: toLowerCamel(name),
+		name: toCamelCase(name),
 		fields: [],
 		variable: type === BlockType.Variable || type === BlockType.Multiple,
 		size: type === BlockType.Multiple ? Number.parseInt(size) : undefined,
@@ -284,7 +301,7 @@ function parseMessageTemplate(content: string): Packet[] {
 
 			const packet: Packet = {
 				name,
-				camelCaseName: toLowerCamel(name),
+				camelCaseName: toCamelCase(name),
 				frequency: parseFrequency(frequency),
 				id: id.startsWith("0x")
 					? Number.parseInt(id.slice(2), 16)
@@ -346,17 +363,18 @@ async function generatePackets() {
 			"utf-8",
 		)
 
-		const lookupTemplate = readFileSync(
-			join(import.meta.dirname, "packet-lookup-template.ts.ejs"),
-			"utf-8",
-		)
+		// const lookupTemplate = readFileSync(
+		// 	join(import.meta.dirname, "packet-lookup-template.ts.ejs"),
+		// 	"utf-8",
+		// )
 
 		const outputDir = join(
 			import.meta.dirname,
 			"..",
 			"..",
 			"src",
-			"network",
+			"codec",
+			"generated",
 			"packets",
 		)
 
@@ -382,22 +400,23 @@ async function generatePackets() {
 
 		writeFileSync(join(outputDir, "index.ts"), indexContent)
 
-		const lookupOutput = ejs.render(lookupTemplate, {
-			packets: packets.sort((a, b) => a.id - b.id),
-		})
+		// const lookupOutput = ejs.render(lookupTemplate, {
+		// 	packets: packets.sort((a, b) => a.id - b.id),
+		// })
 
-		writeFileSync(
-			join(
-				import.meta.dirname,
-				"..",
-				"..",
-				"src",
-				"network",
-				"helpers",
-				"packet-lookup.ts",
-			),
-			lookupOutput,
-		)
+		// writeFileSync(
+		// 	join(
+		// 		import.meta.dirname,
+		// 		"..",
+		// 		"..",
+		// 		"src",
+		// 		"codec",
+		// 		"generated",
+		// 		"packets",
+		// 		"packet-lookup.ts",
+		// 	),
+		// 	lookupOutput,
+		// )
 	} catch (error) {
 		console.error("Error generating packets:", error)
 		throw error

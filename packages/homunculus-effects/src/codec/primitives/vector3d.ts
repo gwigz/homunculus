@@ -1,4 +1,4 @@
-import * as Types from "../model/types"
+import * as Types from "~/model/types"
 import type { Primitive } from "./primitive"
 
 export const Vector3D = {
@@ -10,12 +10,15 @@ export const Vector3D = {
 
 		return offset + 24
 	},
-	decode: (buffer, offset) => [
-		Types.Vector3({
-			x: buffer.readDoubleLE(offset),
-			y: buffer.readDoubleLE(offset + 8),
-			z: buffer.readDoubleLE(offset + 16),
-		}),
-		24,
-	],
+	decode: (buffer, state) => {
+		const value = Types.Vector3({
+			x: buffer.readDoubleLE(state.offset),
+			y: buffer.readDoubleLE(state.offset + 8),
+			z: buffer.readDoubleLE(state.offset + 16),
+		})
+
+		state.offset += 24
+
+		return value
+	},
 } as const satisfies Primitive<Types.Vector3>

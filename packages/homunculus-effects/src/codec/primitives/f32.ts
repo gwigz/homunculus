@@ -7,5 +7,11 @@ export const F32 = {
 
 		return offset + 4
 	},
-	decode: (buffer, offset) => [buffer.readFloatLE(offset), offset + 4],
+	decode: (buffer, state) => {
+		const value = buffer.readFloatLE(state.offset)
+
+		state.offset += 4
+
+		return value
+	},
 } as const satisfies Primitive<number>

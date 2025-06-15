@@ -6,6 +6,6 @@ export interface Primitive<A> {
 
 	size: (value?: A) => number
 
-	encode: (value: A, target: Buffer, offset: number) => void
+	encode: (value: A, target: Buffer, offset: number) => number
 	decode: (source: Buffer, state: { offset: number }) => A
 }

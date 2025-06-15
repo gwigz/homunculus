@@ -1,4 +1,4 @@
-import * as Types from "../model/types"
+import * as Types from "~/model/types"
 import type { Primitive } from "./primitive"
 
 export const Vector4 = {
@@ -11,13 +11,16 @@ export const Vector4 = {
 
 		return offset + 16
 	},
-	decode: (buffer, offset) => [
-		Types.Vector4({
-			x: buffer.readFloatLE(offset),
-			y: buffer.readFloatLE(offset + 4),
-			z: buffer.readFloatLE(offset + 8),
-			w: buffer.readFloatLE(offset + 12),
-		}),
-		16,
-	],
+	decode: (buffer, state) => {
+		const value = Types.Vector4({
+			x: buffer.readFloatLE(state.offset),
+			y: buffer.readFloatLE(state.offset + 4),
+			z: buffer.readFloatLE(state.offset + 8),
+			w: buffer.readFloatLE(state.offset + 12),
+		})
+
+		state.offset += 16
+
+		return value
+	},
 } as const satisfies Primitive<Types.Vector4>

@@ -16,5 +16,11 @@ export const U8 = {
 
 		return offset + 1
 	},
-	decode: (buffer, offset) => [buffer.readUInt8(offset), offset + 1],
+	decode: (buffer, state) => {
+		const value = buffer.readUInt8(state.offset)
+
+		state.offset += 1
+
+		return value
+	},
 } as const satisfies Primitive<number>

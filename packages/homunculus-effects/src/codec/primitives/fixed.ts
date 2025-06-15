@@ -17,10 +17,12 @@ export function fixed(size: number) {
 
 			return offset + size
 		},
-		decode: (buffer, offset) => {
-			const end = offset + size
+		decode: (buffer, state) => {
+			const value = buffer.subarray(state.offset, state.offset + size)
 
-			return [buffer.subarray(offset, end), end]
+			state.offset += size
+
+			return value
 		},
 	} as const satisfies Primitive<Buffer>
 }

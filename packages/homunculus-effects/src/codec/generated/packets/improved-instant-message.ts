@@ -9,16 +9,16 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
+import type { DeepRequired } from "ts-essentials"
 import * as PacketEncoder from "~/codec/lludp/packet-encoder"
 import * as Primitives from "~/codec/primitives"
 import type * as Types from "~/model/types"
 
 export interface ImprovedInstantMessageData {
-	agentData: {
-		agentId: Types.UUID
-		sessionId: Types.UUID
+	agentData?: {
+		agentId?: Types.UUID
+		sessionId?: Types.UUID
 	}
-
 	messageBlock: {
 		fromGroup: boolean
 		toAgentId: Types.UUID
@@ -42,12 +42,13 @@ export const compression = true
 
 const HEADER_SIZE = PacketEncoder.FREQUENCY_OFFSETS[frequency]!
 
-const BASE_SIZE =
-	// Header
-	HEADER_SIZE +
-	// AgentData
-	Primitives.UUID.size() * 2 + // agentId, sessionId
-	// MessageBlock
+// base byte size for one "agentData" entry (fixed-length parameters only)
+const AGENT_DATA_BASE_SIZE =
+	Primitives.UUID.size() + // agentId
+	Primitives.UUID.size() // sessionId
+
+// base byte size for one "messageBlock" entry (fixed-length parameters only)
+const MESSAGE_BLOCK_BASE_SIZE =
 	Primitives.Boolean.size() + // fromGroup
 	Primitives.UUID.size() + // toAgentId
 	Primitives.U32.size() + // parentEstateId
@@ -58,12 +59,17 @@ const BASE_SIZE =
 	Primitives.UUID.size() + // id
 	Primitives.U32.size() // timestamp
 
-export function encode(sequence: number, reliable: boolean, data: ImprovedInstantMessageData) {
-	const size =
-		BASE_SIZE +
-		Primitives.Variable1.size(data.messageBlock.fromAgentName) + // fromAgentName
-		Primitives.Variable2.size(data.messageBlock.message) + // message
-		Primitives.Variable2.size(data.messageBlock.binaryBucket) // binaryBucket
+// size contributed by the packet header and all FIXED-LENGTH fields
+const BASE_SIZE =
+	// Header
+	HEADER_SIZE + AGENT_DATA_BASE_SIZE + MESSAGE_BLOCK_BASE_SIZE
+
+export function encode(sequence: number, reliable: boolean, data: DeepRequired<ImprovedInstantMessageData>) {
+	let size = BASE_SIZE
+
+	size += Primitives.Variable1.size(data.messageBlock.fromAgentName)
+	size += Primitives.Variable2.size(data.messageBlock.message)
+	size += Primitives.Variable2.size(data.messageBlock.binaryBucket)
 
 	const buffer = Buffer.allocUnsafe(size)
 
@@ -92,7 +98,7 @@ export function encode(sequence: number, reliable: boolean, data: ImprovedInstan
 	return buffer
 }
 
-export function decode(buffer: Buffer) {
+export function decode(buffer: Buffer): ImprovedInstantMessageData {
 	const state = { offset: HEADER_SIZE }
 
 	return {

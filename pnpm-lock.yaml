@@ -261,6 +261,9 @@ importers:
       esbuild:
         specifier: ^0.25.4
         version: 0.25.5
+      ts-essentials:
+        specifier: ^10.1.1
+        version: 10.1.1(typescript@5.8.3)
       tsc-alias:
         specifier: ^1.8.16
         version: 1.8.16
@@ -3400,6 +3403,14 @@ packages:
   ts-dedent@2.2.0:
     resolution: {integrity: sha512-q5W7tVM71e2xjHZTlgfTDoPF/SmqKG5hddq9SzR49CH2hayqRKJtQ4mtRlSxKaJlR/+9rEM+mnBHf7I2/BQcpQ==}
     engines: {node: '>=6.10'}
+
+  ts-essentials@10.1.1:
+    resolution: {integrity: sha512-4aTB7KLHKmUvkjNj8V+EdnmuVTiECzn3K+zIbRthumvHu+j44x3w63xpfs0JL3NGIzGXqoQ7AV591xHO+XrOTw==}
+    peerDependencies:
+      typescript: '>=4.5.0'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   ts-morph@26.0.0:
     resolution: {integrity: sha512-ztMO++owQnz8c/gIENcM9XfCEzgoGphTv+nKpYNM1bgsdOVC/jRZuEBf6N+mLLDNg68Kl+GgUZfOySaRiG1/Ug==}
@@ -7193,6 +7204,10 @@ snapshots:
   trough@2.2.0: {}
 
   ts-dedent@2.2.0: {}
+
+  ts-essentials@10.1.1(typescript@5.8.3):
+    optionalDependencies:
+      typescript: 5.8.3
 
   ts-morph@26.0.0:
     dependencies:

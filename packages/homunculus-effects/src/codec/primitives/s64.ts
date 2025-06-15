@@ -15,5 +15,11 @@ export const S64 = {
 
 		return offset + 8
 	},
-	decode: (buffer, offset) => [buffer.readBigInt64LE(offset), offset + 8],
+	decode: (buffer, state) => {
+		const value = buffer.readBigInt64LE(state.offset)
+
+		state.offset += 8
+
+		return value
+	},
 } as const satisfies Primitive<bigint>

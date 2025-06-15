@@ -31,7 +31,10 @@
 		"check": "biome check .",
 		"test": "bun test",
 		"prebuild": "rm -rf dist && tsc && tsc-alias",
-		"build": "esbuild src/index.ts --bundle --platform=node --target=node22 --format=esm --packages=external --outfile=dist/index.js"
+		"build": "esbuild src/index.ts --bundle --platform=node --target=node22 --format=esm --packages=external --outfile=dist/index.js",
+		"precodegen": "find ./src/codec/generated -type f -delete",
+		"codegen": "bun run ./scripts/packet-codegen",
+		"postcodegen": "biome check ./src/codec/generated --fix --unsafe"
 	},
 	"dependencies": {
 		"@usebruno/node-machine-id": "^2.0.0",

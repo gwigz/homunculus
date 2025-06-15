@@ -9,90 +9,168 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import {
-	Bool,
-	Color4,
-	F32,
-	F64,
-	Fixed32,
-	Fixed4,
-	IP,
-	ParticleSystem,
-	Port,
-	Quaternion,
-	S16,
-	S32,
-	S8,
-	Text,
-	Type,
-	U16,
-	U32,
-	U64,
-	U8,
-	UUID,
-	Variable1,
-	Variable2,
-	Vector3,
-	Vector3D,
-	Vector4,
-} from "../types"
-import {
-	createPacketDelegate,
-	createPacketSender,
-	type PacketMetadata,
-} from "../packet"
+import type { DeepRequired } from "ts-essentials"
+import * as PacketEncoder from "~/codec/lludp/packet-encoder"
+import * as Primitives from "~/codec/primitives"
+import type * as Types from "~/model/types"
 
 <% if (blocks.length > 0) { -%>
 export interface <%= name %>Data {
 <% blocks.forEach(block => { -%>
-  <%= block.name %><%= block.name === 'agentData' && !shouldMakeAgentDataOptional(block) ? '' : '?' %>: {
+	<%= block.name %><%= block.name === 'agentData' && shouldMakeAgentDataOptional(block) ? '?' : '' %>: {
 <% block.fields.forEach(field => { -%>
-    <%= field.name %><%= field.optional ? '?' : '' %>: <%= getTypeScriptType(field.type) %>
+		<%= field.name %><%= field.optional ? '?' : '' %>: <%= getTypeScriptType(field.type) %>
 <% }) -%>
-  }<%= block.variable ? '[]' : '' %>
+	}<%= block.variable ? '[]' : '' %>
 <% }) -%>
 }
 <% } else { -%>
-export type <%= name %>Data = Record<string, never>
+export type <%= name %>Data = never
 <% } -%>
 
-export const <%= camelCaseName %>Metadata = {
-	id: <%= id %>,
-	name: "<%= name %>",
-<% if (frequency) { -%>
-	frequency: <%= frequency %>,
-<% } -%>
-<% if (trusted) { -%>
-	trusted: true,
-<% } -%>
+export const id = <%= id %>
+export const name = "<%= name %>"
+export const frequency = <%= frequency %>
 <% if (compression) { -%>
-	compression: true,
+export const compression = true
 <% } -%>
-<% if (blocks.length > 0) { -%>
-	blocks: [
-<% blocks.forEach((block, index) => { -%>
-		{
-			name: "<%= block.name %>",
-			parameters: [
-<% block.fields.forEach((field, fieldIndex) => { -%>
-				["<%= field.name %>", <%= field.type %>],
+
+const HEADER_SIZE = PacketEncoder.FREQUENCY_OFFSETS[frequency]!
+<% /* ------------------------------------------------------------
+   * Per-block base sizes (fixed-length fields only)
+   * ---------------------------------------------------------- */ -%>
+<% function toScreamingSnake(value) { return value.replace(/([a-z])([A-Z])/g, "$1_$2").toUpperCase() } -%>
+<% blocks.forEach(block => { -%>
+<% const fixedFields = block.fields.filter(f => !f.variable) -%>
+<% if (fixedFields.length) { -%>
+
+// base byte size for one "<%= block.name %>" entry (fixed-length parameters only)
+const <%= toScreamingSnake(block.name) %>_BASE_SIZE =
+	<% fixedFields.forEach((field, idx) => { -%>
+	<% if (idx > 0) { %>+ <% } %>Primitives.<%= field.type %>.size() // <%= field.name %>
+	<% }) -%>
+<% } -%>
 <% }) -%>
-			],
+
+// size contributed by the packet header and all FIXED-LENGTH fields
+const BASE_SIZE =
+	// Header
+	HEADER_SIZE
+<% blocks.forEach(block => { -%>
+<% if (block.variable) { -%><% } else { -%>
+	+ <%= toScreamingSnake(block.name) %>_BASE_SIZE
+<% } -%>
+<% }) -%>
+
+export function encode(sequence: number, reliable: boolean, data: DeepRequired<<%= name %>Data>) {
+	let size = BASE_SIZE
+
+<% // ===== Dynamic size adjustments ===== %>
+<% blocks.forEach(block => { -%>
+<% const varFields = block.fields.filter(f => f.variable) -%>
+<% const hasFixedConst = block.fields.some(f => !f.variable) -%>
+
 <% if (block.variable) { -%>
-			multiple: true,
+	<% const isFixedCount = Boolean(block.size) -%>
+	<% const countExpr = block.size ? String(block.size) : `(data.${block.name}?.length ?? 0)` -%>
+	<% if (!block.size) { %>
+	// add 1 byte for the block count
+	size += Primitives.U8.size()
+	<% } %>
+	<% if (hasFixedConst) { -%>
+	size += <%= toScreamingSnake(block.name) %>_BASE_SIZE * <%= countExpr %>
+	<% } -%>
+
+	<% if (varFields.length) { -%>
+	for (const item of data.<%= block.name %> ?? []) {
+		<% varFields.forEach(field => { -%>
+		size += Primitives.<%= field.type %>.size(item.<%= field.name %>)
+		<% }) -%>
+	}
+	<% } -%>
+<% } else { /* single block */ -%>
+	<% varFields.forEach(field => { -%>
+	size += Primitives.<%= field.type %>.size(data.<%= block.name %>.<%= field.name %>)
+	<% }) -%>
 <% } -%>
-<% if (block.size) { -%>
-			size: <%= block.size %>,
-<% } -%>
-		},
 <% }) -%>
-	]
+
+	const buffer = Buffer.allocUnsafe(size)
+
+	PacketEncoder.encodeHeader(buffer, id, frequency, sequence, reliable)
+
+<% if (blocks.length > 0) { -%>
+	let offset = HEADER_SIZE
+<% // ===== Encoding fields ===== %>
+<% blocks.forEach(block => { -%>
+
+	// <%= block.name.charAt(0).toUpperCase() + block.name.slice(1) %>
+<% if (block.variable) { -%>
+	<% if (!block.size) { -%>
+	offset = Primitives.U8.encode(data.<%= block.name %>?.length ?? 0, buffer, offset)
+
+	<% } -%>
+	<% if (block.size) { -%>
+	for (const item of data.<%= block.name %> ?? []) {
+	<% block.fields.forEach(field => { -%>
+		offset = Primitives.<%= field.type %>.encode(item.<%= field.name %>, buffer, offset)
+	<% }) -%>
+	}
+	<% } else { -%>
+	for (const item of data.<%= block.name %> ?? []) {
+	<% block.fields.forEach(field => { -%>
+		offset = Primitives.<%= field.type %>.encode(item.<%= field.name %>, buffer, offset)
+	<% }) -%>
+	}
+	<% } -%>
+<% } else { -%>
+<% block.fields.forEach(field => { -%>
+	offset = Primitives.<%= field.type %>.encode(data.<%= block.name %>.<%= field.name %>, buffer, offset)
+<% }) -%>
 <% } -%>
-} satisfies PacketMetadata
+<% }) -%>
+<% } -%>
 
-export const <%= camelCaseName %> = createPacketSender<<%= name %>Data>(
-	<%= camelCaseName %>Metadata
-)
+	return buffer
+}
 
-export const create<%= name %>Delegate =
-	createPacketDelegate<<%= name %>Data>(<%= camelCaseName %>Metadata)
+export function decode(buffer: Buffer): <%= name %>Data {
+<% if (blocks.length > 0) { -%>
+	const state = { offset: HEADER_SIZE }
+
+	return {
+<% // ===== Decoding blocks ===== %>
+<% blocks.forEach((block, blockIdx) => { -%>
+<% if (block.variable) { -%>
+		<%= block.name %>: (() => {
+			const items: <%= name %>Data["<%= block.name %>"] = []
+<% if (block.size) { -%>
+
+			for (let i = 0; i < <%= block.size %>; i++) {
+<% } else { -%>
+			const size = Primitives.U8.decode(buffer, state)
+
+			for (let i = 0; i < size; i++) {
+<% } -%>
+				items.push({
+<% block.fields.forEach(field => { -%>
+					<%= field.name %>: Primitives.<%= field.type %>.decode(buffer, state),
+<% }) -%>
+				})
+			}
+
+			return items
+		})()<% if (blockIdx < blocks.length - 1) { %>,<% } %>
+<% } else { -%>
+		<%= block.name %>: {
+<% block.fields.forEach(field => { -%>
+			<%= field.name %>: Primitives.<%= field.type %>.decode(buffer, state),
+<% }) -%>
+		}<% if (blockIdx < blocks.length - 1) { %>,<% } %>
+<% } -%>
+<% }) -%>
+	}
+<% } else { -%>
+	return {}
+<% } -%>
+}

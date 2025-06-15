@@ -1,4 +1,4 @@
-import * as Types from "../model/types"
+import * as Types from "~/model/types"
 import type { Primitive } from "./primitive"
 
 export const NormalizedQuaternion = {
@@ -16,15 +16,18 @@ export const NormalizedQuaternion = {
 
 		return offset + 12
 	},
-	decode: (buffer, offset) => [
-		Types.Quaternion({
-			x: buffer.readFloatLE(offset),
-			y: buffer.readFloatLE(offset + 4),
-			z: buffer.readFloatLE(offset + 8),
+	decode: (buffer, state) => {
+		const value = Types.Quaternion({
+			x: buffer.readFloatLE(state.offset),
+			y: buffer.readFloatLE(state.offset + 4),
+			z: buffer.readFloatLE(state.offset + 8),
 			w: 0,
-		}),
-		12,
-	],
+		})
+
+		state.offset += 12
+
+		return value
+	},
 } as const satisfies Primitive<Types.Quaternion>
 
 export const Quaternion = {
@@ -37,13 +40,16 @@ export const Quaternion = {
 
 		return offset + 16
 	},
-	decode: (buffer, offset) => [
-		Types.Quaternion({
-			x: buffer.readFloatLE(offset),
-			y: buffer.readFloatLE(offset + 4),
-			z: buffer.readFloatLE(offset + 8),
-			w: buffer.readFloatLE(offset + 12),
-		}),
-		16,
-	],
+	decode: (buffer, state) => {
+		const value = Types.Quaternion({
+			x: buffer.readFloatLE(state.offset),
+			y: buffer.readFloatLE(state.offset + 4),
+			z: buffer.readFloatLE(state.offset + 8),
+			w: buffer.readFloatLE(state.offset + 12),
+		})
+
+		state.offset += 16
+
+		return value
+	},
 } as const satisfies Primitive<Types.Quaternion>

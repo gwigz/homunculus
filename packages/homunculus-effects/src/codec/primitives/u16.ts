@@ -16,5 +16,11 @@ export const U16 = {
 
 		return offset + 2
 	},
-	decode: (buffer, offset) => [buffer.readUInt16LE(offset), offset + 2],
+	decode: (buffer, state) => {
+		const value = buffer.readUInt16LE(state.offset)
+
+		state.offset += 2
+
+		return value
+	},
 } as const satisfies Primitive<number>

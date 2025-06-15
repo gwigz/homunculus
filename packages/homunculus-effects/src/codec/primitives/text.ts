@@ -3,14 +3,16 @@ import type { Primitive } from "./primitive"
 export const Text = {
 	size: (text) => (text?.replace(/\0.*/g, "").length ?? 0) + 1,
 	encode: (text, buffer, offset) => {
-		buffer.write(text.replace(/\0.*/g, ""), offset, "utf-8")
+		const sanitized = text.replace(/\0.*/g, "").concat("\0")
 
-		return offset + Text.size(text)
+		buffer.write(sanitized, offset, "utf-8")
+
+		return offset + sanitized.length
 	},
-	decode: (buffer, offset) => {
+	decode: (buffer, state) => {
 		const bytes = []
 
-		for (const byte of buffer.subarray(offset)) {
+		for (const byte of buffer.subarray(state.offset)) {
 			// marks the end of the text
 			if (byte === 0x00) {
 				break
@@ -19,6 +21,8 @@ export const Text = {
 			bytes.push(byte)
 		}
 
-		return [Buffer.from(bytes).toString("utf-8"), offset + bytes.length + 1]
+		state.offset += bytes.length + 1
+
+		return Buffer.from(bytes).toString("utf-8").slice(0, -1)
 	},
 } as const satisfies Primitive<string>

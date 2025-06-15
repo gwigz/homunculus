@@ -9,5 +9,11 @@ export const S16 = {
 
 		return offset + 2
 	},
-	decode: (buffer, offset) => [buffer.readInt16LE(offset), offset + 2],
+	decode: (buffer, state) => {
+		const value = buffer.readInt16LE(state.offset)
+
+		state.offset += 2
+
+		return value
+	},
 } as const satisfies Primitive<number>

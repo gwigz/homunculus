@@ -7,5 +7,11 @@ export const F64 = {
 
 		return offset + 8
 	},
-	decode: (buffer, offset) => [buffer.readDoubleLE(offset), offset + 8],
+	decode: (buffer, state) => {
+		const value = buffer.readDoubleLE(state.offset)
+
+		state.offset += 8
+
+		return value
+	},
 } as const satisfies Primitive<number>

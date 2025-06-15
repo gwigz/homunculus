@@ -17,10 +17,12 @@ export const IP = {
 
 		return offset + 4
 	},
-	decode: (buffer, offset) => {
-		const data = buffer.subarray(offset, offset + 4)
+	decode: (buffer, state) => {
+		const data = buffer.subarray(state.offset, state.offset + 4)
 		const ip = `${data[0]}.${data[1]}.${data[2]}.${data[3]}`
 
-		return [ip, offset + 4]
+		state.offset += 4
+
+		return ip
 	},
 } as const as Primitive<string>

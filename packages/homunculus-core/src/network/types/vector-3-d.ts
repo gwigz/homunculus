@@ -58,7 +58,7 @@ class Vector3D {
 		const dy = from.y - to.y
 		const dz = from.z - to.z
 
-		return Math.sqrt(dx * dx + dy * dy + dz * dz)
+		return Math.hypot(dx, dy, dz)
 	}
 
 	/**
@@ -72,7 +72,7 @@ class Vector3D {
 	 * Normalizes a vector to a unit vector.
 	 */
 	public static normalize(vector: Vector3D) {
-		const magnitude = Math.sqrt(vector.x ** 2 + vector.y ** 2 + vector.z ** 2)
+		const magnitude = Math.hypot(vector.x, vector.y, vector.z) || 1
 
 		return new Vector3D(
 			vector.x / magnitude,

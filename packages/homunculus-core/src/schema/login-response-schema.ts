@@ -208,6 +208,7 @@ export const loginResponseSchema = z.preprocess(
 
 		z.object({
 			login: z.literal(false),
+			reason: z.string(),
 			message: z.string(),
 		}),
 	]),

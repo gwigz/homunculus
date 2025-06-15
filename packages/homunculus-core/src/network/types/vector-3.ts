@@ -50,7 +50,7 @@ export class Vector3 {
 	/**
 	 * Calculates the distance between this vector and another vector.
 	 */
-	public distance(other: Vector3) {
+	public oss(other: Vector3) {
 		return Vector3.distance(this, other)
 	}
 
@@ -62,7 +62,7 @@ export class Vector3 {
 		const dy = from.y - to.y
 		const dz = from.z - to.z
 
-		return Math.sqrt(dx * dx + dy * dy + dz * dz)
+		return Math.hypot(dx, dy, dz)
 	}
 
 	/**
@@ -76,7 +76,7 @@ export class Vector3 {
 	 * Normalizes a vector to a unit vector.
 	 */
 	public static normalize(vector: Vector3) {
-		const magnitude = Math.sqrt(vector.x ** 2 + vector.y ** 2 + vector.z ** 2)
+		const magnitude = Math.hypot(vector.x, vector.y, vector.z) || 1
 
 		return new Vector3(
 			vector.x / magnitude,

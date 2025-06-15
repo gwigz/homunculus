@@ -1,0 +1,31 @@
+{
+	"compilerOptions": {
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"target": "ESNext",
+		"allowJs": true,
+		"resolveJsonModule": true,
+		"moduleResolution": "bundler",
+		"moduleDetection": "force",
+		"isolatedModules": true,
+		"verbatimModuleSyntax": true,
+		/* strictness */
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		/* NOT transpiling with TypeScript */
+		"module": "preserve",
+		/* doesn't run in the DOM */
+		"lib": ["ESNext"],
+		/** generate declaration files */
+		"declaration": true,
+		"emitDeclarationOnly": true,
+		"outDir": "dist",
+		/* path aliases */
+		"baseUrl": ".",
+		"paths": { "~/*": ["src/*"] },
+		/* plugins */
+		"plugins": [{ "name": "@effect/language-service" }]
+	},
+	"include": ["src/**/*.ts"]
+}

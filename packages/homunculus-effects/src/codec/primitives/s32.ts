@@ -1,4 +1,4 @@
-import type { Codec } from "./codec"
+import type { Primitive } from "./primitive"
 
 export const S32 = {
 	MAX_VALUE: 2147483647,
@@ -17,4 +17,4 @@ export const S32 = {
 		return offset + 4
 	},
 	decode: (buffer, offset) => [buffer.readInt32LE(offset), offset + 4],
-} as const satisfies Codec<number>
+} as const satisfies Primitive<number>

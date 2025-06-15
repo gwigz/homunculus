@@ -1,4 +1,4 @@
-import type { Codec } from "./codec"
+import type { Primitive } from "./primitive"
 
 export const S64 = {
 	MIN_VALUE: -9223372036854775808n,
@@ -16,4 +16,4 @@ export const S64 = {
 		return offset + 8
 	},
 	decode: (buffer, offset) => [buffer.readBigInt64LE(offset), offset + 8],
-} as const satisfies Codec<bigint>
+} as const satisfies Primitive<bigint>

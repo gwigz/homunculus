@@ -1,4 +1,4 @@
-import type { Codec } from "./codec"
+import type { Primitive } from "./primitive"
 
 export const U16 = {
 	MIN_VALUE: 0,
@@ -17,4 +17,4 @@ export const U16 = {
 		return offset + 2
 	},
 	decode: (buffer, offset) => [buffer.readUInt16LE(offset), offset + 2],
-} as const satisfies Codec<number>
+} as const satisfies Primitive<number>

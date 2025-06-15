@@ -1,4 +1,4 @@
-import type { Codec } from "./codec"
+import type { Primitive } from "./primitive"
 
 export const Text = {
 	size: (text) => (text?.replace(/\0.*/g, "").length ?? 0) + 1,
@@ -21,4 +21,4 @@ export const Text = {
 
 		return [Buffer.from(bytes).toString("utf-8"), offset + bytes.length + 1]
 	},
-} as const satisfies Codec<string>
+} as const satisfies Primitive<string>

@@ -1,4 +1,4 @@
-import type { Codec } from "./codec"
+import type { Primitive } from "./primitive"
 
 export const U64 = {
 	MIN_VALUE: 0n,
@@ -22,4 +22,4 @@ export const U64 = {
 			(BigInt.asUintN(32, BigInt(buffer.readUInt32LE(offset + 4))) << 32n),
 		offset + 8,
 	],
-} as const satisfies Codec<bigint>
+} as const satisfies Primitive<bigint>

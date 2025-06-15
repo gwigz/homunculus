@@ -1,4 +1,4 @@
-import type { Codec } from "./codec"
+import type { Primitive } from "./primitive"
 
 export function fixed(size: number) {
 	return {
@@ -22,5 +22,5 @@ export function fixed(size: number) {
 
 			return [buffer.subarray(offset, end), end]
 		},
-	} as const satisfies Codec<Buffer>
+	} as const satisfies Primitive<Buffer>
 }

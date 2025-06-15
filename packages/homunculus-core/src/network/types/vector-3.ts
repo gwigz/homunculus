@@ -50,7 +50,7 @@ export class Vector3 {
 	/**
 	 * Calculates the distance between this vector and another vector.
 	 */
-	public oss(other: Vector3) {
+	public distance(other: Vector3) {
 		return Vector3.distance(this, other)
 	}
 

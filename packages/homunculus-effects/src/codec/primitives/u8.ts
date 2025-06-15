@@ -1,4 +1,4 @@
-import type { Codec } from "./codec"
+import type { Primitive } from "./primitive"
 
 export const U8 = {
 	MAX_VALUE: 255,
@@ -17,4 +17,4 @@ export const U8 = {
 		return offset + 1
 	},
 	decode: (buffer, offset) => [buffer.readUInt8(offset), offset + 1],
-} as const satisfies Codec<number>
+} as const satisfies Primitive<number>

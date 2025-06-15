@@ -1,9 +1,9 @@
-import type { Codec } from "./codec"
-import * as Types from "./types"
+import * as Types from "../model/types"
+import type { Primitive } from "./primitive"
 
 export const Color4 = {
 	size: () => 4,
-	encode: (color: Types.Color4, buffer, offset) => {
+	encode: (color, buffer, offset) => {
 		buffer.writeUInt8(color.r, offset)
 		buffer.writeUInt8(color.g, offset + 1)
 		buffer.writeUInt8(color.b, offset + 2)
@@ -20,4 +20,4 @@ export const Color4 = {
 		}),
 		4,
 	],
-} as const satisfies Codec<Types.Color4>
+} as const satisfies Primitive<Types.Color4>

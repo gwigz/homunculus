@@ -1,7 +1,6 @@
-import type { Codec } from "./codec"
+import type { Primitive } from "./primitive"
 
 // biome-ignore lint/suspicious/noShadowRestrictedNames: used as `Codec.Boolean`
-
 export const Boolean = {
 	size: () => 1,
 	encode: (boolean, buffer, offset) => {
@@ -9,5 +8,11 @@ export const Boolean = {
 
 		return offset + 1
 	},
-	decode: (buffer, offset) => [!!buffer.readUInt8(offset), offset + 1],
-} as const satisfies Codec<boolean>
+	decode: (buffer, state) => {
+		const value = !!buffer.readUInt8(state.offset)
+
+		state.offset += 1
+
+		return value
+	},
+} as const satisfies Primitive<boolean>

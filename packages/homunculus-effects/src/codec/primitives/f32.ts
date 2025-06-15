@@ -1,4 +1,4 @@
-import type { Codec } from "./codec"
+import type { Primitive } from "./primitive"
 
 export const F32 = {
 	size: () => 4,
@@ -8,4 +8,4 @@ export const F32 = {
 		return offset + 4
 	},
 	decode: (buffer, offset) => [buffer.readFloatLE(offset), offset + 4],
-} as const satisfies Codec<number>
+} as const satisfies Primitive<number>

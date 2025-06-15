@@ -1,6 +1,4 @@
-// import { Buffer } from "node:buffer"
-
-import type { Codec } from "./codec"
+import type { Primitive } from "./primitive"
 
 export const IP = {
 	size: () => 4,
@@ -25,4 +23,4 @@ export const IP = {
 
 		return [ip, offset + 4]
 	},
-} as const as Codec<string>
+} as const as Primitive<string>

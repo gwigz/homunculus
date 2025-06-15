@@ -1,5 +1,5 @@
-import type { Codec } from "./codec"
-import * as Types from "./types"
+import * as Types from "../model/types"
+import type { Primitive } from "./primitive"
 
 export const NormalizedQuaternion = {
 	size: () => 12,
@@ -25,7 +25,7 @@ export const NormalizedQuaternion = {
 		}),
 		12,
 	],
-} as const satisfies Codec<Types.Quaternion>
+} as const satisfies Primitive<Types.Quaternion>
 
 export const Quaternion = {
 	size: () => 16,
@@ -46,4 +46,4 @@ export const Quaternion = {
 		}),
 		16,
 	],
-} as const satisfies Codec<Types.Quaternion>
+} as const satisfies Primitive<Types.Quaternion>

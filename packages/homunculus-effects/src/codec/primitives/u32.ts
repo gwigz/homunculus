@@ -1,4 +1,4 @@
-import type { Codec } from "./codec"
+import type { Primitive } from "./primitive"
 
 export const U32 = {
 	MIN_VALUE: 0,
@@ -16,5 +16,11 @@ export const U32 = {
 
 		return offset + 4
 	},
-	decode: (buffer, offset) => [buffer.readUInt32LE(offset), offset + 4],
-} as const satisfies Codec<number>
+	decode: (buffer, state) => {
+		const value = buffer.readUInt32LE(state.offset)
+
+		state.offset += 4
+
+		return value
+	},
+} as const satisfies Primitive<number>

@@ -94,6 +94,12 @@
 					}
 				}
 			}
+		},
+		{
+			"includes": ["**/codec/generated/**"],
+			"formatter": {
+				"lineWidth": 120
+			}
 		}
 	]
 }

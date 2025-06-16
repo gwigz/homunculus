@@ -395,7 +395,10 @@ async function generatePackets() {
 		}
 
 		const indexContent = packets
-			.map((packet) => `export * from "./${toDashCase(packet.name)}"`)
+			.map(
+				(packet) =>
+					`export * as ${packet.name} from "./${toDashCase(packet.name)}"`,
+			)
 			.join("\n")
 
 		writeFileSync(join(outputDir, "index.ts"), indexContent)

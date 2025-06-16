@@ -1,4 +1,5 @@
-export const ACK = 0x40
+import { RELIABLE } from "./packet-decoder"
+
 export const FREQUENCY_OFFSETS = [7, 8, 10, 10]
 
 /**
@@ -22,7 +23,7 @@ export function encodeHeader(
 	reliable = false,
 ) {
 	// flags
-	buffer[0] = reliable ? ACK : 0
+	buffer[0] = reliable ? RELIABLE : 0
 
 	// sequence number
 	buffer[1] = sequence >> 24

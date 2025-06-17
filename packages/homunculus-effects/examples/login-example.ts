@@ -1,19 +1,26 @@
 import { Effect, Logger, LogLevel } from "effect"
 import { login } from "../src/io/login"
-import { Registry, RegistryLive } from "../src/layers/registry-layer"
+import {
+	Registry,
+	RegistryLive,
+	type SimulatorInfo,
+} from "../src/layers/registry-layer"
 
 const program = Effect.gen(function* () {
 	const registry = yield* Registry
 	const loginResponse = yield* login
 
-	const simulator = yield* registry.connect({
+	const simulatorInfo: SimulatorInfo = {
 		simIp: loginResponse.simIp,
 		simPort: loginResponse.simPort,
 		circuitCode: loginResponse.circuitCode,
-	})
+		agentId: loginResponse.agentId,
+		sessionId: loginResponse.sessionId,
+	}
 
-	// make this the active circuit once the simulator is ready
-	yield* registry.promote(simulator.id).pipe(simulator.ready.whenOpen)
+	const simulator = yield* registry.connect(simulatorInfo)
+
+	yield* registry.promote(simulatorInfo).pipe(simulator.ready.whenOpen)
 
 	console.log("Connected to simulator", simulator.id)
 

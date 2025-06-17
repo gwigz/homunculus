@@ -186,7 +186,9 @@ const LoginSuccess = Schema.extend(
 		simPort: Schema.Number,
 		regionX: Schema.Number,
 		regionY: Schema.Number,
+		// TODO: loose UUID validation, and cast to UUID type
 		agentId: Schema.String,
+		// TODO: loose UUID validation, and cast to UUID type
 		sessionId: Schema.String,
 		firstName: Schema.transform(Schema.String, Schema.String, {
 			decode: (value) =>

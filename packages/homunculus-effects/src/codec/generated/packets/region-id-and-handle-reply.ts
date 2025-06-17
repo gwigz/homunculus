@@ -17,7 +17,7 @@ import type * as Types from "~/model/types"
 export interface RegionIDAndHandleReplyData {
 	replyBlock: {
 		regionId: Types.UUID
-		regionHandle: number | bigint
+		regionHandle: bigint
 	}
 }
 

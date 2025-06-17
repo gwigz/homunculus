@@ -44,7 +44,7 @@ const AGENT_DATA_BASE_SIZE =
 // size contributed by the packet header and all FIXED-LENGTH fields
 const BASE_SIZE =
 	// Header
-	HEADER_SIZE + AGENT_DATA_BASE_SIZE + NAME_DATA_BASE_SIZE
+	HEADER_SIZE + AGENT_DATA_BASE_SIZE
 
 export function encode(sequence: number, reliable: boolean, data: DeepRequired<MapNameRequestData>) {
 	let size = BASE_SIZE

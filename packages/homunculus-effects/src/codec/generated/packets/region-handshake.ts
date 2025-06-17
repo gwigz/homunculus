@@ -52,8 +52,8 @@ export interface RegionHandshakeData {
 		productName: Buffer
 	}
 	regionInfo4: {
-		regionFlagsExtended: number | bigint
-		regionProtocols: number | bigint
+		regionFlagsExtended: bigint
+		regionProtocols: bigint
 	}[]
 }
 

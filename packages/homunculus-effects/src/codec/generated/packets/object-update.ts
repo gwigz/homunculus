@@ -16,7 +16,7 @@ import type * as Types from "~/model/types"
 
 export interface ObjectUpdateData {
 	regionData: {
-		regionHandle: number | bigint
+		regionHandle: bigint
 		timeDilation: number
 	}
 	objectData: {

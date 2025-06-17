@@ -15,7 +15,7 @@ import * as Primitives from "~/codec/primitives"
 
 export interface SendXferPacketData {
 	xferId: {
-		id: number | bigint
+		id: bigint
 		packet: number
 	}
 	dataPacket: {
@@ -37,7 +37,7 @@ const XFER_ID_BASE_SIZE =
 // size contributed by the packet header and all FIXED-LENGTH fields
 const BASE_SIZE =
 	// Header
-	HEADER_SIZE + XFER_ID_BASE_SIZE + DATA_PACKET_BASE_SIZE
+	HEADER_SIZE + XFER_ID_BASE_SIZE
 
 export function encode(sequence: number, reliable: boolean, data: DeepRequired<SendXferPacketData>) {
 	let size = BASE_SIZE

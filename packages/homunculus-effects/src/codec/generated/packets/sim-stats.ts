@@ -28,7 +28,7 @@ export interface SimStatsData {
 		pid: number
 	}
 	regionInfo: {
-		regionFlagsExtended: number | bigint
+		regionFlagsExtended: bigint
 	}[]
 }
 

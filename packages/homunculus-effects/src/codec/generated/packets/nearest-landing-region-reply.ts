@@ -15,7 +15,7 @@ import * as Primitives from "~/codec/primitives"
 
 export interface NearestLandingRegionReplyData {
 	landingRegionData: {
-		regionHandle: number | bigint
+		regionHandle: bigint
 	}
 }
 

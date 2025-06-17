@@ -22,7 +22,7 @@ export interface AgentMovementCompleteData {
 	data: {
 		position: Types.Vector3
 		lookAt: Types.Vector3
-		regionHandle: number | bigint
+		regionHandle: bigint
 		timestamp: number
 	}
 	simData: {
@@ -51,7 +51,7 @@ const DATA_BASE_SIZE =
 // size contributed by the packet header and all FIXED-LENGTH fields
 const BASE_SIZE =
 	// Header
-	HEADER_SIZE + AGENT_DATA_BASE_SIZE + DATA_BASE_SIZE + SIM_DATA_BASE_SIZE
+	HEADER_SIZE + AGENT_DATA_BASE_SIZE + DATA_BASE_SIZE
 
 export function encode(sequence: number, reliable: boolean, data: DeepRequired<AgentMovementCompleteData>) {
 	let size = BASE_SIZE

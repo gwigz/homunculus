@@ -17,7 +17,7 @@ import type * as Types from "~/model/types"
 export interface UpdateParcelData {
 	parcelData: {
 		parcelId: Types.UUID
-		regionHandle: number | bigint
+		regionHandle: bigint
 		ownerId: Types.UUID
 		groupOwned: boolean
 		status: number

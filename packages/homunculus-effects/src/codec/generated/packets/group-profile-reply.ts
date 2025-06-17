@@ -24,7 +24,7 @@ export interface GroupProfileReplyData {
 		charter: Buffer
 		showInList: boolean
 		memberTitle: Buffer
-		powersMask: number | bigint
+		powersMask: bigint
 		insigniaId: Types.UUID
 		founderId: Types.UUID
 		membershipFee: number

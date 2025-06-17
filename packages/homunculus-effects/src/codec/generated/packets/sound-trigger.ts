@@ -20,7 +20,7 @@ export interface SoundTriggerData {
 		ownerId: Types.UUID
 		objectId: Types.UUID
 		parentId: Types.UUID
-		handle: number | bigint
+		handle: bigint
 		position: Types.Vector3
 		gain: number
 	}

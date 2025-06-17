@@ -19,7 +19,7 @@ export interface LogParcelChangesData {
 		agentId?: Types.UUID
 	}
 	regionData: {
-		regionHandle: number | bigint
+		regionHandle: bigint
 	}
 	parcelData: {
 		parcelId: Types.UUID

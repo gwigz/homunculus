@@ -15,7 +15,7 @@ import * as Primitives from "~/codec/primitives"
 
 export interface ConfirmXferPacketData {
 	xferId: {
-		id: number | bigint
+		id: bigint
 		packet: number
 	}
 }

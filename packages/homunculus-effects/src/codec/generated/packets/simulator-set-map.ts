@@ -16,7 +16,7 @@ import type * as Types from "~/model/types"
 
 export interface SimulatorSetMapData {
 	mapData: {
-		regionHandle: number | bigint
+		regionHandle: bigint
 		type: number
 		mapImage: Types.UUID
 	}

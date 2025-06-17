@@ -27,7 +27,7 @@ export interface GroupMembersReplyData {
 		agentId: Types.UUID
 		contribution: number
 		onlineStatus: Buffer
-		agentPowers: number | bigint
+		agentPowers: bigint
 		title: Buffer
 		isOwner: boolean
 	}[]

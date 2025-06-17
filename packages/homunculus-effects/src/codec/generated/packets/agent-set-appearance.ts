@@ -58,7 +58,7 @@ const VISUAL_PARAM_BASE_SIZE = Primitives.U8.size() // paramValue
 // size contributed by the packet header and all FIXED-LENGTH fields
 const BASE_SIZE =
 	// Header
-	HEADER_SIZE + AGENT_DATA_BASE_SIZE + OBJECT_DATA_BASE_SIZE
+	HEADER_SIZE + AGENT_DATA_BASE_SIZE
 
 export function encode(sequence: number, reliable: boolean, data: DeepRequired<AgentSetAppearanceData>) {
 	let size = BASE_SIZE

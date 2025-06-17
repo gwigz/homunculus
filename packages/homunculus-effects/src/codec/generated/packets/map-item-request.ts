@@ -24,7 +24,7 @@ export interface MapItemRequestData {
 	}
 	requestData: {
 		itemType: number
-		regionHandle: number | bigint
+		regionHandle: bigint
 	}
 }
 

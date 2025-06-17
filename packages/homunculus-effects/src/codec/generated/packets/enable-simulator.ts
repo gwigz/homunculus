@@ -16,7 +16,7 @@ import type * as Types from "~/model/types"
 
 export interface EnableSimulatorData {
 	simulatorInfo: {
-		handle: number | bigint
+		handle: bigint
 		ip: Types.IP
 		port: Types.Port
 	}

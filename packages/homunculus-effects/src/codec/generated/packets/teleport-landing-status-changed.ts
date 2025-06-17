@@ -15,7 +15,7 @@ import * as Primitives from "~/codec/primitives"
 
 export interface TeleportLandingStatusChangedData {
 	regionData: {
-		regionHandle: number | bigint
+		regionHandle: bigint
 	}
 }
 

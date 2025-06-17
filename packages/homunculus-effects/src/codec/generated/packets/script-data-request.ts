@@ -15,7 +15,7 @@ import * as Primitives from "~/codec/primitives"
 
 export interface ScriptDataRequestData {
 	dataBlock: {
-		hash: number | bigint
+		hash: bigint
 		requestType: number
 		request: Buffer
 	}[]

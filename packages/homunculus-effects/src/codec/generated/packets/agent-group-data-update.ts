@@ -20,7 +20,7 @@ export interface AgentGroupDataUpdateData {
 	}
 	groupData: {
 		groupId: Types.UUID
-		groupPowers: number | bigint
+		groupPowers: bigint
 		acceptNotices: boolean
 		groupInsigniaId: Types.UUID
 		contribution: number

@@ -15,7 +15,7 @@ import * as Primitives from "~/codec/primitives"
 
 export interface ScriptDataReplyData {
 	dataBlock: {
-		hash: number | bigint
+		hash: bigint
 		reply: Buffer
 	}[]
 }

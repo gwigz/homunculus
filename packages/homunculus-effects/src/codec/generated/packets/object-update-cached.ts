@@ -15,7 +15,7 @@ import * as Primitives from "~/codec/primitives"
 
 export interface ObjectUpdateCachedData {
 	regionData: {
-		regionHandle: number | bigint
+		regionHandle: bigint
 		timeDilation: number
 	}
 	objectData: {

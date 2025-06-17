@@ -16,7 +16,7 @@ import type * as Types from "~/model/types"
 
 export interface RequestXferData {
 	xferId: {
-		id: number | bigint
+		id: bigint
 		filename: Buffer
 		filePath: number
 		deleteOnCompletion: boolean

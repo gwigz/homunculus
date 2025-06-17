@@ -36,7 +36,7 @@ const AGENT_DATA_BASE_SIZE = Primitives.UUID.size() // agentId
 // size contributed by the packet header and all FIXED-LENGTH fields
 const BASE_SIZE =
 	// Header
-	HEADER_SIZE + AGENT_DATA_BASE_SIZE + FILE_DATA_BASE_SIZE
+	HEADER_SIZE + AGENT_DATA_BASE_SIZE
 
 export function encode(sequence: number, reliable: boolean, data: DeepRequired<InitiateDownloadData>) {
 	let size = BASE_SIZE

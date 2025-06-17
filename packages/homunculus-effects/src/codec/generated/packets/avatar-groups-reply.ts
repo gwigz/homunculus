@@ -20,7 +20,7 @@ export interface AvatarGroupsReplyData {
 		avatarId: Types.UUID
 	}
 	groupData: {
-		groupPowers: number | bigint
+		groupPowers: bigint
 		acceptNotices: boolean
 		groupTitle: Buffer
 		groupId: Types.UUID

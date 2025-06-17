@@ -28,7 +28,7 @@ export interface GroupRoleDataReplyData {
 		name: Buffer
 		title: Buffer
 		description: Buffer
-		powers: number | bigint
+		powers: bigint
 		members: number
 	}[]
 }

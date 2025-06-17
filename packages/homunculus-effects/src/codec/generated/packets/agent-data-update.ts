@@ -21,7 +21,7 @@ export interface AgentDataUpdateData {
 		lastName: Buffer
 		groupTitle: Buffer
 		activeGroupId: Types.UUID
-		groupPowers: number | bigint
+		groupPowers: bigint
 		groupName: Buffer
 	}
 }

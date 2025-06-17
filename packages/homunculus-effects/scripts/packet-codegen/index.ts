@@ -125,7 +125,7 @@ function shouldMakeAgentDataOptional(block: Block): boolean {
 	return block.fields.every((field) => isOptionalAgentDataField(field.name))
 }
 
-function getTypeScriptType(type: string): string {
+function getTypeScriptType(type: string) {
 	if (type === "Boolean") {
 		return "boolean"
 	}
@@ -135,7 +135,7 @@ function getTypeScriptType(type: string): string {
 	}
 
 	if (type === "U64") {
-		return "number | bigint"
+		return "bigint"
 	}
 
 	if (type === "Fixed") {

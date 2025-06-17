@@ -19,7 +19,7 @@ export interface SetStartLocationData {
 		agentId: Types.UUID
 		regionId: Types.UUID
 		locationId: number
-		regionHandle: number | bigint
+		regionHandle: bigint
 		locationPos: Types.Vector3
 		locationLookAt: Types.Vector3
 	}

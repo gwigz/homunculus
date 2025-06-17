@@ -32,7 +32,7 @@ const HEADER_SIZE = PacketEncoder.FREQUENCY_OFFSETS[frequency]!
 // size contributed by the packet header and all FIXED-LENGTH fields
 const BASE_SIZE =
 	// Header
-	HEADER_SIZE + ALERT_DATA_BASE_SIZE
+	HEADER_SIZE
 
 export function encode(sequence: number, reliable: boolean, data: DeepRequired<AlertMessageData>) {
 	let size = BASE_SIZE

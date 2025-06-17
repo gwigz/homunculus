@@ -15,7 +15,7 @@ import * as Primitives from "~/codec/primitives"
 
 export interface AbortXferData {
 	xferId: {
-		id: number | bigint
+		id: bigint
 		result: number
 	}
 }

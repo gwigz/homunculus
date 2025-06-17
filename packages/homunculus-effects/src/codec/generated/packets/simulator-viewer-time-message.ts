@@ -16,7 +16,7 @@ import type * as Types from "~/model/types"
 
 export interface SimulatorViewerTimeMessageData {
 	timeInfo: {
-		usecSinceStart: number | bigint
+		usecSinceStart: bigint
 		secPerDay: number
 		secPerYear: number
 		sunDirection: Types.Vector3

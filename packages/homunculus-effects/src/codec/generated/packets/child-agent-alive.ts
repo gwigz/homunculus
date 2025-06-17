@@ -16,7 +16,7 @@ import type * as Types from "~/model/types"
 
 export interface ChildAgentAliveData {
 	agentData: {
-		regionHandle: number | bigint
+		regionHandle: bigint
 		viewerCircuitCode: number
 		agentId?: Types.UUID
 		sessionId?: Types.UUID

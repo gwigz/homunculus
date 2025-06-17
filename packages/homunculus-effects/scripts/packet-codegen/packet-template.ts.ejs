@@ -57,7 +57,9 @@ const BASE_SIZE =
 	// Header
 	HEADER_SIZE
 <% blocks.forEach(block => { -%>
-<% if (block.variable) { -%><% } else { -%>
+<% const fixedFields = block.fields.filter(f => !f.variable) -%>
+<% /* Only include the per-block constant when there is at least one fixed-length field */ -%>
+<% if (!block.variable && fixedFields.length) { -%>
 	+ <%= toScreamingSnake(block.name) %>_BASE_SIZE
 <% } -%>
 <% }) -%>

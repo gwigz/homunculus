@@ -34,7 +34,7 @@ const METHOD_DATA_BASE_SIZE = Primitives.U16.size() // method
 // size contributed by the packet header and all FIXED-LENGTH fields
 const BASE_SIZE =
 	// Header
-	HEADER_SIZE + METHOD_DATA_BASE_SIZE + DATA_BLOCK_BASE_SIZE
+	HEADER_SIZE + METHOD_DATA_BASE_SIZE
 
 export function encode(sequence: number, reliable: boolean, data: DeepRequired<GenericStreamingMessageData>) {
 	let size = BASE_SIZE

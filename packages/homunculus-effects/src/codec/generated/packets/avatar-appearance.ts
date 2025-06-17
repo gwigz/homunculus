@@ -71,7 +71,7 @@ const ATTACHMENT_BLOCK_BASE_SIZE =
 // size contributed by the packet header and all FIXED-LENGTH fields
 const BASE_SIZE =
 	// Header
-	HEADER_SIZE + SENDER_BASE_SIZE + OBJECT_DATA_BASE_SIZE
+	HEADER_SIZE + SENDER_BASE_SIZE
 
 export function encode(sequence: number, reliable: boolean, data: DeepRequired<AvatarAppearanceData>) {
 	let size = BASE_SIZE

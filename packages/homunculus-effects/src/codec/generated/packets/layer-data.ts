@@ -34,7 +34,7 @@ const LAYER_ID_BASE_SIZE = Primitives.U8.size() // type
 // size contributed by the packet header and all FIXED-LENGTH fields
 const BASE_SIZE =
 	// Header
-	HEADER_SIZE + LAYER_ID_BASE_SIZE + LAYER_DATA_BASE_SIZE
+	HEADER_SIZE + LAYER_ID_BASE_SIZE
 
 export function encode(sequence: number, reliable: boolean, data: DeepRequired<LayerDataData>) {
 	let size = BASE_SIZE

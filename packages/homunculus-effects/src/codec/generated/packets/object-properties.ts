@@ -20,7 +20,7 @@ export interface ObjectPropertiesData {
 		creatorId: Types.UUID
 		ownerId: Types.UUID
 		groupId: Types.UUID
-		creationDate: number | bigint
+		creationDate: bigint
 		baseMask: number
 		ownerMask: number
 		groupMask: number

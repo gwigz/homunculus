@@ -45,7 +45,7 @@ export interface RegionInfoData {
 		hardMaxObjects: number
 	}
 	regionInfo3: {
-		regionFlagsExtended: number | bigint
+		regionFlagsExtended: bigint
 	}[]
 	regionInfo5: {
 		chatWhisperRange: number

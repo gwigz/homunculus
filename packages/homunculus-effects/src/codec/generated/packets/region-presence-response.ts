@@ -17,7 +17,7 @@ import type * as Types from "~/model/types"
 export interface RegionPresenceResponseData {
 	regionData: {
 		regionId: Types.UUID
-		regionHandle: number | bigint
+		regionHandle: bigint
 		internalRegionIp: Types.IP
 		externalRegionIp: Types.IP
 		regionPort: Types.Port

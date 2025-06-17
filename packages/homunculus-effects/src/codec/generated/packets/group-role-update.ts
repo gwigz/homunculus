@@ -25,7 +25,7 @@ export interface GroupRoleUpdateData {
 		name: Buffer
 		description: Buffer
 		title: Buffer
-		powers: number | bigint
+		powers: bigint
 		updateType: number
 	}[]
 }

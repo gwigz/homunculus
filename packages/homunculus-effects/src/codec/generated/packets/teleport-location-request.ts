@@ -20,7 +20,7 @@ export interface TeleportLocationRequestData {
 		sessionId?: Types.UUID
 	}
 	info: {
-		regionHandle: number | bigint
+		regionHandle: bigint
 		position: Types.Vector3
 		lookAt: Types.Vector3
 	}

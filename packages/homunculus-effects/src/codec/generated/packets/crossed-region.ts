@@ -22,7 +22,7 @@ export interface CrossedRegionData {
 	regionData: {
 		simIp: Types.IP
 		simPort: Types.Port
-		regionHandle: number | bigint
+		regionHandle: bigint
 		seedCapability: Buffer
 	}
 	info: {

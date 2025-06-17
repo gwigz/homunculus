@@ -25,7 +25,7 @@ export interface ScriptSensorRequestData {
 		type: number
 		range: number
 		arc: number
-		regionHandle: number | bigint
+		regionHandle: bigint
 		searchRegions: number
 	}
 }

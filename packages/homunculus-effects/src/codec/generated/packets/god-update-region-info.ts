@@ -30,7 +30,7 @@ export interface GodUpdateRegionInfoData {
 		redirectGridY: number
 	}
 	regionInfo2: {
-		regionFlagsExtended: number | bigint
+		regionFlagsExtended: bigint
 	}[]
 }
 

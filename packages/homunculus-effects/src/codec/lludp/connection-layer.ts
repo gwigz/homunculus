@@ -6,6 +6,10 @@ import * as Decoder from "./packet-decoder"
 const MAX_SEQUENCE = 0x01000000
 
 export interface Udp {
+	/**
+	 * Sends a packet and returns an `Effect` that will succeed once the packet has
+	 * been sent.
+	 */
 	send: <Data>(
 		encode: (sequence: number, reliable: boolean, data: Data) => Buffer,
 		data: Data,
@@ -15,7 +19,7 @@ export interface Udp {
 	/**
 	 * Sends a packet reliably and returns an `Effect` that will succeed once the
 	 * packet has been acknowledged by the remote simulator. The packet will be
-	 * retried every 5 seconds up to **three** additional attempts before the
+	 * retried every 1 second up to **three** additional attempts before the
 	 * returned `Effect` fails with a timeout error.
 	 */
 	sendReliable: <Data>(
@@ -51,7 +55,9 @@ interface PendingAck {
 }
 
 /** @internal */
-export function startUdpFibers(simulator: Simulator) {
+export function startUdpFibers(
+	simulator: Omit<Simulator, "id" | "ready" | "udp">,
+) {
 	return Effect.gen(function* () {
 		const sequence = yield* Ref.make<number>(1)
 
@@ -89,6 +95,9 @@ export function startUdpFibers(simulator: Simulator) {
 				}
 
 				if (header.id !== PacketAck.id) {
+					// TODO: remove this
+					console.log("received packet", header.id, header.sequence)
+
 					yield* Queue.offer(simulator.inbound, buffer)
 				}
 			}),
@@ -106,13 +115,8 @@ export function startUdpFibers(simulator: Simulator) {
 			Schedule.addDelay(Schedule.forever, () => "100 millis"),
 		).pipe(Effect.forkIn(simulator.scope))
 
-		const nextSequence = () =>
-			Ref.modify(sequence, (seq) => {
-				const current = seq
-				const updated = seq + 1
-
-				return [current, updated > MAX_SEQUENCE ? 1 : updated]
-			})
+		const getNextSequence = () =>
+			Ref.modify(sequence, (seq) => [seq, (seq + 1) % MAX_SEQUENCE])
 
 		const safeEncode = <A>(
 			seq: number,
@@ -134,7 +138,7 @@ export function startUdpFibers(simulator: Simulator) {
 			data: A,
 			reliable = false,
 		) =>
-			nextSequence().pipe(
+			getNextSequence().pipe(
 				Effect.flatMap((seq) => safeEncode(seq, encode, data, reliable)),
 				Effect.flatMap((buffer) => sendRaw(buffer)),
 			)
@@ -144,7 +148,7 @@ export function startUdpFibers(simulator: Simulator) {
 			data: A,
 		) =>
 			Effect.gen(function* () {
-				const seq = yield* nextSequence()
+				const seq = yield* getNextSequence()
 				const buffer = encode(seq, true, data)
 
 				const deferred = yield* Deferred.make<
@@ -160,7 +164,7 @@ export function startUdpFibers(simulator: Simulator) {
 					deferred,
 				})
 
-				// TODO: add timeout error
+				// TODO: add timeout error, lol
 				yield* Effect.repeat(sendRaw(buffer), {
 					until: () => Deferred.isDone(deferred),
 					schedule: Schedule.addDelay(Schedule.recurs(3), () => "1 seconds"),

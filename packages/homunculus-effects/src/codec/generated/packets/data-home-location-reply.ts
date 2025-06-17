@@ -17,7 +17,7 @@ import type * as Types from "~/model/types"
 export interface DataHomeLocationReplyData {
 	info: {
 		agentId: Types.UUID
-		regionHandle: number | bigint
+		regionHandle: bigint
 		position: Types.Vector3
 		lookAt: Types.Vector3
 	}

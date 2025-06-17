@@ -20,7 +20,7 @@ export interface TeleportFinishData {
 		locationId: number
 		simIp: Types.IP
 		simPort: Types.Port
-		regionHandle: number | bigint
+		regionHandle: bigint
 		seedCapability: Buffer
 		simAccess: number
 		teleportFlags: number

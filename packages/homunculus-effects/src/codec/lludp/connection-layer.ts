@@ -1,0 +1,189 @@
+import { Data, Deferred, Effect, Queue, Ref, Schedule } from "effect"
+import * as PacketAck from "~/codec/generated/packets/packet-ack"
+import type { Simulator } from "~/layers/registry-layer"
+import * as Decoder from "./packet-decoder"
+
+const MAX_SEQUENCE = 0x01000000
+
+export interface Udp {
+	send: <Data>(
+		encode: (sequence: number, reliable: boolean, data: Data) => Buffer,
+		data: Data,
+		reliable?: boolean,
+	) => Effect.Effect<void, PacketSendFailureError>
+
+	/**
+	 * Sends a packet reliably and returns an `Effect` that will succeed once the
+	 * packet has been acknowledged by the remote simulator. The packet will be
+	 * retried every 5 seconds up to **three** additional attempts before the
+	 * returned `Effect` fails with a timeout error.
+	 */
+	sendReliable: <Data>(
+		encode: (sequence: number, reliable: boolean, data: Data) => Buffer,
+		data: Data,
+	) => Effect.Effect<
+		Deferred.Deferred<void, PacketAckTimeoutError | PacketSendFailureError>,
+		PacketSendFailureError
+	>
+}
+
+export class PacketSendFailureError extends Data.TaggedError(
+	"PacketSendFailureError",
+)<{
+	readonly message: string
+	readonly cause: unknown
+}> {}
+
+export class PacketAckTimeoutError extends Data.TaggedError(
+	"PacketAckTimeoutError",
+)<{
+	readonly message: string
+}> {}
+
+interface PendingAck {
+	buffer: Buffer
+	retries: number
+	timestamp: number
+	deferred: Deferred.Deferred<
+		void,
+		PacketAckTimeoutError | PacketSendFailureError
+	>
+}
+
+/** @internal */
+export function startUdpFibers(simulator: Simulator) {
+	return Effect.gen(function* () {
+		const sequence = yield* Ref.make<number>(1)
+
+		// our own packets that we're waiting for an ack for
+		const unacked = new Map<number, PendingAck>()
+
+		// incoming packets that we're due to acknowledge, once the next ack flush is sent
+		const pendingAcks = yield* Queue.unbounded<number>()
+
+		// reader fiber
+		yield* Effect.repeat(
+			Effect.gen(function* () {
+				const buffer = yield* Queue.take(simulator.inbound)
+				const header = Decoder.decodeHeader(buffer)
+
+				const acks =
+					header.id === PacketAck.id
+						? PacketAck.decode(buffer).packets.map((packet) => packet.id)
+						: header.ack
+							? Decoder.decodeAppendedAcks(buffer)
+							: []
+
+				for (const ack of acks) {
+					const entry = unacked.get(ack)
+
+					if (entry) {
+						yield* Deferred.succeed(entry.deferred, undefined)
+
+						unacked.delete(ack)
+					}
+				}
+
+				if (header.reliable) {
+					yield* Queue.offer(pendingAcks, header.sequence)
+				}
+
+				if (header.id !== PacketAck.id) {
+					yield* Queue.offer(simulator.inbound, buffer)
+				}
+			}),
+			Schedule.forever,
+		).pipe(Effect.forkIn(simulator.scope))
+
+		// reader -> acknowledger flusher fiber
+		yield* Effect.repeat(
+			Effect.gen(function* () {
+				// NOTE: we can only send 255 packets per message
+				const packets = yield* Queue.takeBetween(pendingAcks, 1, 255)
+
+				yield* send(PacketAck.encode, { packets })
+			}),
+			Schedule.addDelay(Schedule.forever, () => "100 millis"),
+		).pipe(Effect.forkIn(simulator.scope))
+
+		const nextSequence = () =>
+			Ref.modify(sequence, (seq) => {
+				const current = seq
+				const updated = seq + 1
+
+				return [current, updated > MAX_SEQUENCE ? 1 : updated]
+			})
+
+		const safeEncode = <A>(
+			seq: number,
+			encode: (seq: number, reliable: boolean, data: A) => Buffer,
+			data: A,
+			reliable = false,
+		) =>
+			Effect.try({
+				try: () => encode(seq, reliable, data),
+				catch: (error) =>
+					new PacketSendFailureError({
+						message: "Failed to encode packet",
+						cause: error,
+					}),
+			})
+
+		const send = <A>(
+			encode: (seq: number, reliable: boolean, data: A) => Buffer,
+			data: A,
+			reliable = false,
+		) =>
+			nextSequence().pipe(
+				Effect.flatMap((seq) => safeEncode(seq, encode, data, reliable)),
+				Effect.flatMap((buffer) => sendRaw(buffer)),
+			)
+
+		const sendReliable = <A>(
+			encode: (seq: number, reliable: boolean, data: A) => Buffer,
+			data: A,
+		) =>
+			Effect.gen(function* () {
+				const seq = yield* nextSequence()
+				const buffer = encode(seq, true, data)
+
+				const deferred = yield* Deferred.make<
+					void,
+					PacketAckTimeoutError | PacketSendFailureError
+				>()
+
+				// register in the map so the reader fibre can complete the ackGate
+				unacked.set(seq, {
+					buffer,
+					retries: 0,
+					timestamp: Date.now(),
+					deferred,
+				})
+
+				// TODO: add timeout error
+				yield* Effect.repeat(sendRaw(buffer), {
+					until: () => Deferred.isDone(deferred),
+					schedule: Schedule.addDelay(Schedule.recurs(3), () => "1 seconds"),
+				})
+
+				return deferred
+			})
+
+		const sendRaw = (buffer: Buffer) =>
+			Effect.tryPromise({
+				try: () =>
+					new Promise<void>((resolve, reject) => {
+						simulator.socket.send(buffer, (error) =>
+							error ? reject(error) : resolve(),
+						)
+					}),
+				catch: (error) =>
+					new PacketSendFailureError({
+						message: "Failed to send packet",
+						cause: error,
+					}),
+			})
+
+		return { send, sendReliable } satisfies Udp
+	})
+}

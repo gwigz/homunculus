@@ -1,5 +1,6 @@
 import { RELIABLE } from "./packet-decoder"
 
+/** @internal */
 export const FREQUENCY_OFFSETS = [7, 8, 10, 10]
 
 /**
@@ -14,6 +15,7 @@ export const FREQUENCY_OFFSETS = [7, 8, 10, 10]
  * Low:    .. .. .. .. .. FF FF XX XX .. .. ..
  * Fixed:  .. .. .. .. .. FF FF FF XX .. .. ..
  * ```
+ * @internal
  */
 export function encodeHeader(
 	buffer: Buffer,

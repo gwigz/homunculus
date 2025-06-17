@@ -37,8 +37,10 @@
 		"postcodegen": "biome check ./src/codec/generated --fix --unsafe"
 	},
 	"dependencies": {
+		"@effect/platform": "^0.85.1",
+		"@effect/platform-node": "^0.86.2",
 		"@usebruno/node-machine-id": "^2.0.0",
-		"effect": "^3.16.7"
+		"effect": "^3.16.8"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.0.0-beta.5",

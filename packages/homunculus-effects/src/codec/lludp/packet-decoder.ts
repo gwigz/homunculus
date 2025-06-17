@@ -13,6 +13,7 @@ export const ZERO_CODED = 0x80
 
 const FREQUENCY_OFFSETS = [1, 2, 4, 4] as const
 
+/** @internal */
 export function decodeHeader(buffer: Buffer): PacketHeader {
 	const ack = (buffer[0]! & ACK) === ACK
 	const reliable = (buffer[0]! & RELIABLE) === RELIABLE
@@ -78,6 +79,7 @@ export function decodeHeader(buffer: Buffer): PacketHeader {
 	return { reliable, sequence: sequence >>> 0, frequency, id, offset, ack }
 }
 
+/** @internal */
 export function decodeAppendedAcks(buffer: Buffer) {
 	if ((buffer[0]! & ACK) !== ACK) {
 		return []

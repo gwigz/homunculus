@@ -1,19 +1,20 @@
 import dgram from "node:dgram"
-import { Context, Data, Effect, Layer, Option, Queue, Ref } from "effect"
+import { Context, Data, Effect, Layer, Option, Queue, Ref, Scope } from "effect"
 
 export type SimulatorId = `${string}:${number}` & { readonly _: unique symbol }
 
 export interface SimulatorInfo {
 	simIp: string
 	simPort: number
-	circuitCode: number // redacted?
+	circuitCode: number // TODO: redacted?
 }
 
 export interface Simulator {
 	readonly id: SimulatorId
 	readonly socket: dgram.Socket
-	readonly packets: Queue.Queue<Buffer>
+	readonly inbound: Queue.Queue<Buffer>
 	readonly ready: Effect.Latch
+	readonly scope: Scope.CloseableScope
 }
 
 export class SimulatorHandshakeError extends Data.TaggedError(
@@ -109,13 +110,14 @@ export const RegistryLive = Layer.effect(
 						}),
 				)
 
-				const packets = yield* Queue.unbounded<Buffer>()
+				const inbound = yield* Queue.unbounded<Buffer>()
 				const ready = yield* Effect.makeLatch()
+				const scope = yield* Scope.make()
 
-				const simulator: Simulator = { id, socket, packets, ready }
+				const simulator: Simulator = { id, socket, inbound, ready, scope }
 
 				socket.on("message", (buffer) => {
-					packets.offer(buffer)
+					Queue.offer(inbound, buffer)
 				})
 
 				// socket.on("error", (error) => {})
@@ -155,6 +157,6 @@ export const RegistryLive = Layer.effect(
 			connect,
 			promote,
 			get,
-		}
+		} satisfies RegistryService
 	}),
 )

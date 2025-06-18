@@ -8,8 +8,9 @@ export interface PacketHeader {
 }
 
 export const ACK = 0x10
-export const RELIABLE = 0x20
-export const ZERO_CODED = 0x80
+export const RESENT = 0x20
+export const RELIABLE = 0x40
+export const ZEROCODED = 0x80
 
 const FREQUENCY_OFFSETS = [1, 2, 4, 4] as const
 
@@ -17,7 +18,7 @@ const FREQUENCY_OFFSETS = [1, 2, 4, 4] as const
 export function decodeHeader(buffer: Buffer): PacketHeader {
 	const ack = (buffer[0]! & ACK) === ACK
 	const reliable = (buffer[0]! & RELIABLE) === RELIABLE
-	const zerocoded = (buffer[0]! & ZERO_CODED) === ZERO_CODED
+	const zerocoded = (buffer[0]! & ZEROCODED) === ZEROCODED
 
 	const sequence =
 		(buffer[1]! << 24) | (buffer[2]! << 16) | (buffer[3]! << 8) | buffer[4]!
@@ -89,4 +90,61 @@ export function decodeAppendedAcks(buffer: Buffer) {
 	const start = buffer.length - (length * 4 + 1)
 
 	return Array.from({ length }, (_, i) => buffer.readUInt32BE(start + i * 4))
+}
+
+/** @internal */
+export function uncompress<T extends Buffer>(buffer: T) {
+	if ((buffer[0]! & ZEROCODED) !== ZEROCODED) {
+		return buffer
+	}
+
+	// skip header
+	const start = 6
+
+	// skip acks (they're not zero-coded)
+	const end = buffer.length - 1
+	const acks = (buffer[0]! & ACK) === ACK
+	const tail = acks ? buffer.readUInt8(end) * 4 + 1 : 0
+	const cap = end - tail
+
+	let position = start
+	let zero = false
+	let zeros = 0
+
+	for (let index = start; index <= end; index++) {
+		if (zero) {
+			zero = false
+			zeros += buffer.readUInt8(index)
+		} else if (buffer[index] === 0 && index <= cap) {
+			zero = true
+		}
+	}
+
+	zero = false
+
+	const output = Buffer.allocUnsafe(end + 1 + zeros - start)
+
+	// copy header (6 bytes) – copy is exclusive of the end index, so use `start` here
+	buffer.copy(output, 0, 0, start)
+
+	// copy body, with fill for zero-coded bytes
+	for (let index = start; index <= end; index++) {
+		if (zero) {
+			zero = false
+
+			const count = buffer.readUInt8(index)
+
+			output.fill(0, position, position + count)
+			position += count
+		} else if (buffer[index] === 0 && index <= cap) {
+			zero = true
+		} else {
+			output[position++] = buffer[index]!
+		}
+	}
+
+	// set the header to non-zero-coded
+	output[0] = buffer[0]! & ~ZEROCODED
+
+	return output
 }

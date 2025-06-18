@@ -121,7 +121,7 @@ export class Vector3 {
 	 * Calculates the length of the vector.
 	 */
 	public length() {
-		return Math.sqrt(this.x ** 2 + this.y ** 2 + this.z ** 2)
+		return Math.hypot(this.x, this.y, this.z)
 	}
 
 	/**

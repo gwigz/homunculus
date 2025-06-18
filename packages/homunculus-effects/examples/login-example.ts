@@ -18,33 +18,17 @@ const program = Effect.gen(function* () {
 		sessionId: loginResponse.sessionId,
 	}
 
-	const simulator = yield* registry.connect(simulatorInfo)
+	console.log(
+		"Connecting to simulator",
+		simulatorInfo.simIp,
+		simulatorInfo.simPort,
+	)
 
-	yield* registry.promote(simulatorInfo).pipe(simulator.ready.whenOpen)
+	const simulator = yield* registry.connect(simulatorInfo)
 
 	console.log("Connected to simulator", simulator.id)
 
-	// TODO: state machine for the connection? we need to handle
-	// sending UseCircuitCode, CompleteAgentMovement, RegionHandshakeReply, etc.
-	// https://wiki.secondlife.com/wiki/Login_sequence
-
-	// import * as UseCircuitCode from "../src/codec/generated/packets/use-circuit-code"
-
-	// simulator.socket.send(
-
-	// UseCircuitCode.encode(sequence, true, {
-	// 	circuitCode: {
-	// 		code: loginResponse.circuitCode,
-	// 		sessionId: loginResponse.sessionId,
-	// 		id: loginResponse.circuitCode,
-	// 	},
-	// })
-
-	// TODO: simulator needs maybe it's own UDP, Capabilities, and EQ fibers
-
-	// TODO: we need to be ready to receive packets, over the queue,
-	// and we need to be able to send packets, over the socket
-	// before we can even do the handshake...
+	yield* registry.promote(simulatorInfo).pipe(simulator.ready.whenOpen)
 
 	console.log("Promoted simulator", simulator.id, "to current circuit")
 })

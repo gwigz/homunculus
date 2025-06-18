@@ -1,4 +1,5 @@
 import { Chunk, Data, Deferred, Effect, Queue, Ref, Schedule } from "effect"
+import * as PacketLookup from "~/codec/generated/packet-lookup"
 import * as Packets from "~/codec/generated/packets"
 import * as Decoder from "~/codec/lludp/packet-decoder"
 import type { Simulator } from "~/layers/registry-layer"
@@ -41,15 +42,10 @@ export class PacketAckTimeoutError extends Data.TaggedError(
 	readonly message: string
 }> {}
 
-interface PendingAck {
-	buffer: Buffer
-	retries: number
-	timestamp: number
-	acknowledgement: Deferred.Deferred<
-		void,
-		PacketAckTimeoutError | PacketSendFailureError
-	>
-}
+type PendingAck = Deferred.Deferred<
+	void,
+	PacketAckTimeoutError | PacketSendFailureError
+>
 
 /** @internal */
 export function make(simulator: Omit<Simulator, "id" | "ready" | "circuit">) {
@@ -83,15 +79,16 @@ export function make(simulator: Omit<Simulator, "id" | "ready" | "circuit">) {
 						: []
 
 				for (const ack of acks) {
-					const entry = unacked.get(ack)
+					const pending = unacked.get(ack)
 
-					if (entry) {
-						yield* Deferred.succeed(entry.acknowledgement, undefined)
+					if (pending) {
+						yield* Deferred.succeed(pending, undefined)
 
 						unacked.delete(ack)
 					}
 				}
 
+				// TODO: do we want to handle this elsewhere?
 				if (isPingCheck) {
 					const pingCheck = Packets.StartPingCheck.decode(buffer)
 
@@ -104,8 +101,24 @@ export function make(simulator: Omit<Simulator, "id" | "ready" | "circuit">) {
 					yield* Queue.offer(pendingAcks, header.sequence)
 				}
 
+				// TODO: pass into event loop
 				if (!isPacketAck && !isPingCheck) {
-					// TODO: pass this onto event loop
+					const packet = PacketLookup.get(header)
+
+					console.log("---")
+
+					// TODO: don't decode here, only decode if we're interested in the packet
+					console.log(
+						packet?.name,
+						packet?.decode(
+							header.zerocoded ? Decoder.uncompress(buffer) : buffer,
+						),
+						buffer
+							.toString("hex")
+							.split(/(\w{2})/)
+							.filter(Boolean)
+							.join(" "),
+					)
 				}
 			}),
 			Schedule.forever,
@@ -165,12 +178,7 @@ export function make(simulator: Omit<Simulator, "id" | "ready" | "circuit">) {
 				>()
 
 				// register in the map so the reader fibre can complete the ackGate
-				unacked.set(seq, {
-					buffer,
-					retries: 0,
-					timestamp: Date.now(),
-					acknowledgement,
-				})
+				unacked.set(seq, acknowledgement)
 
 				// TODO: add timeout error, lol
 				// TODO: flag as resent if we've already sent it

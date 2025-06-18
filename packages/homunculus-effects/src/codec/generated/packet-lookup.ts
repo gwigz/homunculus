@@ -8,6 +8,7 @@
  */
 
 import * as Packets from "~/codec/generated/packets"
+import type { PacketHeader } from "~/codec/lludp/packet-decoder"
 
 const map = {
 	"1:2": Packets.TestMessage,
@@ -488,8 +489,9 @@ const map = {
 	"4294967291:3": Packets.PacketAck,
 	"4294967292:3": Packets.OpenCircuit,
 	"4294967293:3": Packets.CloseCircuit,
-} as const as Record<`${number}:${number}`, { decode: (buffer: Buffer) => object | undefined }>
+} as const as Record<`${number}:${number}`, { name: string; decode: (buffer: Buffer) => object | undefined }>
 
-export function lookup(id: number, sequence: number) {
-	return map[`${id}:${sequence}`]
+/** @internal */
+export function get(header: PacketHeader) {
+	return map[`${header.id}:${header.frequency}`]
 }

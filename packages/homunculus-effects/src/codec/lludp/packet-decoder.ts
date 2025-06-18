@@ -1,6 +1,7 @@
 export interface PacketHeader {
 	ack: boolean
 	reliable: boolean
+	zerocoded: boolean
 	sequence: number
 	frequency: 0 | 1 | 2 | 3
 	id: number
@@ -77,7 +78,15 @@ export function decodeHeader(buffer: Buffer): PacketHeader {
 			break
 	}
 
-	return { reliable, sequence: sequence >>> 0, frequency, id, offset, ack }
+	return {
+		reliable,
+		zerocoded,
+		sequence: sequence >>> 0,
+		frequency,
+		id,
+		offset,
+		ack,
+	}
 }
 
 /** @internal */

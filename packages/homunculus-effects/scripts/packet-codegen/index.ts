@@ -400,6 +400,17 @@ async function generatePackets() {
 					`export * as ${packet.name} from "./${toDashCase(packet.name)}"`,
 			)
 			.join("\n")
+			.concat("\n\n")
+			.concat("export type Packets = {\n")
+			.concat(
+				packets
+					.map(
+						(packet) =>
+							`\t${packet.name}: import("./${toDashCase(packet.name)}").${packet.name}Data`,
+					)
+					.join("\n"),
+			)
+			.concat("\n}\n")
 
 		writeFileSync(join(outputDir, "index.ts"), indexContent)
 

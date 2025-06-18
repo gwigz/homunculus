@@ -16,11 +16,15 @@ export interface SimulatorInfo {
 
 export interface Simulator {
 	readonly id: SimulatorId
-	readonly socket: dgram.Socket
-	readonly inbound: Queue.Queue<Buffer>
 	readonly ready: Effect.Latch
 	readonly scope: Scope.CloseableScope
 	readonly circuit: Circuit.Circuit
+
+	/** @internal */
+	readonly socket: dgram.Socket
+
+	/** @internal */
+	readonly inbound: Queue.Queue<Buffer>
 }
 
 export class SimulatorHandshakeError extends Data.TaggedError(

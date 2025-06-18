@@ -1,7 +1,7 @@
 import { Chunk, Data, Deferred, Effect, Queue, Ref, Schedule } from "effect"
 import * as Packets from "~/codec/generated/packets"
+import * as Decoder from "~/codec/lludp/packet-decoder"
 import type { Simulator } from "~/layers/registry-layer"
-import * as Decoder from "./packet-decoder"
 
 const MAX_SEQUENCE = 0x01000000
 
@@ -45,7 +45,7 @@ interface PendingAck {
 	buffer: Buffer
 	retries: number
 	timestamp: number
-	deferred: Deferred.Deferred<
+	acknowledgement: Deferred.Deferred<
 		void,
 		PacketAckTimeoutError | PacketSendFailureError
 	>
@@ -86,7 +86,7 @@ export function make(simulator: Omit<Simulator, "id" | "ready" | "circuit">) {
 					const entry = unacked.get(ack)
 
 					if (entry) {
-						yield* Deferred.succeed(entry.deferred, undefined)
+						yield* Deferred.succeed(entry.acknowledgement, undefined)
 
 						unacked.delete(ack)
 					}
@@ -159,7 +159,7 @@ export function make(simulator: Omit<Simulator, "id" | "ready" | "circuit">) {
 				const seq = yield* getNextSequence()
 				const buffer = yield* safeEncode(seq, encode, data, true)
 
-				const deferred = yield* Deferred.make<
+				const acknowledgement = yield* Deferred.make<
 					void,
 					PacketAckTimeoutError | PacketSendFailureError
 				>()
@@ -169,7 +169,7 @@ export function make(simulator: Omit<Simulator, "id" | "ready" | "circuit">) {
 					buffer,
 					retries: 0,
 					timestamp: Date.now(),
-					deferred,
+					acknowledgement,
 				})
 
 				// TODO: add timeout error, lol
@@ -181,7 +181,7 @@ export function make(simulator: Omit<Simulator, "id" | "ready" | "circuit">) {
 
 				yield* sendRaw(buffer)
 
-				return yield* Deferred.await(deferred)
+				return yield* Deferred.await(acknowledgement)
 			})
 
 		const sendRaw = (buffer: Buffer) =>

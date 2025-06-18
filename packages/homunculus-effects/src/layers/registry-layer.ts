@@ -1,7 +1,7 @@
 import dgram from "node:dgram"
 import { Context, Data, Effect, Layer, Option, Queue, Ref, Scope } from "effect"
 import * as Packets from "~/codec/generated/packets"
-import * as Circuit from "~/codec/lludp/circuit-layer"
+import * as Circuit from "~/layers/circuit-layer"
 import type { UUID } from "~/model/types"
 
 export type SimulatorId = `${string}:${number}` & { readonly _: unique symbol }

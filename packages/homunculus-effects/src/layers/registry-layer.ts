@@ -1,5 +1,15 @@
 import dgram from "node:dgram"
-import { Context, Data, Effect, Layer, Option, Queue, Ref, Scope } from "effect"
+import {
+	Context,
+	Data,
+	Effect,
+	Layer,
+	Option,
+	PubSub,
+	Queue,
+	Ref,
+	Scope,
+} from "effect"
 import * as Packets from "~/codec/generated/packets"
 import * as Circuit from "~/layers/circuit-layer"
 import type { UUID } from "~/model/types"
@@ -19,6 +29,11 @@ export interface Simulator {
 	readonly ready: Effect.Latch
 	readonly scope: Scope.CloseableScope
 	readonly circuit: Circuit.Circuit
+
+	// TODO: probably not best place for this
+	readonly events: {
+		[K in Packets.Packet]?: PubSub.PubSub<Packets.Packets[K]>
+	}
 
 	/** @internal */
 	readonly socket: dgram.Socket
@@ -69,6 +84,13 @@ export interface RegistryService {
 	 * Gets a simulator by it's IP and port.
 	 */
 	get(id: SimulatorId): Effect.Effect<Simulator | undefined>
+
+	/**
+	 * Subscribes to incoming packets by name.
+	 */
+	subscribe<K extends Packets.Packet>(
+		packet: K,
+	): Effect.Effect<Queue.Dequeue<Packets.Packets[K]>, never, Scope.Scope>
 }
 
 export class Registry extends Context.Tag("homunculus/Registry")<
@@ -89,6 +111,9 @@ export const RegistryLive = Layer.effect(
 
 		// TODO: maybe use SubscriptionRef here?
 		const current = yield* Ref.make<Option.Option<SimulatorId>>(Option.none())
+
+		// TODO: improve this
+		const events = {} as Simulator["events"]
 
 		const toId = (info: SimulatorInfo) =>
 			`${info.simIp}:${info.simPort}` as SimulatorId
@@ -153,6 +178,7 @@ export const RegistryLive = Layer.effect(
 					socket,
 					inbound,
 					scope,
+					events,
 				})
 
 				const simulator: Simulator = {
@@ -162,6 +188,7 @@ export const RegistryLive = Layer.effect(
 					ready,
 					scope,
 					circuit,
+					events,
 				}
 
 				// TODO: improve this
@@ -239,6 +266,15 @@ export const RegistryLive = Layer.effect(
 		const get = (id: SimulatorId) =>
 			Ref.get(live).pipe(Effect.map((sims) => sims.get(id)))
 
+		const subscribe = <K extends Packets.Packet>(packet: K) =>
+			Effect.gen(function* () {
+				if (!events[packet]) {
+					events[packet] = yield* PubSub.unbounded<any>()
+				}
+
+				return yield* PubSub.subscribe<Packets.Packets[K]>(events[packet])
+			})
+
 		return {
 			discovered,
 			live,
@@ -246,6 +282,7 @@ export const RegistryLive = Layer.effect(
 			connect,
 			promote,
 			get,
+			subscribe,
 		} satisfies RegistryService
 	}),
 )

@@ -48,7 +48,10 @@ type PendingAck = Deferred.Deferred<
 >
 
 /** @internal */
-export function make(simulator: Omit<Simulator, "id" | "ready" | "circuit">) {
+export function make(
+	// TODO: should we just own these instead?
+	simulator: Pick<Simulator, "inbound" | "events" | "socket" | "scope">,
+) {
 	return Effect.gen(function* () {
 		const sequence = yield* Ref.make<number>(1)
 
@@ -104,21 +107,15 @@ export function make(simulator: Omit<Simulator, "id" | "ready" | "circuit">) {
 				// TODO: pass into event loop
 				if (!isPacketAck && !isPingCheck) {
 					const packet = PacketLookup.get(header)
+					const event = packet?.name && simulator.events[packet.name]
 
-					console.log("---")
-
-					// TODO: don't decode here, only decode if we're interested in the packet
-					console.log(
-						packet?.name,
-						packet?.decode(
-							header.zerocoded ? Decoder.uncompress(buffer) : buffer,
-						),
-						buffer
-							.toString("hex")
-							.split(/(\w{2})/)
-							.filter(Boolean)
-							.join(" "),
-					)
+					if (event) {
+						yield* event.publish(
+							packet.decode(
+								header.zerocoded ? Decoder.uncompress(buffer) : buffer,
+							) as any,
+						)
+					}
 				}
 			}),
 			Schedule.forever,

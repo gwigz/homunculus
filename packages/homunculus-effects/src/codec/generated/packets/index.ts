@@ -957,3 +957,5 @@ export type Packets = {
 	RezRestoreToWorld: import("./rez-restore-to-world").RezRestoreToWorldData
 	LinkInventoryItem: import("./link-inventory-item").LinkInventoryItemData
 }
+
+export type Packet = keyof Packets

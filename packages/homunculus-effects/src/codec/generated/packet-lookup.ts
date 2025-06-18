@@ -489,7 +489,7 @@ const map = {
 	"4294967291:3": Packets.PacketAck,
 	"4294967292:3": Packets.OpenCircuit,
 	"4294967293:3": Packets.CloseCircuit,
-} as const as Record<`${number}:${number}`, { name: string; decode: (buffer: Buffer) => object | undefined }>
+} as const as Record<`${number}:${number}`, { name: Packets.Packet; decode: (buffer: Buffer) => object | undefined }>
 
 /** @internal */
 export function get(header: PacketHeader) {

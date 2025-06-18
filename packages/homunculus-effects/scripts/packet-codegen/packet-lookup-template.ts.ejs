@@ -14,7 +14,7 @@ const map = {
 <% packets.forEach(function(packet) { -%>
 	"<%= packet.id %>:<%= packet.frequency %>": Packets.<%= packet.name %>,
 <% }); -%>
-} as const as Record<`${number}:${number}`, { name: string; decode: (buffer: Buffer) => object | undefined }>
+} as const as Record<`${number}:${number}`, { name: Packets.Packet; decode: (buffer: Buffer) => object | undefined }>
 
 /** @internal */
 export function get(header: PacketHeader) {

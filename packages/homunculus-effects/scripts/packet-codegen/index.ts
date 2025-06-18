@@ -410,7 +410,8 @@ async function generatePackets() {
 					)
 					.join("\n"),
 			)
-			.concat("\n}\n")
+			.concat("\n}\n\n")
+			.concat("export type Packet = keyof Packets\n\n")
 
 		writeFileSync(join(outputDir, "index.ts"), indexContent)
 

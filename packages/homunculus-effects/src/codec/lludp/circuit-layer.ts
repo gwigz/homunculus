@@ -1,11 +1,11 @@
-import { Data, Deferred, Effect, Queue, Ref, Schedule } from "effect"
-import * as PacketAck from "~/codec/generated/packets/packet-ack"
+import { Chunk, Data, Deferred, Effect, Queue, Ref, Schedule } from "effect"
+import * as Packets from "~/codec/generated/packets"
 import type { Simulator } from "~/layers/registry-layer"
 import * as Decoder from "./packet-decoder"
 
 const MAX_SEQUENCE = 0x01000000
 
-export interface Udp {
+export interface Circuit {
 	/**
 	 * Sends a packet and returns an `Effect` that will succeed once the packet has
 	 * been sent.
@@ -25,10 +25,7 @@ export interface Udp {
 	sendReliable: <Data>(
 		encode: (sequence: number, reliable: boolean, data: Data) => Buffer,
 		data: Data,
-	) => Effect.Effect<
-		Deferred.Deferred<void, PacketAckTimeoutError | PacketSendFailureError>,
-		PacketSendFailureError
-	>
+	) => Effect.Effect<void, PacketAckTimeoutError | PacketSendFailureError>
 }
 
 export class PacketSendFailureError extends Data.TaggedError(
@@ -55,9 +52,7 @@ interface PendingAck {
 }
 
 /** @internal */
-export function startUdpFibers(
-	simulator: Omit<Simulator, "id" | "ready" | "udp">,
-) {
+export function make(simulator: Omit<Simulator, "id" | "ready" | "circuit">) {
 	return Effect.gen(function* () {
 		const sequence = yield* Ref.make<number>(1)
 
@@ -73,12 +68,19 @@ export function startUdpFibers(
 				const buffer = yield* Queue.take(simulator.inbound)
 				const header = Decoder.decodeHeader(buffer)
 
-				const acks =
-					header.id === PacketAck.id
-						? PacketAck.decode(buffer).packets.map((packet) => packet.id)
-						: header.ack
-							? Decoder.decodeAppendedAcks(buffer)
-							: []
+				const isPacketAck =
+					header.id === Packets.PacketAck.id &&
+					header.frequency === Packets.PacketAck.frequency
+
+				const isPingCheck =
+					header.id === Packets.StartPingCheck.id &&
+					header.frequency === Packets.StartPingCheck.frequency
+
+				const acks = isPacketAck
+					? Packets.PacketAck.decode(buffer).packets.map((packet) => packet.id)
+					: header.ack
+						? Decoder.decodeAppendedAcks(buffer)
+						: []
 
 				for (const ack of acks) {
 					const entry = unacked.get(ack)
@@ -90,15 +92,20 @@ export function startUdpFibers(
 					}
 				}
 
+				if (isPingCheck) {
+					const pingCheck = Packets.StartPingCheck.decode(buffer)
+
+					yield* send(Packets.CompletePingCheck.encode, {
+						pingId: { pingId: pingCheck.pingId.pingId },
+					})
+				}
+
 				if (header.reliable) {
 					yield* Queue.offer(pendingAcks, header.sequence)
 				}
 
-				if (header.id !== PacketAck.id) {
-					// TODO: remove this
-					console.log("received packet", header.id, header.sequence)
-
-					yield* Queue.offer(simulator.inbound, buffer)
+				if (!isPacketAck && !isPingCheck) {
+					// TODO: pass this onto event loop
 				}
 			}),
 			Schedule.forever,
@@ -108,9 +115,10 @@ export function startUdpFibers(
 		yield* Effect.repeat(
 			Effect.gen(function* () {
 				// NOTE: we can only send 255 packets per message
-				const packets = yield* Queue.takeBetween(pendingAcks, 1, 255)
+				const chunk = yield* Queue.takeBetween(pendingAcks, 1, 255)
+				const packets = Chunk.toArray(chunk).map((id) => ({ id }))
 
-				yield* send(PacketAck.encode, { packets })
+				yield* send(Packets.PacketAck.encode, { packets })
 			}),
 			Schedule.addDelay(Schedule.forever, () => "100 millis"),
 		).pipe(Effect.forkIn(simulator.scope))
@@ -118,10 +126,10 @@ export function startUdpFibers(
 		const getNextSequence = () =>
 			Ref.modify(sequence, (seq) => [seq, (seq + 1) % MAX_SEQUENCE])
 
-		const safeEncode = <A>(
+		const safeEncode = <Data>(
 			seq: number,
-			encode: (seq: number, reliable: boolean, data: A) => Buffer,
-			data: A,
+			encode: (seq: number, reliable: boolean, data: Data) => Buffer,
+			data: Data,
 			reliable = false,
 		) =>
 			Effect.try({
@@ -133,9 +141,9 @@ export function startUdpFibers(
 					}),
 			})
 
-		const send = <A>(
-			encode: (seq: number, reliable: boolean, data: A) => Buffer,
-			data: A,
+		const send = <Data>(
+			encode: (seq: number, reliable: boolean, data: Data) => Buffer,
+			data: Data,
 			reliable = false,
 		) =>
 			getNextSequence().pipe(
@@ -143,13 +151,13 @@ export function startUdpFibers(
 				Effect.flatMap((buffer) => sendRaw(buffer)),
 			)
 
-		const sendReliable = <A>(
-			encode: (seq: number, reliable: boolean, data: A) => Buffer,
-			data: A,
+		const sendReliable = <Data>(
+			encode: (seq: number, reliable: boolean, data: Data) => Buffer,
+			data: Data,
 		) =>
 			Effect.gen(function* () {
 				const seq = yield* getNextSequence()
-				const buffer = encode(seq, true, data)
+				const buffer = yield* safeEncode(seq, encode, data, true)
 
 				const deferred = yield* Deferred.make<
 					void,
@@ -165,22 +173,26 @@ export function startUdpFibers(
 				})
 
 				// TODO: add timeout error, lol
-				yield* Effect.repeat(sendRaw(buffer), {
-					until: () => Deferred.isDone(deferred),
-					schedule: Schedule.addDelay(Schedule.recurs(3), () => "1 seconds"),
-				})
+				// TODO: flag as resent if we've already sent it
+				// yield* Effect.repeat(sendRaw(buffer), {
+				// 	until: () => Deferred.isDone(deferred),
+				// 	schedule: Schedule.addDelay(Schedule.recurs(2), () => "2 seconds"),
+				// })
 
-				return deferred
+				yield* sendRaw(buffer)
+
+				return yield* Deferred.await(deferred)
 			})
 
 		const sendRaw = (buffer: Buffer) =>
 			Effect.tryPromise({
 				try: () =>
-					new Promise<void>((resolve, reject) => {
+					new Promise<void>((resolve, reject) =>
+						// TODO: can append acks to the buffer if we want to
 						simulator.socket.send(buffer, (error) =>
 							error ? reject(error) : resolve(),
-						)
-					}),
+						),
+					),
 				catch: (error) =>
 					new PacketSendFailureError({
 						message: "Failed to send packet",
@@ -188,6 +200,6 @@ export function startUdpFibers(
 					}),
 			})
 
-		return { send, sendReliable } satisfies Udp
+		return { send, sendReliable } satisfies Circuit
 	})
 }

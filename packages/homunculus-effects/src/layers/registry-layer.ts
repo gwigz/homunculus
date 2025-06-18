@@ -1,7 +1,7 @@
 import dgram from "node:dgram"
 import { Context, Data, Effect, Layer, Option, Queue, Ref, Scope } from "effect"
 import * as Packets from "~/codec/generated/packets"
-import { startUdpFibers, type Udp } from "~/codec/lludp/connection-layer"
+import * as Circuit from "~/codec/lludp/circuit-layer"
 import type { UUID } from "~/model/types"
 
 export type SimulatorId = `${string}:${number}` & { readonly _: unique symbol }
@@ -20,7 +20,7 @@ export interface Simulator {
 	readonly inbound: Queue.Queue<Buffer>
 	readonly ready: Effect.Latch
 	readonly scope: Scope.CloseableScope
-	readonly udp: Udp
+	readonly circuit: Circuit.Circuit
 }
 
 export class SimulatorHandshakeError extends Data.TaggedError(
@@ -32,16 +32,38 @@ export class SimulatorHandshakeError extends Data.TaggedError(
 }> {}
 
 export interface RegistryService {
+	// TODO: can't we have multiple circuits per simulator? may need to refactor
+	// this just a little bit...
 	readonly discovered: Ref.Ref<Map<SimulatorId, SimulatorInfo>>
 	readonly live: Ref.Ref<Map<SimulatorId, Simulator>>
 	readonly current: Ref.Ref<Option.Option<SimulatorId>>
 
+	/**
+	 * Connects to a simulator and returns a `Simulator` instance.
+	 *
+	 * This also initiates UDP related fibers, such as handling incoming/outgoing
+	 * packets. Including packet acknowledgements, ping checks, etc.
+	 */
 	connect(
 		info: SimulatorInfo,
 	): Effect.Effect<Simulator, SimulatorHandshakeError>
+
+	/**
+	 * Promotes a simulator to the current circuit.
+	 *
+	 * This does fire off the `CompleteAgentMovement` packet, which is required
+	 * to "move" the agent into the region. Along with the `RegionHandshakeReply`
+	 * packet, which is required to complete the login sequence.
+	 *
+	 * @todo Should be able to connect to regions without "moving" into them
+	 */
 	promote(
 		info: SimulatorInfo,
 	): Effect.Effect<Simulator, SimulatorHandshakeError>
+
+	/**
+	 * Gets a simulator by it's IP and port.
+	 */
 	get(id: SimulatorId): Effect.Effect<Simulator | undefined>
 }
 
@@ -72,14 +94,7 @@ export const RegistryLive = Layer.effect(
 				const id = toId(info)
 
 				// track discovery
-				yield* Ref.update(discovered, (map) => {
-					const next = new Map(map)
-
-					// track the new discovery
-					next.set(id, info)
-
-					return next
-				})
+				yield* Ref.update(discovered, (map) => map.set(id, info))
 
 				// return existing connection if present
 				const maybeExisting = yield* get(id)
@@ -94,6 +109,9 @@ export const RegistryLive = Layer.effect(
 
 				// otherwise spin-up a new connection
 				const socket = dgram.createSocket("udp4")
+				const inbound = yield* Queue.unbounded<Buffer>()
+
+				socket.on("message", (buffer) => Effect.runSync(inbound.offer(buffer)))
 
 				yield* Effect.promise(
 					() =>
@@ -124,24 +142,32 @@ export const RegistryLive = Layer.effect(
 						}),
 				)
 
-				const inbound = yield* Queue.unbounded<Buffer>()
-
-				socket.on("message", (buffer) => {
-					Queue.offer(inbound, buffer)
-				})
-
 				const ready = yield* Effect.makeLatch()
 				const scope = yield* Scope.make()
-				const udp = yield* startUdpFibers({ socket, inbound, scope })
 
-				const simulator: Simulator = { id, socket, inbound, ready, scope, udp }
+				const circuit = yield* Circuit.make({
+					socket,
+					inbound,
+					scope,
+				})
+
+				const simulator: Simulator = {
+					id,
+					socket,
+					inbound,
+					ready,
+					scope,
+					circuit,
+				}
 
 				// TODO: improve this
 				socket.on("error", (error) => {
 					console.error("socket error", error)
 				})
 
-				yield* simulator.udp
+				yield* Ref.update(live, (map) => map.set(id, simulator))
+
+				yield* simulator.circuit
 					.sendReliable(Packets.UseCircuitCode.encode, {
 						circuitCode: {
 							id: info.agentId,
@@ -150,7 +176,7 @@ export const RegistryLive = Layer.effect(
 						},
 					})
 					.pipe(
-						Effect.catchTag("PacketSendFailureError", (error) =>
+						Effect.catchAll((error) =>
 							Effect.fail(
 								new SimulatorHandshakeError({
 									id,
@@ -161,14 +187,8 @@ export const RegistryLive = Layer.effect(
 						),
 					)
 
-				yield* Ref.update(live, (map) => {
-					const next = new Map(map)
-
-					// record the new connection
-					next.set(id, simulator)
-
-					return next
-				})
+				// TODO: do this once region handshake reply is sent
+				yield* simulator.ready.open
 
 				return simulator
 			})
@@ -184,7 +204,7 @@ export const RegistryLive = Layer.effect(
 					)
 				}
 
-				yield* simulator.udp
+				yield* simulator.circuit
 					.sendReliable(Packets.CompleteAgentMovement.encode, {
 						// TODO: make this optional again
 						agentData: {
@@ -194,7 +214,7 @@ export const RegistryLive = Layer.effect(
 						},
 					})
 					.pipe(
-						Effect.catchTag("PacketSendFailureError", (error) =>
+						Effect.catchAll((error) =>
 							Effect.fail(
 								new SimulatorHandshakeError({
 									id,

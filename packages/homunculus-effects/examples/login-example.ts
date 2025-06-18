@@ -28,7 +28,9 @@ const program = Effect.gen(function* () {
 
 	console.log("Connected to simulator", simulator.id)
 
-	yield* registry.promote(simulatorInfo).pipe(simulator.ready.whenOpen)
+	yield* registry.promote(simulatorInfo)
+
+	// .pipe(simulator.ready.whenOpen)
 
 	console.log("Promoted simulator", simulator.id, "to current circuit")
 })

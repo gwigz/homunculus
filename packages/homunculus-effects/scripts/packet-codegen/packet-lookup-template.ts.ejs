@@ -7,20 +7,14 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import { type PacketMetadata, packets } from "~/network"
+import * as Packets from "~/codec/generated/packets"
 
-export class PacketLookup {
-	private static list: Record<number, PacketMetadata> | null = null
-
-	public static find(id: number) {
-		if (!PacketLookup.list) {
-			PacketLookup.list = {
+const map = {
 <% packets.forEach(function(packet) { -%>
-				<%= packet.id %><%= packet.frequency %>: packets.<%= packet.camelCaseName %>Metadata,
+	"<%= packet.id %>:<%= packet.frequency %>": Packets.<%= packet.name %>,
 <% }); -%>
-			}
-		}
+} as const as Record<`${number}:${number}`, { decode: (buffer: Buffer) => object | undefined }>
 
-		return PacketLookup.list[id]
-	}
+export function lookup(id: number, sequence: number) {
+	return map[`${id}:${sequence}`]
 }

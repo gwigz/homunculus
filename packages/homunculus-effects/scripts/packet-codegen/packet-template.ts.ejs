@@ -25,7 +25,7 @@ export interface <%= name %>Data {
 <% }) -%>
 }
 <% } else { -%>
-export type <%= name %>Data = never
+export type <%= name %>Data = Record<string, never>
 <% } -%>
 
 export const id = <%= id %>
@@ -64,7 +64,11 @@ const BASE_SIZE =
 <% } -%>
 <% }) -%>
 
+<% if (blocks.length > 0) { -%>
 export function encode(sequence: number, reliable: boolean, data: DeepRequired<<%= name %>Data>) {
+<% } else { -%>
+export function encode(sequence: number, reliable: boolean, _data?: <%= name %>Data) {
+<% } -%>
 	let size = BASE_SIZE
 
 <% // ===== Dynamic size adjustments ===== %>

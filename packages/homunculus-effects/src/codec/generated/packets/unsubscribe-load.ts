@@ -9,10 +9,9 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import type { DeepRequired } from "ts-essentials"
 import * as PacketEncoder from "~/codec/lludp/packet-encoder"
 
-export type UnsubscribeLoadData = never
+export type UnsubscribeLoadData = Record<string, never>
 
 export const id = 8
 export const name = "UnsubscribeLoad"
@@ -25,7 +24,7 @@ const BASE_SIZE =
 	// Header
 	HEADER_SIZE
 
-export function encode(sequence: number, reliable: boolean, _data: DeepRequired<UnsubscribeLoadData>) {
+export function encode(sequence: number, reliable: boolean, _data?: UnsubscribeLoadData) {
 	const size = BASE_SIZE
 
 	const buffer = Buffer.allocUnsafe(size)

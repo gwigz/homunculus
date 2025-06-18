@@ -363,10 +363,10 @@ async function generatePackets() {
 			"utf-8",
 		)
 
-		// const lookupTemplate = readFileSync(
-		// 	join(import.meta.dirname, "packet-lookup-template.ts.ejs"),
-		// 	"utf-8",
-		// )
+		const lookupTemplate = readFileSync(
+			join(import.meta.dirname, "packet-lookup-template.ts.ejs"),
+			"utf-8",
+		)
 
 		const outputDir = join(
 			import.meta.dirname,
@@ -403,23 +403,22 @@ async function generatePackets() {
 
 		writeFileSync(join(outputDir, "index.ts"), indexContent)
 
-		// const lookupOutput = ejs.render(lookupTemplate, {
-		// 	packets: packets.sort((a, b) => a.id - b.id),
-		// })
+		const lookupOutput = ejs.render(lookupTemplate, {
+			packets: packets.sort((a, b) => a.id - b.id),
+		})
 
-		// writeFileSync(
-		// 	join(
-		// 		import.meta.dirname,
-		// 		"..",
-		// 		"..",
-		// 		"src",
-		// 		"codec",
-		// 		"generated",
-		// 		"packets",
-		// 		"packet-lookup.ts",
-		// 	),
-		// 	lookupOutput,
-		// )
+		writeFileSync(
+			join(
+				import.meta.dirname,
+				"..",
+				"..",
+				"src",
+				"codec",
+				"generated",
+				"packet-lookup.ts",
+			),
+			lookupOutput,
+		)
 	} catch (error) {
 		console.error("Error generating packets:", error)
 		throw error

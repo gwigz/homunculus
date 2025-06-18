@@ -9,10 +9,9 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import type { DeepRequired } from "ts-essentials"
 import * as PacketEncoder from "~/codec/lludp/packet-encoder"
 
-export type CloseCircuitData = never
+export type CloseCircuitData = Record<string, never>
 
 export const id = 4294967293
 export const name = "CloseCircuit"
@@ -25,7 +24,7 @@ const BASE_SIZE =
 	// Header
 	HEADER_SIZE
 
-export function encode(sequence: number, reliable: boolean, _data: DeepRequired<CloseCircuitData>) {
+export function encode(sequence: number, reliable: boolean, _data?: CloseCircuitData) {
 	const size = BASE_SIZE
 
 	const buffer = Buffer.allocUnsafe(size)

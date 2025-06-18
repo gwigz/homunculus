@@ -9,10 +9,9 @@
  * @see {@link http://wiki.secondlife.com/wiki/Message_Layout}
  */
 
-import type { DeepRequired } from "ts-essentials"
 import * as PacketEncoder from "~/codec/lludp/packet-encoder"
 
-export type RequestTrustedCircuitData = never
+export type RequestTrustedCircuitData = Record<string, never>
 
 export const id = 394
 export const name = "RequestTrustedCircuit"
@@ -25,7 +24,7 @@ const BASE_SIZE =
 	// Header
 	HEADER_SIZE
 
-export function encode(sequence: number, reliable: boolean, _data: DeepRequired<RequestTrustedCircuitData>) {
+export function encode(sequence: number, reliable: boolean, _data?: RequestTrustedCircuitData) {
 	const size = BASE_SIZE
 
 	const buffer = Buffer.allocUnsafe(size)

@@ -1,3 +1,4 @@
+import type * as Types from "~/model/types"
 import type { Primitive } from "./primitive"
 
 export const IP = {
@@ -23,6 +24,6 @@ export const IP = {
 
 		state.offset += 4
 
-		return ip
+		return ip as Types.IP
 	},
-} as const as Primitive<string>
+} as const as Primitive<Types.IP>

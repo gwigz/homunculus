@@ -6,12 +6,12 @@ import type { Simulator } from "~/layers/registry-layer"
 
 const MAX_SEQUENCE = 0x01000000
 
-export interface Circuit {
+export interface CircuitShape {
 	/**
 	 * Sends a packet and returns an `Effect` that will succeed once the packet has
 	 * been sent.
 	 */
-	send: <Data>(
+	readonly send: <Data>(
 		encode: (sequence: number, reliable: boolean, data: Data) => Buffer,
 		data: Data,
 		reliable?: boolean,
@@ -23,7 +23,7 @@ export interface Circuit {
 	 * retried every 1 second up to **three** additional attempts before the
 	 * returned `Effect` fails with a timeout error.
 	 */
-	sendReliable: <Data>(
+	readonly sendReliable: <Data>(
 		encode: (sequence: number, reliable: boolean, data: Data) => Buffer,
 		data: Data,
 	) => Effect.Effect<void, PacketAckTimeoutError | PacketSendFailureError>
@@ -205,6 +205,6 @@ export function make(
 					}),
 			})
 
-		return { send, sendReliable } satisfies Circuit
+		return { send, sendReliable } satisfies CircuitShape
 	})
 }

@@ -1,4 +1,6 @@
 export * from "./color4"
+export * from "./ip"
+export * from "./port"
 export * from "./quaternion"
 export * from "./uuid"
 export * from "./vector3"

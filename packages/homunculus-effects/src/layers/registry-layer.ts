@@ -28,7 +28,7 @@ export interface Simulator {
 	readonly id: SimulatorId
 	readonly ready: Effect.Latch
 	readonly scope: Scope.CloseableScope
-	readonly circuit: Circuit.Circuit
+	readonly circuit: Circuit.CircuitShape
 
 	// TODO: probably not best place for this
 	readonly events: {
@@ -63,9 +63,9 @@ export interface RegistryService {
 	 * This also initiates UDP related fibers, such as handling incoming/outgoing
 	 * packets. Including packet acknowledgements, ping checks, etc.
 	 */
-	connect(
+	readonly connect: (
 		info: SimulatorInfo,
-	): Effect.Effect<Simulator, SimulatorHandshakeError>
+	) => Effect.Effect<Simulator, SimulatorHandshakeError>
 
 	/**
 	 * Promotes a simulator to the current circuit.
@@ -76,21 +76,21 @@ export interface RegistryService {
 	 *
 	 * @todo Should be able to connect to regions without "moving" into them
 	 */
-	promote(
+	readonly promote: (
 		info: SimulatorInfo,
-	): Effect.Effect<Simulator, SimulatorHandshakeError>
+	) => Effect.Effect<Simulator, SimulatorHandshakeError>
 
 	/**
 	 * Gets a simulator by it's IP and port.
 	 */
-	get(id: SimulatorId): Effect.Effect<Simulator | undefined>
+	readonly get: (id: SimulatorId) => Effect.Effect<Simulator | undefined>
 
 	/**
 	 * Subscribes to incoming packets by name.
 	 */
-	subscribe<K extends Packets.Packet>(
+	readonly subscribe: <K extends Packets.Packet>(
 		packet: K,
-	): Effect.Effect<Queue.Dequeue<Packets.Packets[K]>, never, Scope.Scope>
+	) => Effect.Effect<Queue.Dequeue<Packets.Packets[K]>, never, Scope.Scope>
 }
 
 export class Registry extends Context.Tag("homunculus/Registry")<
@@ -118,6 +118,9 @@ export const RegistryLive = Layer.effect(
 		const toId = (info: SimulatorInfo) =>
 			`${info.simIp}:${info.simPort}` as SimulatorId
 
+		/**
+		 * Connects to a simulator and returns a `Simulator` instance.
+		 */
 		const connect = (info: SimulatorInfo) =>
 			Effect.gen(function* () {
 				const id = toId(info)
@@ -224,6 +227,9 @@ export const RegistryLive = Layer.effect(
 				return simulator
 			})
 
+		/**
+		 * Promotes a simulator to the current circuit.
+		 */
 		const promote = (info: SimulatorInfo) =>
 			Effect.gen(function* () {
 				const id = toId(info)

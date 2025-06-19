@@ -15,8 +15,8 @@
 		"noImplicitOverride": true,
 		/* NOT transpiling with TypeScript */
 		"module": "preserve",
-		/* doesn't run in the DOM */
-		"lib": ["ESNext"],
+		/* doesn't run in the DOM... except for the debug layer */
+		"lib": ["ESNext", "DOM"],
 		/** generate declaration files */
 		"declaration": true,
 		"emitDeclarationOnly": true,

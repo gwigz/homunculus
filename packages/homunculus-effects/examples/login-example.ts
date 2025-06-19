@@ -1,5 +1,6 @@
 import { Effect, Logger, LogLevel } from "effect"
 import { login } from "../src/io/login"
+import { DebugLive } from "../src/layers/debug-layer"
 import {
 	Registry,
 	RegistryLive,
@@ -39,6 +40,7 @@ const program = Effect.gen(function* () {
 Effect.runPromise(
 	program.pipe(
 		Effect.provide(RegistryLive),
+		Effect.provide(DebugLive),
 		Logger.withMinimumLogLevel(LogLevel.Debug),
 	),
 )

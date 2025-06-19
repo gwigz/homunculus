@@ -1,8 +1,18 @@
-import { Chunk, Data, Deferred, Effect, Queue, Ref, Schedule } from "effect"
+import {
+	Chunk,
+	Config,
+	Data,
+	Deferred,
+	Effect,
+	Queue,
+	Ref,
+	Schedule,
+} from "effect"
 import * as PacketLookup from "~/codec/generated/packet-lookup"
 import * as Packets from "~/codec/generated/packets"
 import * as Decoder from "~/codec/lludp/packet-decoder"
 import type { Simulator } from "~/layers/registry-layer"
+import { Debug } from "./debug-layer"
 
 const MAX_SEQUENCE = 0x01000000
 
@@ -53,6 +63,8 @@ export function make(
 	simulator: Pick<Simulator, "inbound" | "events" | "socket" | "scope">,
 ) {
 	return Effect.gen(function* () {
+		const debug = yield* Config.boolean("DEBUG").pipe(Config.withDefault(false))
+
 		const sequence = yield* Ref.make<number>(1)
 
 		// our own packets that we're waiting for an ack for
@@ -109,11 +121,25 @@ export function make(
 					const packet = PacketLookup.get(header)
 					const event = packet?.name && simulator.events[packet.name]
 
-					if (event) {
-						yield* event.publish(
-							packet.decode(
-								header.zerocoded ? Decoder.uncompress(buffer) : buffer,
-							) as any,
+					if (event || (packet && debug)) {
+						const decoded = packet.decode(
+							header.zerocoded ? Decoder.uncompress(buffer) : buffer,
+						) as any
+
+						if (event) {
+							yield* event.publish(decoded)
+						}
+
+						// forward to debug layer (if provided)
+						yield* Effect.catchAll(
+							Effect.flatMap(Debug, (debug) =>
+								debug.publish({
+									timestamp: Date.now(),
+									category: packet.name ?? "unknown-packet",
+									data: decoded,
+								}),
+							),
+							() => Effect.succeed(undefined),
 						)
 					}
 				}

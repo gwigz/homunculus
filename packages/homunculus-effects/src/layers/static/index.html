@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Homunculus Debug UI</title>
+	<style>
+		html, body {
+			margin: 0;
+			padding: 0;
+			height: 100%;
+			width: 100%;
+			overflow: hidden;
+			background: #222;
+		}
+
+		canvas {
+			display: block;
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="gui"></canvas>
+
+	<script type="module">
+		import { ImGui, ImGuiImplWeb, ImVec2 } from "https://esm.sh/@mori2003/jsimgui";
+
+		// initialise ImGui context using WebGL2 backend
+		const canvas = document.getElementById("gui");
+		await ImGuiImplWeb.InitWebGL(canvas);
+
+		const messages = [];
+
+		// connect to the debug WebSocket (same host/port as the page itself)
+		const wsProtocol = location.protocol === "https:" ? "wss://" : "ws://";
+		const socket = new WebSocket(wsProtocol + location.host + "/ws");
+
+		socket.addEventListener("message", (event) => {
+			try {
+				const msg = JSON.parse(event.data);
+
+				messages.push(msg);
+
+				// keep the buffer bounded
+				if (messages.length > 1000) {
+					messages.shift();
+				}
+			} catch (err) {
+				console.error("Failed to parse debug message", err);
+			}
+		});
+
+		function frame() {
+			ImGuiImplWeb.BeginRenderWebGL();
+
+			ImGui.SetNextWindowPos(new ImVec2(0, 0), ImGui.Cond.Once);
+			ImGui.SetNextWindowSize(new ImVec2(canvas.width, canvas.height), ImGui.Cond.Once);
+
+			if (ImGui.Begin("Debug Messages")) {
+				const tableFlags =
+					ImGui.TableFlags.Borders |
+					ImGui.TableFlags.RowBg |
+					ImGui.TableFlags.ScrollY |
+					ImGui.TableFlags.ScrollX |
+					ImGui.TableFlags.Resizable;
+
+				if (ImGui.BeginTable("messages", 3, tableFlags)) {
+					ImGui.TableSetupColumn("Time", ImGui.TableColumnFlags.WidthFixed | ImGui.TableColumnFlags.NoHide, 110);
+					ImGui.TableSetupColumn("Category", ImGui.TableColumnFlags.WidthFixed | ImGui.TableColumnFlags.NoHide, 160);
+					ImGui.TableSetupColumn(
+						"Data",
+						ImGui.TableColumnFlags.WidthStretch | ImGui.TableColumnFlags.NoHide,
+						1
+					);
+					ImGui.TableSetupScrollFreeze(0, 1);
+					ImGui.TableHeadersRow();
+
+					// Iterate newest to oldest
+					for (let i = messages.length - 1; i >= 0; i--) {
+						const m = messages[i];
+
+						ImGui.TableNextRow();
+						ImGui.TableSetColumnIndex(0);
+						ImGui.Text(new Date(m.timestamp).toLocaleTimeString());
+						ImGui.TableSetColumnIndex(1);
+						ImGui.Text(m.category ?? "");
+						ImGui.TableSetColumnIndex(2);
+
+						const jsonLines = JSON.stringify(m.data, null, 2).split("\n");
+
+						for (const line of jsonLines) {
+							ImGui.Text(line);
+						}
+					}
+
+					ImGui.EndTable();
+				}
+			}
+
+			ImGui.End();
+			ImGuiImplWeb.EndRenderWebGL();
+
+			requestAnimationFrame(frame);
+		}
+
+		requestAnimationFrame(frame);
+	</script>
+</body>
+</html>
